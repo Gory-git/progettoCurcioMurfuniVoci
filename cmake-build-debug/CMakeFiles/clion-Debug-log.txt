@@ -1,0 +1,1 @@
+CMakeLists.txt not found in C:\Users\grego\OneDrive - Università della Calabria\UNI\A.A. 2024-2025 L.M. ING. INF\Primo Semestre\Architetture e Programmazione dei Sistemi di Elaborazione\progettoCurcioMurfuniVoci Select CMakeLists.txt
