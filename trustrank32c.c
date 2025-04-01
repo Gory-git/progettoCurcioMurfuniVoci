@@ -59,21 +59,16 @@ type volume[] = {88.6, -1, 108.5, 111.1, 138.4, 189.9, 60.1, 153.2, 166.7, -1, 1
 type charge[] = {0, -1, 0, -1, -1, 0, 0, 0.5, 0, -1, 1, 0, 0, 0, -1, 0, 0, 1, 0, 0, -1, 0, 0, -1, 0, -1};		// charge
 
 typedef struct {
-	char* seq;		// sequenza di amminoacidi
-	int N;			// lunghezza sequenza
-	unsigned int sd; 	// seed per la generazione casuale
-	type to;		// temperatura INIZIALE
-	type alpha;		// tasso di raffredamento
-	type k;		// costante
-	VECTOR hydrophobicity; // hydrophobicity
-	VECTOR volume;		// volume
-	VECTOR charge;		// charge
-	VECTOR phi;		// vettore angoli phi
-	VECTOR psi;		// vettore angoli psi
-	type e;		// energy
-	int display;
-	int silent;
-
+	MATRIX tranMat; // Transition Matrix
+	int numP; // Numero Pagine
+	int lim;
+	double alfaB;
+	int mB;
+	double alfaI;
+	VECTOR scoreDistVect;
+	MATRIX tranMatInv;
+	VECTOR s;
+	VECTOR index;
 } params;
 
 
@@ -273,11 +268,11 @@ void save_out(char* filename, MATRIX X, int k) {
  * Funzioni ad-hoc
  */
 
-float* selectSeed(float** tranMatInv, int numP, float alfaI, int mI){
+float* selectSeed(MATRIX tranMatInv, int numP, double alfaI, int mI){
 
 }
 
-int* rank(int* index, float* s){
+int* rank(VECTOR index, VECTOR s){
 
 }
 
@@ -285,21 +280,22 @@ int oracle(int index){
 
 }
 
-float* normalize(float* scoreDistVect){
+float* normalize(VECTOR scoreDistVect){
 
 }
 
-float* computeScores(float** tranMat, float alfaB, int mB, float* scoreDistVect){
+float* computeScores(MATRIX tranMat, double alfaB, int mB, VECTOR scoreDistVect){
 
 }
 
-float** reverseMat(float** mat){
+float** reverseMat(MATRIX mat){
 
 }
 
-float** trustRank(float** tranMat, int numP, int lim, float alfaB, int mB, float alfaI){
+float** trustRank(MATRIX tranMat, int numP, int lim, double alfaB, int mB, double alfaI){
     float** tranMatInv = reverseMat(tranMat)
     float* s = selectSeed()
+
 }
 
 int main(int argc, char** argv){

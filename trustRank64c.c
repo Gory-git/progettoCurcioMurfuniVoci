@@ -61,21 +61,16 @@ type volume[] = {88.6, -1, 108.5, 111.1, 138.4, 189.9, 60.1, 153.2, 166.7, -1, 1
 type charge[] = {0, -1, 0, -1, -1, 0, 0, 0.5, 0, -1, 1, 0, 0, 0, -1, 0, 0, 1, 0, 0, -1, 0, 0, -1, 0, -1};		// charge
 
 typedef struct {
-	char* seq;		// sequenza di amminoacidi
-	int N;			// lunghezza sequenza
-	unsigned int sd; 	// seed per la generazione casuale
-	type to;		// temperatura INIZIALE
-	type alpha;		// tasso di raffredamento
-	type k;		// costante
-	VECTOR hydrophobicity; // hydrophobicity
-	VECTOR volume;		// volume
-	VECTOR charge;		// charge
-	VECTOR phi;		// vettore angoli phi
-	VECTOR psi;		// vettore angoli psi
-	type e;		// energy
-	int display;
-	int silent;
-
+	MATRIX tranMat; // Transition Matrix
+	int numP; // Numero Pagine
+    int lim;
+    double alfaB;
+    int mB;
+    double alfaI;
+    VECTOR scoreDistVect;
+    MATRIX tranMatInv;
+    VECTOR s;
+	VECTOR index;
 } params;
 
 
