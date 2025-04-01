@@ -293,8 +293,8 @@ MATRIX reverseMat(MATRIX mat){
 }
 
 MATRIX trustRank(MATRIX tranMat, int numP, int lim, double alfaB, int mB, double alfaI){
-    float** tranMatInv = reverseMat(tranMat)
-    float* s = selectSeed()
+    MATRIX tranMatInv = reverseMat(tranMat);
+    // VECTOR s = selectSeed()
 
 }
 
