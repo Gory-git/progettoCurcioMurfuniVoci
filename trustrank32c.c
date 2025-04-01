@@ -268,7 +268,7 @@ void save_out(char* filename, MATRIX X, int k) {
  * Funzioni ad-hoc
  */
 
-float* selectSeed(MATRIX tranMatInv, int numP, double alfaI, int mI){
+VECTOR selectSeed(MATRIX tranMatInv, int numP, double alfaI, int mI){
 
 }
 
@@ -280,19 +280,19 @@ int oracle(int index){
 
 }
 
-float* normalize(VECTOR scoreDistVect){
+VECTOR normalize(VECTOR scoreDistVect){
 
 }
 
-float* computeScores(MATRIX tranMat, double alfaB, int mB, VECTOR scoreDistVect){
+VECTOR computeScores(MATRIX tranMat, double alfaB, int mB, VECTOR scoreDistVect){
 
 }
 
-float** reverseMat(MATRIX mat){
+MATRIX reverseMat(MATRIX mat){
 
 }
 
-float** trustRank(MATRIX tranMat, int numP, int lim, double alfaB, int mB, double alfaI){
+MATRIX trustRank(MATRIX tranMat, int numP, int lim, double alfaB, int mB, double alfaI){
     float** tranMatInv = reverseMat(tranMat)
     float* s = selectSeed()
 
