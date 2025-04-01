@@ -26,13 +26,8 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="preparazione merge">
-      <change beforePath="$PROJECT_DIR$/.idea/editor.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/editor.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-Debug-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-Debug-log.txt" afterDir="false" />
+    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="AO">
       <change beforePath="$PROJECT_DIR$/trustRank32c.c" beforeDir="false" afterPath="$PROJECT_DIR$/trustRank32c.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trustRank64c.c" beforeDir="false" afterPath="$PROJECT_DIR$/trustRank64c.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,6 +57,12 @@
     &quot;accountId&quot;: &quot;9cdb57ce-e474-4ca3-9e13-f52c310dc7f5&quot;
   }
 }</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="mock://C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci/trustRank32c.c" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci/trustRank32c.c" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci/trustrank32c.c" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci/trustrank32c.c" root0="SKIP_HIGHLIGHTING" />
+  </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -112,6 +113,12 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="trustRank32c.c" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="progettoCurcioMurfuniVoci" TARGET_NAME="trustRank32c.c" CONFIG_NAME="trustRank32c.c">
+      <option name="sourceFile" value="trustRank32c.c" />
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.runfile.CppFileBuildBeforeRunTaskProvider$BasicBuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -126,7 +133,7 @@
       <workItem from="1743256636676" duration="180000" />
       <workItem from="1743256933074" duration="563000" />
       <workItem from="1743267231181" duration="54000" />
-      <workItem from="1743496433792" duration="1416000" />
+      <workItem from="1743496433792" duration="1730000" />
     </task>
     <task id="LOCAL-00001" summary="creato file 64 e importate funzioni di base">
       <option name="closed" value="true" />
@@ -152,7 +159,23 @@
       <option name="project" value="LOCAL" />
       <updated>1743257061717</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="sistemato struct e codice">
+      <option name="closed" value="true" />
+      <created>1743502905045</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1743502905045</updated>
+    </task>
+    <task id="LOCAL-00005" summary="sistemato codice">
+      <option name="closed" value="true" />
+      <created>1743502984779</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1743502984779</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -203,6 +226,9 @@
     <MESSAGE value="creato file 64 e importate funzioni di base" />
     <MESSAGE value="eliminato file prova.txt" />
     <MESSAGE value="preparazione merge" />
-    <option name="LAST_COMMIT_MESSAGE" value="preparazione merge" />
+    <MESSAGE value="sistemato struct e codice" />
+    <MESSAGE value="sistemato codice" />
+    <MESSAGE value="AO" />
+    <option name="LAST_COMMIT_MESSAGE" value="AO" />
   </component>
 </project>
