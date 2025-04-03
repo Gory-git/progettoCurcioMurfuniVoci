@@ -7,6 +7,7 @@
     <option name="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue" value="false" type="bool" />
     <option name="/Default/Housekeeping/GlobalSettingsUpgraded/IsUpgraded/@EntryValue" value="true" type="bool" />
     <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
+    <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexRemoved" />
   </component>
   <component name="CMakePresetLoader">{
   &quot;useNewFormat&quot;: true
@@ -26,7 +27,8 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="AO">
+    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="non committa trustRank32c.c">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trustRank32c.c" beforeDir="false" afterPath="$PROJECT_DIR$/trustRank32c.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -60,6 +62,12 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="mock://C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci/trustRank32c.c" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci/trustRank32c.c" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci/trustRank32c.c" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci/trustRank32c.c" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci/trustRank32c.c" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci/trustRank32c.c" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci/trustrank32c.c" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci/trustrank32c.c" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci/trustrank32c.c" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci/trustrank32c.c" root0="SKIP_HIGHLIGHTING" />
   </component>
@@ -108,9 +116,9 @@
   }
 }</component>
   <component name="RunManager">
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
       </method>
     </configuration>
     <configuration name="trustRank32c.c" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="progettoCurcioMurfuniVoci" TARGET_NAME="trustRank32c.c" CONFIG_NAME="trustRank32c.c">
@@ -133,7 +141,8 @@
       <workItem from="1743256636676" duration="180000" />
       <workItem from="1743256933074" duration="563000" />
       <workItem from="1743267231181" duration="54000" />
-      <workItem from="1743496433792" duration="1730000" />
+      <workItem from="1743496433792" duration="2012000" />
+      <workItem from="1743710116913" duration="4752000" />
     </task>
     <task id="LOCAL-00001" summary="creato file 64 e importate funzioni di base">
       <option name="closed" value="true" />
@@ -175,7 +184,23 @@
       <option name="project" value="LOCAL" />
       <updated>1743502984779</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="AO">
+      <option name="closed" value="true" />
+      <created>1743503187581</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1743503187581</updated>
+    </task>
+    <task id="LOCAL-00007" summary="non committa trustRank32c.c">
+      <option name="closed" value="true" />
+      <created>1743503350255</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1743503350255</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -229,6 +254,7 @@
     <MESSAGE value="sistemato struct e codice" />
     <MESSAGE value="sistemato codice" />
     <MESSAGE value="AO" />
-    <option name="LAST_COMMIT_MESSAGE" value="AO" />
+    <MESSAGE value="non committa trustRank32c.c" />
+    <option name="LAST_COMMIT_MESSAGE" value="non committa trustRank32c.c" />
   </component>
 </project>

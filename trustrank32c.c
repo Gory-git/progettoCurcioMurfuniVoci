@@ -62,9 +62,9 @@ typedef struct {
 	MATRIX tranMat; // Transition Matrix
 	int numP; // Numero Pagine
 	int lim;
-	double alfaB;
+	float alfaB;
 	int mB;
-	double alfaI;
+	float alfaI;
 	VECTOR scoreDistVect;
 	MATRIX tranMatInv;
 	VECTOR s;
@@ -268,34 +268,92 @@ void save_out(char* filename, MATRIX X, int k) {
  * Funzioni ad-hoc
  */
 
-VECTOR selectSeed(MATRIX tranMatInv, int numP, double alfaI, int mI){
+int* selectSeed(MATRIX tranMatInv, int numP, float alfaI, int mI)
+{
 
 }
 
-int* rank(VECTOR index, VECTOR s){
+int* rank(int* index, int* s)
+{
 
 }
 
-int oracle(int index){
-
+int oracle(int index)
+{
+	// TODO CAPIRE come implementare
 }
 
-VECTOR normalize(VECTOR scoreDistVect){
-
+VECTOR normalize(int* scoreDistVect, int numPages)
+{
+	VECTOR ret = alloc_vector(numPages);
+	for (int i = 0; i < numPages; i++)
+	{
+		ret[i] = (type) scoreDistVect[i] / numPages; // TODO RIGUARDARE quando conosciamo megio le matrici e i vettori
+	}
+	return ret;
 }
 
-VECTOR computeScores(MATRIX tranMat, double alfaB, int mB, VECTOR scoreDistVect){
-
+void computeScores(MATRIX tranMat, float alfaB, int maxBias, int* d, VECTOR *trustScores){
+	for (int i = 0; i < maxBias; i++)
+	{
+		// TODO IMPOSTARE trustScores[i] = alfaB * tranMat[i][] * trustScores[] + (1 - alfaB) * d[i]
+		// TODO CAPIRE
+	}
 }
 
-MATRIX reverseMat(MATRIX mat){
+MATRIX reverseMat(MATRIX mat, int numPages)
+{
+	/* T
+	 * |1 0 1|
+	 * |0 0 1|
+	 * |1 0 2|
+	 */
+	/*
+	 * U
+	 * |2 0 1|
+	 * |1 0 0|
+	 * |1 0 1|
+	 */
+	// [i, j] -> [n - i, m - j]; n = num righe - 1, m = num col - 1; n = m = numPages
 
+	MATRIX ret = alloc_matrix(numPages,numPages);
+	for (int i = 0; i < numPages; i++)
+	{
+		for (int j = 0; j < numPages; j++)
+		{
+			// TODO SCRIVERE BENE
+			// ret[x] = mat[y]; dove x = i + ((numpages - 1) * i) + j
+			//					dove y = (numpages - 1 - i) + ((numpages - 1) * (numpages - 1 - i) + (numpages - 1 - j)
+
+		}
+	}
+	return ret;
 }
 
-MATRIX trustRank(MATRIX tranMat, int numP, int lim, double alfaB, int mB, double alfaI){
-    MATRIX tranMatInv = reverseMat(tranMat);
-    // VECTOR s = selectSeed()
 
+
+MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, float alfaB, int maxBias, float alfaI)
+{
+    MATRIX tranMatInv = reverseMat(tranMat, numPages);
+	int mI = 100; // numero massimo di iterazioni
+	int* s = selectSeed(tranMatInv, numPages, alfaI, mI);
+	int* indici = alloc_int_matrix(numPages, 1);
+	int* sigma = rank(indici, s);
+	int* d = alloc_int_matrix(numPages, 1);
+	for (int i = 0; i < limitOracle; i++)
+	{
+		for (int j = 0; j < numPages; j++)
+		{
+			if (oracle(sigma[j]) == 1)
+			{
+				d[sigma[j]]=1;
+			}
+		}
+	}
+	VECTOR dNormalized = normalize(d, numPages);
+	VECTOR trustScores = dNormalized; // TODO controllare se shallow o deep copy
+	computeScores(tranMat, alfaB, maxBias, d, trustScores);
+	return trustScores;
 }
 
 int main(int argc, char** argv){
