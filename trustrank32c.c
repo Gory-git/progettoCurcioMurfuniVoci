@@ -293,10 +293,10 @@ VECTOR normalize(int* scoreDistVect, int numPages)
 	return ret;
 }
 
-void computeScores(MATRIX tranMat, float alfaB, int maxBias, int* d, VECTOR *trustScores){
+void computeScores(MATRIX tranMat, float alfaB, int maxBias, int* d, VECTOR trustScores){
 	for (int i = 0; i < maxBias; i++)
 	{
-		// TODO IMPOSTARE trustScores[i] = alfaB * tranMat[i][] * trustScores[] + (1 - alfaB) * d[i]
+		// TODO IMPOSTARE trustScores[i] = alfaB * tranMat * trustScores + (1 - alfaB) * d
 		// TODO CAPIRE
 	}
 }
@@ -304,17 +304,17 @@ void computeScores(MATRIX tranMat, float alfaB, int maxBias, int* d, VECTOR *tru
 MATRIX reverseMat(MATRIX mat, int numPages)
 {
 	/* T
-	 * |1 0 1|
-	 * |0 0 1|
-	 * |1 0 2|
+	 * |1 2 3|
+	 * |4 5 6|
+	 * |7 8 9|
 	 */
 	/*
 	 * U
-	 * |2 0 1|
-	 * |1 0 0|
-	 * |1 0 1|
+	 * |9 8 7|
+	 * |6 5 4|
+	 * |3 2 1|
 	 */
-	// [i, j] -> [n - i, m - j]; n = num righe - 1, m = num col - 1; n = m = numPages
+	// [i, j] -> [n - i - 1, m - j - 1]; n = num righe, m = num col; n = m = numPages
 
 	MATRIX ret = alloc_matrix(numPages,numPages);
 	for (int i = 0; i < numPages; i++)
@@ -324,7 +324,7 @@ MATRIX reverseMat(MATRIX mat, int numPages)
 			// TODO SCRIVERE BENE
 			// ret[x] = mat[y]; dove x = i + ((numpages - 1) * i) + j
 			//					dove y = (numpages - 1 - i) + ((numpages - 1) * (numpages - 1 - i) + (numpages - 1 - j)
-
+			// TODO FORSE MEGLIO un solo for e reverso la lista, più leggibile
 		}
 	}
 	return ret;
@@ -338,7 +338,7 @@ MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, float alfaB, int
 	int mI = 100; // numero massimo di iterazioni
 	int* s = selectSeed(tranMatInv, numPages, alfaI, mI);
 	int* indici = alloc_int_matrix(numPages, 1);
-	int* sigma = rank(indici, s);
+	int* sigma = rank(indici, s); //rank restituisce una lista ordinats per l'affidabilità delle pagine CONTIENE INDICI PAG
 	int* d = alloc_int_matrix(numPages, 1);
 	for (int i = 0; i < limitOracle; i++)
 	{
@@ -350,7 +350,7 @@ MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, float alfaB, int
 			}
 		}
 	}
-	VECTOR dNormalized = normalize(d, numPages);
+	VECTOR dNormalized = normalize(d, numPages); //somma elementi = 1
 	VECTOR trustScores = dNormalized; // TODO controllare se shallow o deep copy
 	computeScores(tranMat, alfaB, maxBias, d, trustScores);
 	return trustScores;
