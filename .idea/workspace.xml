@@ -28,7 +28,8 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="scritta compute scores">
+    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="sistemato il file">
+      <change beforePath="$PROJECT_DIR$/.idea/editor.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/editor.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trustRank32c.c" beforeDir="false" afterPath="$PROJECT_DIR$/trustRank32c.c" afterDir="false" />
     </list>
@@ -119,6 +120,11 @@
   }
 }</component>
   <component name="RunManager">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="trustRank32c.c" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="progettoCurcioMurfuniVoci" TARGET_NAME="trustRank32c.c" CONFIG_NAME="trustRank32c.c">
       <option name="sourceFile" value="trustRank32c.c" />
       <method v="2">
@@ -142,6 +148,7 @@
       <workItem from="1743496433792" duration="2012000" />
       <workItem from="1743710116913" duration="5349000" />
       <workItem from="1743762933978" duration="1983000" />
+      <workItem from="1743966069083" duration="846000" />
     </task>
     <task id="LOCAL-00001" summary="creato file 64 e importate funzioni di base">
       <option name="closed" value="true" />
@@ -215,7 +222,23 @@
       <option name="project" value="LOCAL" />
       <updated>1743946457586</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="impalcatura selectSeed">
+      <option name="closed" value="true" />
+      <created>1743948963738</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1743948963738</updated>
+    </task>
+    <task id="LOCAL-00011" summary="sistemato il file">
+      <option name="closed" value="true" />
+      <created>1743949070365</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1743949070365</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -273,6 +296,8 @@
     <MESSAGE value="scheletro delle funzioni" />
     <MESSAGE value="recuperato 2.0" />
     <MESSAGE value="scritta compute scores" />
-    <option name="LAST_COMMIT_MESSAGE" value="scritta compute scores" />
+    <MESSAGE value="impalcatura selectSeed" />
+    <MESSAGE value="sistemato il file" />
+    <option name="LAST_COMMIT_MESSAGE" value="sistemato il file" />
   </component>
 </project>

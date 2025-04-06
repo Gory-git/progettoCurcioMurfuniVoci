@@ -265,32 +265,30 @@ void save_out(char* filename, MATRIX X, int k) {
  * Funzioni ad-hoc
  */
 
-int* selectSeed(MATRIX tranMatInv, int numP, type alfaI, int mI)
+VECTOR selectSeed(MATRIX tranMatInv, int numP, type alfaI, int mI)
 {
-	int* unoN = alloc_int_matrix(numP, 1);
-	int* s = alloc_int_matrix(numP, 1);
+	VECTOR s = alloc_vector(numP);
 	int iterazione = 0;
 
+	// s = alfaI * tranMatInv * s + (1 - alfa) * (1/n) * unoN
+	// vettore = scalare * Matrice * vettore + scalare * scalare * vettore
+	type somma = (1 - alfaI) / (type) numP;
 
 	for (int m = 0; m < mI; m++)
 	{
 		for (int i = 0; i < numP; i++)
 		{
-			if (iterazione == 0) // Così risparmio un ciclo in n
-			{
-				unoN[i] = 1;
-				s[i] = 1;
-			}
-
+			type riga = 0;
 			for (int j = 0; j < numP; j++)
 			{
+				if (i == 0) // Così risparmio un ciclo in n in cui inizializzo tutti gli elementi di s a 1
+				{
+					s[j] = 1;
+				}
 
+				riga = riga + alfaI * tranMatInv[i * numP + j] * s[j];
 			}
-
-			if (iterazione == 0)
-			{
-				iterazione = 1;
-			}
+			s[i] = riga + somma;
 		}
 	}
 
@@ -332,7 +330,7 @@ VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numP
 
 	for (int b = 0; b < maxBias; b++)
 	{
-		// TODO ret = alfaB * tranMat * ret + (1 - alfaB) * d
+		// ret = alfaB * tranMat * ret + (1 - alfaB) * d
 		// vettore = scalare * matrice * vettore + scalare * vettore
 
 		for (int i = 0; i < numPages; i++)
@@ -344,7 +342,7 @@ VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numP
 				riga = riga + alfaB * ret[j] * tranMat[i * numPages + j];
 			}
 
-			ret[i] = ret[i] + riga + somma[i];
+			ret[i] = riga + somma[i];
 		}
 	}
 	return ret;
@@ -378,7 +376,7 @@ MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int 
 {
     MATRIX tranMatInv = reverseMat(tranMat, numPages);
 	int mI = 100; // numero massimo di iterazioni, deciso empiricamente AC-DC
-	int* s = selectSeed(tranMatInv, numPages, alfaI, mI);
+	VECTOR s = selectSeed(tranMatInv, numPages, alfaI, mI);
 	int* indici = alloc_int_matrix(numPages, 1);
 	int* sigma = rank(indici, s); //rank restituisce una lista ordinata per l'affidabilità delle pagine (CONTIENE INDICI PAG)
 
