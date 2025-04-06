@@ -59,21 +59,16 @@ type volume[] = {88.6, -1, 108.5, 111.1, 138.4, 189.9, 60.1, 153.2, 166.7, -1, 1
 type charge[] = {0, -1, 0, -1, -1, 0, 0, 0.5, 0, -1, 1, 0, 0, 0, -1, 0, 0, 1, 0, 0, -1, 0, 0, -1, 0, -1};		// charge
 
 typedef struct {
-	char* seq;		// sequenza di amminoacidi
-	int N;			// lunghezza sequenza
-	unsigned int sd; 	// seed per la generazione casuale
-	type to;		// temperatura INIZIALE
-	type alpha;		// tasso di raffredamento
-	type k;		// costante
-	VECTOR hydrophobicity; // hydrophobicity
-	VECTOR volume;		// volume
-	VECTOR charge;		// charge
-	VECTOR phi;		// vettore angoli phi
-	VECTOR psi;		// vettore angoli psi
-	type e;		// energy
-	int display;
-	int silent;
-
+	MATRIX tranMat; // Transition Matrix
+	int numP; // Numero Pagine
+	int lim;
+	float alfaB;
+	int mB;
+	float alfaI;
+	VECTOR scoreDistVect;
+	MATRIX tranMatInv;
+	VECTOR s;
+	VECTOR index;
 } params;
 
 
@@ -273,33 +268,179 @@ void save_out(char* filename, MATRIX X, int k) {
  * Funzioni ad-hoc
  */
 
-float* selectSeed(float** tranMatInv, int numP, float alfaI, int mI){
+int* selectSeed(MATRIX tranMatInv, int numP, float alfaI, int mI)
+{
+	int* s = alloc_vector(numP)
+	
+	inizializzato = false;
+	reset = false;
+
+	iterazioni = -1;
+	prima_parte = 0;
+	seconda_parte = 0;
+	giriS = -1 //conta quante volte ho terminato il for su S
+	sommeSuPrimaParte = 0 //conta quante somme ho fatto su prima parte
+	sommeSuSecondaParte = 0 //conta quante somme ho fatto su seconda parte 
+	
+	for (int i = 0; i < mI; i++) //TODO capire bene perché così si sprecano iterazioni
+	{
+		indiceTran = i % ((numP * numP) - 1);
+		indiceS = i % numP;
+		//indiceTran > indiceS
+
+		if
+		
+		if(indiceS == 0)
+		{
+			giriS += 1
+		}
+
+		if(giriS == 0) {
+			prima_parte = prima_parte + (alfaI * tranMat[indiceTran] * 1)
+		}
+		if(sommeSuPrimaParte < numP && giriS != 0)
+		{
+			prima_parte = prima_parte + (alfaI * tranMat[indiceTran] * s[indiceS])
+		}
+
+		if(sommeSuSecondaParte < numP * numP)
+		{
+			seconda_parte = seconda_parte + (1 - alfaI) * (1 / numP) * 1
+			sommeSuSecondaParte += 1
+		}
+		if(sommeSuSecondaParte == numP * numP && sommeSuPrimaParte == numP) {
+			s[]
+		}
+	}
+}
+
+int* rank(int* index, int* s)
+{
 
 }
 
-int* rank(int* index, float* s){
-
+int oracle(int index)
+{
+	// TODO CAPIRE come implementare
 }
 
-int oracle(int index){
-
+VECTOR normalize(int* scoreDistVect, int numPages)
+{
+	VECTOR ret = alloc_vector(numPages);
+	for (int i = 0; i < numPages; i++)
+	{
+		ret[i] = (type) scoreDistVect[i] / numPages; // TODO RIGUARDARE quando conosciamo megio le matrici e i vettori
+	}
+	return ret;
 }
 
-float* normalize(float* scoreDistVect){
+void computeScores(MATRIX tranMat, float alfaB, int maxBias, int* d, VECTOR trustScores){
+	for (int i = 0; i < maxBias; i++)
+	{
+		// TODO IMPOSTARE trustScores[i] = alfaB * tranMat * trustScores + (1 - alfaB) * d 
 
+		int* risultato = alloc_vector(numPages)
+
+		reset = false;
+		somma = 0; 
+		iterazioni = -1; //corrisponde anche all'indice in cui salveremo il risultato nel vettore di ritorno
+		for (i = 0; i < numPages * numPages; i ++)
+		{
+			indice = i % numPages; //serve per capire se abbiamo cambiato riga (se siamo andati a capo)
+
+			if(reset && indice == 0) //abbiamo calcolato il prodotto e le somme e siamo andati a capo
+			{
+				iterazioni += 1; //iterazione completata
+				
+				risultato[iterazioni] = somma + ((1 - alfaB) * d[indice]); 
+				/*
+				somma corrisponde alla somma-prodotto della prima moltiplicazione riga-i * colonna-j
+				
+				d viene istanziato come: int* d = alloc_int_matrix(numPages, 1) quindi sarà
+				sempre grande quanto trustScores che è grande quanto numPages (o numPages * 1)
+				
+				DOVREBBE FUNZIONARE
+				*/
+
+				somma = 0;
+				reset = false;
+			}
+			
+			prodotto = alfaB * tranMat[i] * trustScores[indice];
+			somma = somma + prodotto;
+			reset = true;
+		}	
+
+
+
+	}
 }
 
-float* computeScores(float** tranMat, float alfaB, int mB, float* scoreDistVect){
+MATRIX reverseMat(MATRIX mat, int numPages)
+{
+	/* T
+	 * |1 2 3|
+	 * |4 5 6|
+	 * |7 8 9|
+	 */
+	/*
+	 * U
+	 * |9 8 7|
+	 * |6 5 4|
+	 * |3 2 1|
+	 */
+	// [i, j] -> [n - i - 1, m - j - 1]; n = num righe, m = num col; n = m = numPages
 
+	MATRIX ret = alloc_matrix(numPages,numPages);
+
+	/*	Versione con due for:
+	for (int i = numPages - 1; i == 0; i--)
+	{
+		for (int j = numPages - 1; j == 0, j++)
+		{
+			x = (i + j) - (numPages - 1) * i
+			y = (i + j) + (numPages - 1) * i
+			ret[x] = mat[y]
+		}
+	}
+	*/
+
+	//Mono-inidce con inversione di vettore (singolo ciclo)
+	for (int x = (numPages * numPages) - 1, x == -1, x--) 
+	{
+		y = (numPages * numPages) - 1 - x;
+		ret[y] = mat[x];
+	}
+	return ret;
 }
 
-float** reverseMat(float** mat){
-
-}
-
-float** trustRank(float** tranMat, int numP, int lim, float alfaB, int mB, float alfaI){
-    float** tranMatInv = reverseMat(tranMat)
-    float* s = selectSeed()
+MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, float alfaB, int maxBias, float alfaI)
+{
+    MATRIX tranMatInv = reverseMat(tranMat, numPages);
+	int mI = 100; // numero massimo di iterazioni
+	int* s = selectSeed(tranMatInv, numPages, alfaI, mI);
+	int* indici = alloc_int_matrix(numPages, 1);
+	int* sigma = rank(indici, s); //rank restituisce una lista ordinata per l'affidabilità delle pagine (CONTIENE INDICI PAG)
+	int* d = alloc_int_matrix(numPages, 1);
+	for (int i = 0; i == limitOracle; i++) //Singolo FOR
+	{
+		if (i <= numPages - 1)
+		{
+			j = i;
+		}
+		else
+		{
+			j = i % numPages;
+		}
+		if (oracle(sigma[j]) == 1)
+			{
+				d[sigma[j]]=1;
+			}
+	}
+	
+	VECTOR dNormalized = normalize(d, numPages); //somma elementi = 1
+	computeScores(tranMat, alfaB, maxBias, d, dNormalized);
+	return trustScores;
 }
 
 int main(int argc, char** argv){
