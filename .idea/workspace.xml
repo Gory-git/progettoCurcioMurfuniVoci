@@ -28,7 +28,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="recuperato 2.0">
+    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="scritta compute scores">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trustRank32c.c" beforeDir="false" afterPath="$PROJECT_DIR$/trustRank32c.c" afterDir="false" />
     </list>
@@ -207,7 +207,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743714958862</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="scritta compute scores">
+      <option name="closed" value="true" />
+      <created>1743946457586</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1743946457586</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -264,6 +272,7 @@
     <MESSAGE value="non committa trustRank32c.c" />
     <MESSAGE value="scheletro delle funzioni" />
     <MESSAGE value="recuperato 2.0" />
-    <option name="LAST_COMMIT_MESSAGE" value="recuperato 2.0" />
+    <MESSAGE value="scritta compute scores" />
+    <option name="LAST_COMMIT_MESSAGE" value="scritta compute scores" />
   </component>
 </project>

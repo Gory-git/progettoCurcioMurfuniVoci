@@ -271,9 +271,32 @@ void save_out(char* filename, MATRIX X, int k) {
 
 int* selectSeed(MATRIX tranMatInv, int numP, float alfaI, int mI)
 {
+	int* unoN = alloc_int_matrix(numP, 1);
 	int* s = alloc_int_matrix(numP, 1);
+	int iterazione = 0;
 
 
+	for (int m = 0; m < mI; m++)
+	{
+		for (int i = 0; i < numP; i++)
+		{
+			if (iterazione == 0) // Così risparmio un ciclo in n
+			{
+				unoN[i] = 1;
+				s[i] = 1;
+			}
+
+			for (int j = 0; j < numP; j++)
+			{
+
+			}
+
+			if (iterazione == 0)
+			{
+				iterazione = 1;
+			}
+		}
+	}
 
 	return s;
 }
@@ -299,18 +322,17 @@ int oracle(int index)
 // 	return ret;
 // }
 
-void computeScores(MATRIX tranMat, float alfaB, int maxBias, VECTOR d, int numPages)
+VECTOR computeScores(MATRIX tranMat, float alfaB, int maxBias, VECTOR d, int numPages)
 {
-	VECTOR ret = alloc_vector(numPages); // ATTUALMENTE SHALLOW COPY, TODO DEEP COPY
+	VECTOR ret = d; // ATTUALMENTE SHALLOW COPY, TODO DEEP COPY
 	type unoAlfaB = (type) 1 - alfaB;
 	VECTOR somma = alloc_vector(numPages); // ATTUALMENTE SHALLOW COPY, TODO DEEP COPY
+
 	/*
 	 *				 | A B C |	 | 1 |   | X |   | (alfaB*1*A + alfaB*2*B + alfaB*3*C) + X |
 	 * ret = alfaB * | D E F | * | 2 | + | Y | = | (alfaB*1*D + alfaB*2*E + alfaB*3*F) + Y |
 	 *				 | G H I |	 | 3 |   | Z |   | (alfaB*1*G + alfaB*2*H + alfaB*3*I) + Z |
 	 */
-
-
 
 	for (int b = 0; b < maxBias; b++)
 	{
@@ -319,9 +341,7 @@ void computeScores(MATRIX tranMat, float alfaB, int maxBias, VECTOR d, int numPa
 
 		for (int i = 0; i < numPages; i++)
 		{
-
 			somma[i] = unoAlfaB * d[i];
-			ret[i] = d[i];
 			type riga = 0;
 			for (int j = 0; j < numPages; j++)
 			{
@@ -331,7 +351,7 @@ void computeScores(MATRIX tranMat, float alfaB, int maxBias, VECTOR d, int numPa
 			ret[i] = ret[i] + riga + somma[i];
 		}
 	}
-	d = ret; // QUA LA SHALLOW COPY VA BENE
+	return ret;
 }
 
 MATRIX reverseMat(MATRIX mat, int numPages)
@@ -384,10 +404,11 @@ MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, float alfaB, int
 		}
 	}
 
-	// VECTOR dNormalized = normalize(d, numPages); //somma elementi = 1 NON SERVE, POSSIAMO FARLO DIRETTAMENTE NEL CICLO DI SOPRA,
-																		// SICCOME SAPPIAMO GIà LA LUNGHEZZA DELLA LISTA
-	computeScores(tranMat, alfaB, maxBias, d /*, dNormalized INUTILE*/, numPages);
-	return d/*Normalized*/;
+	// VECTOR dNormalized = normalize(d, numPages);						//somma elementi = 1 NON SERVE, POSSIAMO FARLO
+																		// DIRETTAMENTE NEL CICLO DI SOPRA, SICCOME
+																		// SAPPIAMO GIà LA LUNGHEZZA DELLA LISTA
+	return computeScores(tranMat, alfaB, maxBias, d /*, dNormalized INUTILE*/, numPages);
+	//return d/*Normalized*/;
 }
 
 int main(int argc, char** argv){
