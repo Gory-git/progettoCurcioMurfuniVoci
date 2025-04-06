@@ -73,24 +73,24 @@ typedef struct {
 
 
 /*
-* 
-*	Le funzioni sono state scritte assumento che le matrici siano memorizzate 
+*
+*	Le funzioni sono state scritte assumento che le matrici siano memorizzate
 * 	mediante un array (type*), in modo da occupare un unico blocco
-* 	di memoria, ma a scelta del candidato possono essere 
+* 	di memoria, ma a scelta del candidato possono essere
 * 	memorizzate mediante array di array (type**).
-* 
+*
 * 	In entrambi i casi il candidato dovrà inoltre scegliere se memorizzare le
 * 	matrici per righe (row-major order) o per colonne (column major-order).
 *
 * 	L'assunzione corrente è che le matrici siano in row-major order.
-* 
+*
 */
 
-void* get_block(int size, int elements) { 
-	return _mm_malloc(elements*size,16); 
+void* get_block(int size, int elements) {
+	return _mm_malloc(elements*size,16);
 }
 
-void free_block(void* p) { 
+void free_block(void* p) {
 	_mm_free(p);
 }
 
@@ -121,99 +121,99 @@ void dealloc_vector(void* mat) {
 
 
 /*
-* 
+*
 * 	load_data
 * 	=========
-* 
+*
 *	Legge da file una matrice di N righe
 * 	e M colonne e la memorizza in un array lineare in row-major order
-* 
+*
 * 	Codifica del file:
 * 	primi 4 byte: numero di righe (N) --> numero intero
 * 	successivi 4 byte: numero di colonne (M) --> numero intero
 * 	successivi N*M*4 byte: matrix data in row-major order --> numeri typeing-point a precisione singola
-* 
+*
 *****************************************************************************
 *	Se lo si ritiene opportuno, � possibile cambiare la codifica in memoria
-* 	della matrice. 
+* 	della matrice.
 *****************************************************************************
-* 
+*
 */
 MATRIX load_data(char* filename, int *n, int *k) {
 	FILE* fp;
 	int rows, cols, status, i;
-	
+
 	fp = fopen(filename, "rb");
-	
+
 	if (fp == NULL){
 		printf("'%s': bad data file name!\n", filename);
 		exit(0);
 	}
-	
+
 	status = fread(&cols, sizeof(int), 1, fp);
 	status = fread(&rows, sizeof(int), 1, fp);
-	
+
 	MATRIX data = alloc_matrix(rows,cols);
 	status = fread(data, sizeof(type), rows*cols, fp);
 	fclose(fp);
-	
+
 	*n = rows;
 	*k = cols;
-	
+
 	return data;
 }
 
 /*
-* 
+*
 * 	load_seq
 * 	=========
-* 
+*
 *	Legge da file una matrice di N righe
 * 	e M colonne e la memorizza in un array lineare in row-major order
-* 
+*
 * 	Codifica del file:
 * 	primi 4 byte: numero di righe (N) --> numero intero
 * 	successivi 4 byte: numero di colonne (M) --> numero intero
 * 	successivi N*M*1 byte: matrix data in row-major order --> charatteri che compongono la stringa
-* 
+*
 *****************************************************************************
 *	Se lo si ritiene opportuno, � possibile cambiare la codifica in memoria
-* 	della matrice. 
+* 	della matrice.
 *****************************************************************************
-* 
+*
 */
 char* load_seq(char* filename, int *n, int *k) {
 	FILE* fp;
 	int rows, cols, status, i;
-	
+
 	fp = fopen(filename, "rb");
-	
+
 	if (fp == NULL){
 		printf("'%s': bad data file name!\n", filename);
 		exit(0);
 	}
-	
+
 	status = fread(&cols, sizeof(int), 1, fp);
 	status = fread(&rows, sizeof(int), 1, fp);
 
-	
+
 	char* data = alloc_char_matrix(rows,cols);
 	status = fread(data, sizeof(char), rows*cols, fp);
 	fclose(fp);
-	
+
 	*n = rows;
 	*k = cols;
-	
+
 	return data;
 }
 
 /*
 * 	save_data
 * 	=========
-* 
+*
 *	Salva su file un array lineare in row-major order
 *	come matrice di N righe e M colonne
-* 
+*
 * 	Codifica del file:
 * 	primi 4 byte: numero di righe (N) --> numero intero a 32 bit
 * 	successivi 4 byte: numero di colonne (M) --> numero intero a 32 bit
@@ -243,9 +243,9 @@ void save_data(char* filename, void* X, int n, int k) {
 /*
 * 	save_out
 * 	=========
-* 
+*
 *	Salva su file un array lineare composto da k elementi.
-* 
+*
 * 	Codifica del file:
 * 	primi 4 byte: contenenti l'intero 1 		--> numero intero a 32 bit
 * 	successivi 4 byte: numero di elementi k     --> numero intero a 32 bit
@@ -271,7 +271,7 @@ void save_out(char* filename, MATRIX X, int k) {
 int* selectSeed(MATRIX tranMatInv, int numP, float alfaI, int mI)
 {
 	int* s = alloc_vector(numP)
-	
+
 	inizializzato = false;
 	reset = false;
 
@@ -280,8 +280,8 @@ int* selectSeed(MATRIX tranMatInv, int numP, float alfaI, int mI)
 	seconda_parte = 0;
 	giriS = -1 //conta quante volte ho terminato il for su S
 	sommeSuPrimaParte = 0 //conta quante somme ho fatto su prima parte
-	sommeSuSecondaParte = 0 //conta quante somme ho fatto su seconda parte 
-	
+	sommeSuSecondaParte = 0 //conta quante somme ho fatto su seconda parte
+
 	for (int i = 0; i < mI; i++) //TODO capire bene perché così si sprecano iterazioni
 	{
 		indiceTran = i % ((numP * numP) - 1);
@@ -289,7 +289,7 @@ int* selectSeed(MATRIX tranMatInv, int numP, float alfaI, int mI)
 		//indiceTran > indiceS
 
 		if
-		
+
 		if(indiceS == 0)
 		{
 			giriS += 1
@@ -337,12 +337,12 @@ VECTOR normalize(int* scoreDistVect, int numPages)
 void computeScores(MATRIX tranMat, float alfaB, int maxBias, int* d, VECTOR trustScores){
 	for (int i = 0; i < maxBias; i++)
 	{
-		// TODO IMPOSTARE trustScores[i] = alfaB * tranMat * trustScores + (1 - alfaB) * d 
+		// TODO IMPOSTARE trustScores[i] = alfaB * tranMat * trustScores + (1 - alfaB) * d
 
 		int* risultato = alloc_vector(numPages)
 
 		reset = false;
-		somma = 0; 
+		somma = 0;
 		iterazioni = -1; //corrisponde anche all'indice in cui salveremo il risultato nel vettore di ritorno
 		for (i = 0; i < numPages * numPages; i ++)
 		{
@@ -351,25 +351,25 @@ void computeScores(MATRIX tranMat, float alfaB, int maxBias, int* d, VECTOR trus
 			if(reset && indice == 0) //abbiamo calcolato il prodotto e le somme e siamo andati a capo
 			{
 				iterazioni += 1; //iterazione completata
-				
-				risultato[iterazioni] = somma + ((1 - alfaB) * d[indice]); 
+
+				risultato[iterazioni] = somma + ((1 - alfaB) * d[indice]);
 				/*
 				somma corrisponde alla somma-prodotto della prima moltiplicazione riga-i * colonna-j
-				
+
 				d viene istanziato come: int* d = alloc_int_matrix(numPages, 1) quindi sarà
 				sempre grande quanto trustScores che è grande quanto numPages (o numPages * 1)
-				
+
 				DOVREBBE FUNZIONARE
 				*/
 
 				somma = 0;
 				reset = false;
 			}
-			
+
 			prodotto = alfaB * tranMat[i] * trustScores[indice];
 			somma = somma + prodotto;
 			reset = true;
-		}	
+		}
 
 
 
@@ -406,7 +406,7 @@ MATRIX reverseMat(MATRIX mat, int numPages)
 	*/
 
 	//Mono-inidce con inversione di vettore (singolo ciclo)
-	for (int x = (numPages * numPages) - 1, x == -1, x--) 
+	for (int x = (numPages * numPages) - 1, x == -1, x--)
 	{
 		y = (numPages * numPages) - 1 - x;
 		ret[y] = mat[x];
@@ -437,7 +437,7 @@ MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, float alfaB, int
 				d[sigma[j]]=1;
 			}
 	}
-	
+
 	VECTOR dNormalized = normalize(d, numPages); //somma elementi = 1
 	computeScores(tranMat, alfaB, maxBias, d, dNormalized);
 	return trustScores;
