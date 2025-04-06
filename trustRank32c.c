@@ -301,9 +301,9 @@ int oracle(int index)
 
 void computeScores(MATRIX tranMat, float alfaB, int maxBias, VECTOR d, int numPages)
 {
-	VECTOR ret = d; // ATTUALMENTE SHALLOW COPY, TODO DEEP COPY
+	VECTOR ret = alloc_vector(numPages); // ATTUALMENTE SHALLOW COPY, TODO DEEP COPY
 	type unoAlfaB = (type) 1 - alfaB;
-	VECTOR somma = d; // ATTUALMENTE SHALLOW COPY, TODO DEEP COPY
+	VECTOR somma = alloc_vector(numPages); // ATTUALMENTE SHALLOW COPY, TODO DEEP COPY
 	/*
 	 *				 | A B C |	 | 1 |   | X |   | (alfaB*1*A + alfaB*2*B + alfaB*3*C) + X |
 	 * ret = alfaB * | D E F | * | 2 | + | Y | = | (alfaB*1*D + alfaB*2*E + alfaB*3*F) + Y |
@@ -311,21 +311,24 @@ void computeScores(MATRIX tranMat, float alfaB, int maxBias, VECTOR d, int numPa
 	 */
 
 
-	for (int i = 0; i < numPages; i++)
-	{
-		somma[i] = unoAlfaB * d[i];
-	}
 
 	for (int b = 0; b < maxBias; b++)
 	{
 		// TODO ret = alfaB * tranMat * ret + (1 - alfaB) * d
 		// vettore = scalare * matrice * vettore + scalare * vettore
+
 		for (int i = 0; i < numPages; i++)
 		{
+
+			somma[i] = unoAlfaB * d[i];
+			ret[i] = d[i];
+			type riga = 0;
 			for (int j = 0; j < numPages; j++)
 			{
-
+				riga = riga + alfaB * ret[j] * tranMat[i * numPages + j];
 			}
+
+			ret[i] = ret[i] + riga + somma[i];
 		}
 	}
 	d = ret; // QUA LA SHALLOW COPY VA BENE
