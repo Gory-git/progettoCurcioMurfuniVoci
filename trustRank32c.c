@@ -55,17 +55,13 @@
 
 #define random() (((type) rand())/RAND_MAX)
 
-type hydrophobicity[] = {1.8, -1, 2.5, -3.5, -3.5, 2.8, -0.4, -3.2, 4.5, -1, -3.9, 3.8, 1.9, -3.5, -1, -1.6, -3.5, -4.5, -0.8, -0.7, -1, 4.2, -0.9, -1, -1.3, -1};		// hydrophobicity
-type volume[] = {88.6, -1, 108.5, 111.1, 138.4, 189.9, 60.1, 153.2, 166.7, -1, 168.6, 166.7, 162.9, 114.1, -1, 112.7, 143.8, 173.4, 89.0, 116.1, -1, 140.0, 227.8, -1, 193.6, -1};		// volume
-type charge[] = {0, -1, 0, -1, -1, 0, 0, 0.5, 0, -1, 1, 0, 0, 0, -1, 0, 0, 1, 0, 0, -1, 0, 0, -1, 0, -1};		// charge
-
 typedef struct {
 	MATRIX tranMat; // Transition Matrix
 	int numP; // Numero Pagine
 	int lim;
-	float alfaB;
+	type alfaB;
 	int mB;
-	float alfaI;
+	type alfaI;
 	VECTOR scoreDistVect;
 	MATRIX tranMatInv;
 	VECTOR s;
@@ -269,7 +265,7 @@ void save_out(char* filename, MATRIX X, int k) {
  * Funzioni ad-hoc
  */
 
-int* selectSeed(MATRIX tranMatInv, int numP, float alfaI, int mI)
+int* selectSeed(MATRIX tranMatInv, int numP, type alfaI, int mI)
 {
 	int* unoN = alloc_int_matrix(numP, 1);
 	int* s = alloc_int_matrix(numP, 1);
@@ -322,7 +318,7 @@ int oracle(int index)
 // 	return ret;
 // }
 
-VECTOR computeScores(MATRIX tranMat, float alfaB, int maxBias, VECTOR d, int numPages)
+VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numPages)
 {
 	VECTOR ret = d; // ATTUALMENTE SHALLOW COPY, TODO DEEP COPY
 	type unoAlfaB = (type) 1 - alfaB;
@@ -378,7 +374,7 @@ MATRIX reverseMat(MATRIX mat, int numPages)
 	return ret;
 }
 
-MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, float alfaB, int maxBias, float alfaI)
+MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int maxBias, type alfaI)
 {
     MATRIX tranMatInv = reverseMat(tranMat, numPages);
 	int mI = 100; // numero massimo di iterazioni, deciso empiricamente AC-DC
