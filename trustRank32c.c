@@ -390,11 +390,13 @@ MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int 
 		// else
 		// {
 		// 	int j = i % numPages;
-		// } Non ho capito il senso di questi if
-
-		if (oracle(sigma[i]) == 1)
+		// } Se le invocazioni all'oracolo fossero troppe poche??
+		for (int j = 0; j < numPages; j++)
 		{
-			d[sigma[i]] = (type)1 / (type) numPages; // MEMORIZZO GIà NORMALIZZATO SULLA LUNGHEZZA
+			if (oracle(sigma[j]) == 1)
+			{
+				d[sigma[j]] = (type) 1 / (type) numPages; // MEMORIZZO GIà NORMALIZZATO SULLA LUNGHEZZA
+			}
 		}
 	}
 
