@@ -28,11 +28,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="sistemato il file">
-      <change beforePath="$PROJECT_DIR$/.idea/editor.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/editor.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trustRank32c.c" beforeDir="false" afterPath="$PROJECT_DIR$/trustRank32c.c" afterDir="false" />
-    </list>
+    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="implementato select seed" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -148,7 +144,7 @@
       <workItem from="1743496433792" duration="2012000" />
       <workItem from="1743710116913" duration="5349000" />
       <workItem from="1743762933978" duration="1983000" />
-      <workItem from="1743966069083" duration="846000" />
+      <workItem from="1743966069083" duration="1224000" />
     </task>
     <task id="LOCAL-00001" summary="creato file 64 e importate funzioni di base">
       <option name="closed" value="true" />
@@ -238,7 +234,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743949070365</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="implementato select seed">
+      <option name="closed" value="true" />
+      <created>1743967252621</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1743967252621</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -298,6 +302,7 @@
     <MESSAGE value="scritta compute scores" />
     <MESSAGE value="impalcatura selectSeed" />
     <MESSAGE value="sistemato il file" />
-    <option name="LAST_COMMIT_MESSAGE" value="sistemato il file" />
+    <MESSAGE value="implementato select seed" />
+    <option name="LAST_COMMIT_MESSAGE" value="implementato select seed" />
   </component>
 </project>

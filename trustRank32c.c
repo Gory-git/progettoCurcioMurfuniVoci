@@ -295,7 +295,7 @@ VECTOR selectSeed(MATRIX tranMatInv, int numP, type alfaI, int mI)
 	return s;
 }
 
-int* rank(int* index, int* s)
+int* rank(int* index, VECTOR s)
 {
 
 }
