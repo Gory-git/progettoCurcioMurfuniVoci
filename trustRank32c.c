@@ -297,25 +297,25 @@ VECTOR selectSeed(MATRIX tranMatInv, int numPages, type alfaI, int mI, int* indi
 }
 
 
-void merge(int arr[], VECTOR s, int left, int mid, int right) {
+void merge(VECTOR arr, int index[], int left, int mid, int right) {
 	int i, j, k;
 	int n1 = mid - left + 1;
 	int n2 = right - mid;
 
 	// Create temporary arrays
-	int leftArr[n1], rightArr[n2];
-	VECTOR leftS[n1], rightS[n2];
+	VECTOR leftArr[n1], rightArr[n2];
+	int leftIndex[n1], rightIndex[n2];
 
 	// Copy data to temporary arrays
 	for (i = 0; i < n1; i++)
 	{
 		leftArr[i] = arr[left + i];
-		leftS[i] = &s[left + i];
+		leftIndex[i] = &index[left + i];
 	}
 	for (j = 0; j < n2; j++)
 	{
 		rightArr[j] = arr[mid + 1 + j];
-		rightS[j] = s[mid + 1 + j];
+		rightIndex[j] = index[mid + 1 + j];
 	}
 	// Merge the temporary arrays back into arr[left..right]
 	i = 0;
@@ -324,12 +324,12 @@ void merge(int arr[], VECTOR s, int left, int mid, int right) {
 	while (i < n1 && j < n2) {
 		if (leftArr[i] <= rightArr[j]) {
 			arr[k] = leftArr[i];
-			s[k] = *leftS[i];
+			index[k] = *leftIndex[i];
 			i++;
 		}
 		else {
 			arr[k] = rightArr[j];
-			s[k] = rightS[j];
+			index[k] = rightIndex[j];
 			j++;
 		}
 		k++;
@@ -338,7 +338,7 @@ void merge(int arr[], VECTOR s, int left, int mid, int right) {
 	// Copy the remaining elements of leftArr[], if any
 	while (i < n1) {
 		arr[k] = leftArr[i];
-		s[k] = *leftS[i];
+		index[k] = *leftIndex[i];
 		i++;
 		k++;
 	}
@@ -346,31 +346,31 @@ void merge(int arr[], VECTOR s, int left, int mid, int right) {
 	// Copy the remaining elements of rightArr[], if any
 	while (j < n2) {
 		arr[k] = rightArr[j];
-		s[k] = rightS[j];
+		index[k] = rightIndex[j];
 		j++;
 		k++;
 	}
 }
 
 // The subarray to be sorted is in the index range [left-right]
-void mergeSort(int arr[], VECTOR s, int left, int right) {
+void mergeSort(VECTOR arr, int index[], int left, int right) {
 	if (left < right) {
 
 		// Calculate the midpoint
 		int mid = left + (right - left) / 2;
 
 		// Sort first and second halves
-		mergeSort(arr, s, left, mid);
-		mergeSort(arr, s, mid + 1, right);
+		mergeSort(arr, index, left, mid);
+		mergeSort(arr, index, mid + 1, right);
 
 		// Merge the sorted halves
-		merge(arr, s, left, mid, right);
+		merge(arr, index, left, mid, right);
 	}
 }
 
 int* rank(int* index, VECTOR s, int numPages) // è praticamente un sort, ma funziona su due liste
 {
-	mergeSort(index, s, 0, numPages - 1);
+	mergeSort(s, index, 0, numPages - 1);
 	return index;
 }
 
