@@ -265,7 +265,7 @@ void save_out(char* filename, MATRIX X, int k) {
  * Funzioni ad-hoc
  */
 
-VECTOR selectSeed(MATRIX tranMatInv, int numP, type alfaI, int mI)
+VECTOR selectSeed(MATRIX tranMatInv, int numP, type alfaI, int mI, int* indici)
 {
 	VECTOR s = alloc_vector(numP);
 	int iterazione = 0;
@@ -278,6 +278,7 @@ VECTOR selectSeed(MATRIX tranMatInv, int numP, type alfaI, int mI)
 	{
 		for (int i = 0; i < numP; i++)
 		{
+			indici[i] = i; // inizializzo il vettore di indici, risparmio un'iterazione in n inizializzandolo qua dentro
 			type riga = 0;
 			for (int j = 0; j < numP; j++)
 			{
@@ -295,9 +296,11 @@ VECTOR selectSeed(MATRIX tranMatInv, int numP, type alfaI, int mI)
 	return s;
 }
 
-int* rank(int* index, VECTOR s)
+int* rank(int* index, VECTOR s) // è praticamente un sort, ma funziona su due liste
 {
 
+
+	return index;
 }
 
 int oracle(int index)
@@ -320,7 +323,7 @@ VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numP
 {
 	VECTOR ret = d; // ATTUALMENTE SHALLOW COPY, TODO DEEP COPY
 	type unoAlfaB = (type) 1 - alfaB;
-	VECTOR somma = alloc_vector(numPages); // ATTUALMENTE SHALLOW COPY, TODO DEEP COPY
+	VECTOR somma = alloc_vector(numPages);
 
 	/*
 	 *				 | A B C |	 | 1 |   | X |   | (alfaB*1*A + alfaB*2*B + alfaB*3*C) + X |
@@ -376,12 +379,12 @@ MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int 
 {
     MATRIX tranMatInv = reverseMat(tranMat, numPages);
 	int mI = 100; // numero massimo di iterazioni, deciso empiricamente AC-DC
-	VECTOR s = selectSeed(tranMatInv, numPages, alfaI, mI);
 	int* indici = alloc_int_matrix(numPages, 1);
+	VECTOR s = selectSeed(tranMatInv, numPages, alfaI, mI, indici);
 	int* sigma = rank(indici, s); //rank restituisce una lista ordinata per l'affidabilità delle pagine (CONTIENE INDICI PAG)
 
 	VECTOR d = alloc_vector(numPages);
-	for (int i = 0; i == limitOracle; i++) //Singolo FOR
+	for (int i = 0; i < limitOracle; i++) //Singolo FOR
 	{
 		// if (i <= numPages - 1)
 		// {
@@ -394,17 +397,18 @@ MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int 
 
 		if (oracle(sigma[i]) == 1)
 		{
-			d[sigma[i]] = (type)1 / (type) numPages; // MEMORIZZO GIà NORMALIZZATO SULLA LUNGHEZZA
+			d[sigma[i]] = (type) 1 / (type) numPages; // MEMORIZZO GIà NORMALIZZATO SULLA LUNGHEZZA
 		}
 	}
 
 	// VECTOR dNormalized = normalize(d, numPages);						//somma elementi = 1 NON SERVE, POSSIAMO FARLO
 																		// DIRETTAMENTE NEL CICLO DI SOPRA, SICCOME
 																		// SAPPIAMO GIà LA LUNGHEZZA DELLA LISTA
-	return computeScores(tranMat, alfaB, maxBias, d /*, dNormalized INUTILE*/, numPages);
+	return computeScores(tranMat, alfaB, maxBias, d /* dNormalized INUTILE*/, numPages);
 	//return d/*Normalized*/;
 }
 
-int main(int argc, char** argv){
+int main(int argc, char** argv)
+{
 
 }
