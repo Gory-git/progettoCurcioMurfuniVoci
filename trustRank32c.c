@@ -265,29 +265,29 @@ void save_out(char* filename, MATRIX X, int k) {
  * Funzioni ad-hoc
  */
 
-VECTOR selectSeed(MATRIX tranMatInv, int numP, type alfaI, int mI, int* indici)
+VECTOR selectSeed(MATRIX tranMatInv, int numPages, type alfaI, int mI, int* indici)
 {
-	VECTOR s = alloc_vector(numP);
+	VECTOR s = alloc_vector(numPages);
 	int iterazione = 0;
 
 	// s = alfaI * tranMatInv * s + (1 - alfa) * (1/n) * unoN
 	// vettore = scalare * Matrice * vettore + scalare * scalare * vettore
-	type somma = (1 - alfaI) / (type) numP;
+	type somma = (1 - alfaI) / (type) numPages;
 
 	for (int m = 0; m < mI; m++)
 	{
-		for (int i = 0; i < numP; i++)
+		for (int i = 0; i < numPages; i++)
 		{
 			indici[i] = i; // inizializzo il vettore di indici, risparmio un'iterazione in n inizializzandolo qua dentro
 			type riga = 0;
-			for (int j = 0; j < numP; j++)
+			for (int j = 0; j < numPages; j++)
 			{
 				if (i == 0) // Così risparmio un ciclo in n in cui inizializzo tutti gli elementi di s a 1
 				{
 					s[j] = 1;
 				}
 
-				riga = riga + alfaI * tranMatInv[i * numP + j] * s[j];
+				riga = riga + alfaI * tranMatInv[i * numPages + j] * s[j];
 			}
 			s[i] = riga + somma;
 		}
@@ -296,12 +296,84 @@ VECTOR selectSeed(MATRIX tranMatInv, int numP, type alfaI, int mI, int* indici)
 	return s;
 }
 
-int* rank(int* index, VECTOR s) // è praticamente un sort, ma funziona su due liste
+
+void merge(int arr[], VECTOR s, int left, int mid, int right) {
+	int i, j, k;
+	int n1 = mid - left + 1;
+	int n2 = right - mid;
+
+	// Create temporary arrays
+	int leftArr[n1], rightArr[n2];
+	VECTOR leftS[n1], rightS[n2];
+
+	// Copy data to temporary arrays
+	for (i = 0; i < n1; i++)
+	{
+		leftArr[i] = arr[left + i];
+		leftS[i] = &s[left + i];
+	}
+	for (j = 0; j < n2; j++)
+	{
+		rightArr[j] = arr[mid + 1 + j];
+		rightS[j] = s[mid + 1 + j];
+	}
+	// Merge the temporary arrays back into arr[left..right]
+	i = 0;
+	j = 0;
+	k = left;
+	while (i < n1 && j < n2) {
+		if (leftArr[i] <= rightArr[j]) {
+			arr[k] = leftArr[i];
+			s[k] = *leftS[i];
+			i++;
+		}
+		else {
+			arr[k] = rightArr[j];
+			s[k] = rightS[j];
+			j++;
+		}
+		k++;
+	}
+
+	// Copy the remaining elements of leftArr[], if any
+	while (i < n1) {
+		arr[k] = leftArr[i];
+		s[k] = *leftS[i];
+		i++;
+		k++;
+	}
+
+	// Copy the remaining elements of rightArr[], if any
+	while (j < n2) {
+		arr[k] = rightArr[j];
+		s[k] = rightS[j];
+		j++;
+		k++;
+	}
+}
+
+// The subarray to be sorted is in the index range [left-right]
+void mergeSort(int arr[], VECTOR s, int left, int right) {
+	if (left < right) {
+
+		// Calculate the midpoint
+		int mid = left + (right - left) / 2;
+
+		// Sort first and second halves
+		mergeSort(arr, s, left, mid);
+		mergeSort(arr, s, mid + 1, right);
+
+		// Merge the sorted halves
+		merge(arr, s, left, mid, right);
+	}
+}
+
+int* rank(int* index, VECTOR s, int numPages) // è praticamente un sort, ma funziona su due liste
 {
-
-
+	mergeSort(index, s, 0, numPages - 1);
 	return index;
 }
+
 
 int oracle(int index)
 {
