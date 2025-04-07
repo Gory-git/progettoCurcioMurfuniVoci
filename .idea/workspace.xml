@@ -27,12 +27,8 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="implementato select seed">
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/editor.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/editor.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/progettoCurcioMurfuniVoci.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/progettoCurcioMurfuniVoci.iml" afterDir="false" />
+    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="added rank">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-Debug-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-Debug-log.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trustRank32c.c" beforeDir="false" afterPath="$PROJECT_DIR$/trustRank32c.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -44,9 +40,22 @@
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="Git.Settings">
+    <excluded-from-favorite>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="main" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </excluded-from-favorite>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="rank" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -110,7 +119,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "rank",
+    "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci",
     "node.js.detected.package.eslint": "true",
@@ -250,7 +259,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743967252621</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="added rank">
+      <option name="closed" value="true" />
+      <created>1744023211594</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1744023211594</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -291,7 +308,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -311,6 +340,7 @@
     <MESSAGE value="impalcatura selectSeed" />
     <MESSAGE value="sistemato il file" />
     <MESSAGE value="implementato select seed" />
-    <option name="LAST_COMMIT_MESSAGE" value="implementato select seed" />
+    <MESSAGE value="added rank" />
+    <option name="LAST_COMMIT_MESSAGE" value="added rank" />
   </component>
 </project>

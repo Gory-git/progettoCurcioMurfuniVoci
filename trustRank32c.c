@@ -453,7 +453,7 @@ MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int 
 	int mI = 100; // numero massimo di iterazioni, deciso empiricamente AC-DC
 	int* indici = alloc_int_matrix(numPages, 1);
 	VECTOR s = selectSeed(tranMatInv, numPages, alfaI, mI, indici);
-	int* sigma = rank(indici, s); //rank restituisce una lista ordinata per l'affidabilità delle pagine (CONTIENE INDICI PAG)
+	int* sigma = rank(indici, s, numPages); //rank restituisce una lista ordinata per l'affidabilità delle pagine (CONTIENE INDICI PAG)
 
 	VECTOR d = alloc_vector(numPages);
 	for (int i = 0; i < limitOracle; i++) //Singolo FOR
