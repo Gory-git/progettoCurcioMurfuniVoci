@@ -309,7 +309,7 @@ void merge(VECTOR arr, int index[], int left, int mid, int right) {
 	// Copy data to temporary arrays
 	for (i = 0; i < n1; i++)
 	{
-		leftArr[i] = arr[left + i];
+		leftArr[i] = &arr[left + i];
 		leftIndex[i] = &index[left + i];
 	}
 	for (j = 0; j < n2; j++)
@@ -322,9 +322,9 @@ void merge(VECTOR arr, int index[], int left, int mid, int right) {
 	j = 0;
 	k = left;
 	while (i < n1 && j < n2) {
-		if (leftArr[i] <= rightArr[j]) {
-			arr[k] = leftArr[i];
-			index[k] = *leftIndex[i];
+		if (leftArr[i] <= &rightArr[j]) {
+			arr[k] = *leftArr[i];
+			index[k] = leftIndex[i];
 			i++;
 		}
 		else {
@@ -337,8 +337,8 @@ void merge(VECTOR arr, int index[], int left, int mid, int right) {
 
 	// Copy the remaining elements of leftArr[], if any
 	while (i < n1) {
-		arr[k] = leftArr[i];
-		index[k] = *leftIndex[i];
+		arr[k] = *leftArr[i];
+		index[k] = leftIndex[i];
 		i++;
 		k++;
 	}
