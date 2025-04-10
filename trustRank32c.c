@@ -297,7 +297,8 @@ VECTOR selectSeed(MATRIX tranMatInv, int numPages, type alfaI, int mI, int* indi
 }
 
 
-void merge(VECTOR arr, int index[], int left, int mid, int right) {
+void merge(VECTOR arr, int index[], int left, int mid, int right)
+{
 	int i, j, k;
 	int n1 = mid - left + 1;
 	int n2 = right - mid;
@@ -321,13 +322,15 @@ void merge(VECTOR arr, int index[], int left, int mid, int right) {
 	i = 0;
 	j = 0;
 	k = left;
-	while (i < n1 && j < n2) {
-		if (leftArr[i] <= &rightArr[j]) {
+	while (i < n1 && j < n2)
+	{
+		if (leftArr[i] <= &rightArr[j])
+		{
 			arr[k] = *leftArr[i];
 			index[k] = leftIndex[i];
 			i++;
-		}
-		else {
+		} else
+		{
 			arr[k] = rightArr[j];
 			index[k] = rightIndex[j];
 			j++;
@@ -336,7 +339,8 @@ void merge(VECTOR arr, int index[], int left, int mid, int right) {
 	}
 
 	// Copy the remaining elements of leftArr[], if any
-	while (i < n1) {
+	while (i < n1)
+	{
 		arr[k] = *leftArr[i];
 		index[k] = leftIndex[i];
 		i++;
@@ -344,7 +348,8 @@ void merge(VECTOR arr, int index[], int left, int mid, int right) {
 	}
 
 	// Copy the remaining elements of rightArr[], if any
-	while (j < n2) {
+	while (j < n2)
+	{
 		arr[k] = rightArr[j];
 		index[k] = rightIndex[j];
 		j++;
@@ -353,8 +358,10 @@ void merge(VECTOR arr, int index[], int left, int mid, int right) {
 }
 
 // The subarray to be sorted is in the index range [left-right]
-void mergeSort(VECTOR arr, int index[], int left, int right) {
-	if (left < right) {
+void mergeSort(VECTOR arr, int index[], int left, int right)
+{
+	if (left < right)
+	{
 
 		// Calculate the midpoint
 		int mid = left + (right - left) / 2;
@@ -375,10 +382,10 @@ int* rank(int* index, VECTOR s, int numPages) // è praticamente un sort, ma fun
 }
 
 
-int oracle(int index)
-{
-	// TODO CAPIRE come implementare
-}
+// int oracle(int index, int* valoriOracolo)
+// {
+// 	return valoriOracolo[index];
+// }
 
 // NON SERVE
 // VECTOR normalize(int* scoreDistVect, int numPages)
@@ -447,7 +454,7 @@ MATRIX reverseMat(MATRIX mat, int numPages)
 	return ret;
 }
 
-MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int maxBias, type alfaI)
+MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int maxBias, type alfaI, int* valoriOracolo)
 {
     MATRIX tranMatInv = reverseMat(tranMat, numPages);
 	int mI = 100; // numero massimo di iterazioni, deciso empiricamente AC-DC
@@ -467,7 +474,7 @@ MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int 
 		// 	int j = i % numPages;
 		// } Non ho capito il senso di questi if
 
-		if (oracle(sigma[i]) == 1)
+		if (valoriOracolo(sigma[i]) == 1) // Al posto della chiamata a funzione
 		{
 			d[sigma[i]] = (type) 1 / (type) numPages; // MEMORIZZO GIà NORMALIZZATO SULLA LUNGHEZZA
 		}
