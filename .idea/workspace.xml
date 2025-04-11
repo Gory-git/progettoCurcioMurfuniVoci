@@ -28,7 +28,10 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="fix puntatori nella funzione merge di mergeSort. buh">
+    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="finito codice in c, restano da fare le implementazioni, vamos">
+      <change beforePath="$PROJECT_DIR$/.idea/editor.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/editor.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-Debug-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-Debug-log.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trustRank32c.c" beforeDir="false" afterPath="$PROJECT_DIR$/trustRank32c.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -68,12 +71,12 @@
     &quot;assignee&quot;: &quot;Gory-git&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Gory-git/progettoCurcioMurfuniVoci.git&quot;,
-    &quot;accountId&quot;: &quot;a04665bd-0953-4bf0-8d3a-bd6ca171aa3a&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Gory-git/progettoCurcioMurfuniVoci.git",
+    "accountId": "9cdb57ce-e474-4ca3-9e13-f52c310dc7f5"
   }
-}</component>
+}]]></component>
   <component name="HighlightingSettingsPerFile">
     <setting file="mock://C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci/trustRank32c.c" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci/trustRank32c.c" root0="SKIP_HIGHLIGHTING" />
@@ -133,6 +136,11 @@
   }
 }</component>
   <component name="RunManager">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="trustRank32c.c" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="progettoCurcioMurfuniVoci" TARGET_NAME="trustRank32c.c" CONFIG_NAME="trustRank32c.c">
       <option name="sourceFile" value="trustRank32c.c" />
       <method v="2">
@@ -157,6 +165,7 @@
       <workItem from="1743710116913" duration="5349000" />
       <workItem from="1743762933978" duration="1983000" />
       <workItem from="1743966069083" duration="1224000" />
+      <workItem from="1744374428393" duration="3885000" />
     </task>
     <task id="LOCAL-00001" summary="creato file 64 e importate funzioni di base">
       <option name="closed" value="true" />
@@ -270,7 +279,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744273298050</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="finito codice in c, restano da fare le implementazioni, vamos">
+      <option name="closed" value="true" />
+      <created>1744285620016</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1744285620016</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -345,6 +362,7 @@
     <MESSAGE value="implementato select seed" />
     <MESSAGE value="added rank" />
     <MESSAGE value="fix puntatori nella funzione merge di mergeSort. buh" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix puntatori nella funzione merge di mergeSort. buh" />
+    <MESSAGE value="finito codice in c, restano da fare le implementazioni, vamos" />
+    <option name="LAST_COMMIT_MESSAGE" value="finito codice in c, restano da fare le implementazioni, vamos" />
   </component>
 </project>

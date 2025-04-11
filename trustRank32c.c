@@ -265,7 +265,7 @@ void save_out(char* filename, MATRIX X, int k) {
  * Funzioni ad-hoc
  */
 
-VECTOR selectSeed(MATRIX tranMatInv, int numPages, type alfaI, int mI, int* indici)
+VECTOR selectSeed(MATRIX tranMat, int numPages, type alfaI, int mI, int* indici)
 {
 	VECTOR s = alloc_vector(numPages);
 	int iterazione = 0;
@@ -278,16 +278,22 @@ VECTOR selectSeed(MATRIX tranMatInv, int numPages, type alfaI, int mI, int* indi
 	{
 		for (int i = 0; i < numPages; i++)
 		{
-			indici[i] = i; // inizializzo il vettore di indici, risparmio un'iterazione in n inizializzandolo qua dentro
+			if (m == 0)
+			{
+				indici[i] = i; // inizializzo il vettore di indici, risparmio un'iterazione in n inizializzandolo qua dentro
+			}
 			type riga = 0;
 			for (int j = 0; j < numPages; j++)
 			{
-				if (i == 0) // Così risparmio un ciclo in n in cui inizializzo tutti gli elementi di s a 1
+				if (m == 0 && i == 0) // Così risparmio un ciclo in n in cui inizializzo tutti gli elementi di s a 1
 				{
 					s[j] = 1;
 				}
 
-				riga = riga + alfaI * tranMatInv[i * numPages + j] * s[j];
+
+				int x = i * numPages + j;
+
+				riga = riga + alfaI * tranMat[numPages * numPages - x - 1] * s[j];
 			}
 			s[i] = riga + somma;
 		}
@@ -357,6 +363,7 @@ void merge(VECTOR arr, int index[], int left, int mid, int right)
 	}
 }
 
+
 // The subarray to be sorted is in the index range [left-right]
 void mergeSort(VECTOR arr, int index[], int left, int right)
 {
@@ -375,28 +382,13 @@ void mergeSort(VECTOR arr, int index[], int left, int right)
 	}
 }
 
+
 int* rank(int* index, VECTOR s, int numPages) // è praticamente un sort, ma funziona su due liste
 {
 	mergeSort(s, index, 0, numPages - 1);
 	return index;
 }
 
-
-// int oracle(int index, int* valoriOracolo)
-// {
-// 	return valoriOracolo[index];
-// }
-
-// NON SERVE
-// VECTOR normalize(int* scoreDistVect, int numPages)
-// {
-// 	VECTOR ret = alloc_vector(numPages);
-// 	for (int i = 0; i < numPages; i++)
-// 	{
-// 		ret[i] = (type) scoreDistVect[i] / (type) numPages; // TODO RIGUARDARE quando conosciamo megio le matrici e i vettori
-// 	}
-// 	return ret;
-// }
 
 VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numPages)
 {
@@ -430,62 +422,26 @@ VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numP
 	return ret;
 }
 
-MATRIX reverseMat(MATRIX mat, int numPages)
-{
-	/* T
-	 * |1 2 3|
-	 * |4 5 6|
-	 * |7 8 9|
-	 */
-	/*
-	 * U
-	 * |9 8 7|
-	 * |6 5 4|
-	 * |3 2 1|
-	 */
-	// [i, j] -> [n - i - 1, m - j - 1]; n = num righe, m = num col; n = m = numPages
-
-	MATRIX ret = alloc_matrix(numPages,numPages);
-	for (int x = 0; x <= numPages * numPages; x++)
-	{
-		int y = numPages * numPages - x - 1;
-		ret[y] = mat[x];
-	}
-	return ret;
-}
 
 MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int maxBias, type alfaI, int* valoriOracolo)
 {
-    MATRIX tranMatInv = reverseMat(tranMat, numPages);
-	int mI = 100; // numero massimo di iterazioni, deciso empiricamente AC-DC
+	int mI = 100; // numero massimo di iterazioni, deciso empiricamente AC-DC ----> si potrebbe mettere sempre a 1
 	int* indici = alloc_int_matrix(numPages, 1);
-	VECTOR s = selectSeed(tranMatInv, numPages, alfaI, mI, indici);
+	VECTOR s = selectSeed(tranMat, numPages, alfaI, mI, indici);
 	int* sigma = rank(indici, s, numPages); //rank restituisce una lista ordinata per l'affidabilità delle pagine (CONTIENE INDICI PAG)
 
 	VECTOR d = alloc_vector(numPages);
 	for (int i = 0; i < limitOracle; i++) //Singolo FOR
 	{
-		// if (i <= numPages - 1)
-		// {
-		// 	int j = i;
-		// }
-		// else
-		// {
-		// 	int j = i % numPages;
-		// } Non ho capito il senso di questi if
-
 		if (valoriOracolo(sigma[i]) == 1) // Al posto della chiamata a funzione
 		{
 			d[sigma[i]] = (type) 1 / (type) numPages; // MEMORIZZO GIà NORMALIZZATO SULLA LUNGHEZZA
 		}
 	}
 
-	// VECTOR dNormalized = normalize(d, numPages);						//somma elementi = 1 NON SERVE, POSSIAMO FARLO
-																		// DIRETTAMENTE NEL CICLO DI SOPRA, SICCOME
-																		// SAPPIAMO GIà LA LUNGHEZZA DELLA LISTA
-	return computeScores(tranMat, alfaB, maxBias, d /* dNormalized INUTILE*/, numPages);
-	//return d/*Normalized*/;
+	return computeScores(tranMat, alfaB, maxBias, d, numPages);
 }
+
 
 int main(int argc, char** argv)
 {
