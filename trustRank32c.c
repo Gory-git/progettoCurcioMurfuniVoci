@@ -1,3 +1,4 @@
+
 /**************************************************************************************
 * 
 * CdL Magistrale in Ingegneria Informatica
@@ -446,7 +447,8 @@ MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int 
 
 int main(int argc, char** argv)
 {
-	char fname_phi[256];
+	//char fname_x[256] --> il filename di x è una lista di char di 256 char
+	char fname_phi[256]; 
 	char fname_psi[256];
 	char* seqfilename = NULL;
 	clock_t t;
@@ -512,7 +514,7 @@ int main(int argc, char** argv)
 				printf("Missing to value!\n");
 				exit(1);
 			}
-			input->to = atof(argv[par]);
+			input->to = atof(argv[par]); //atof --> sto assegnando al parametro to atof dell'oggetto param
 			par++;
 		} else if (strcmp(argv[par],"-alpha") == 0) {
 			par++;
