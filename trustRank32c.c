@@ -428,6 +428,7 @@ MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int 
 	int mI = 100; // numero massimo di iterazioni, deciso empiricamente AC-DC ----> si potrebbe mettere sempre a 1
 	int* indici = alloc_int_matrix(numPages, 1);
 	VECTOR s = selectSeed(tranMat, numPages, alfaI, mI, indici);
+	
 	int* sigma = rank(indici, s, numPages); //rank restituisce una lista ordinata per l'affidabilità delle pagine (CONTIENE INDICI PAG)
 
 	VECTOR d = alloc_vector(numPages);
@@ -445,5 +446,101 @@ MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int 
 
 int main(int argc, char** argv)
 {
+	char fname_phi[256];
+	char fname_psi[256];
+	char* seqfilename = NULL;
+	clock_t t;
+	type time;
+	int d;
 
+	//
+	// Imposta i valori di default dei parametri
+	//
+	params* input = malloc(sizeof(params));
+	input->tranMat = NULL;
+	input->numP = 0;
+	input->lim = 0;
+	input->alfaB = 0;
+	input->mB = 0;
+	input->alfaI = 0;
+	input->scoreDistVect = NULL;
+	input->tranMatInv = NULL;
+	input->s = NULL;
+	input->index = NULL;
+
+	//
+	// Visualizza la sintassi del passaggio dei parametri da riga comandi
+	//
+
+	if(argc <= 1){
+		printf("%s -seq <SEQ> -to <to> -alpha <alpha> -k <k> -sd <sd> [-s] [-d]\n", argv[0]);
+		printf("\nParameters:\n");
+		printf("\tSEQ: il nome del file ds2 contenente la sequenza amminoacidica\n");
+		printf("\tto: parametro di temperatura\n");
+		printf("\talpha: tasso di raffredamento\n");
+		printf("\tk: costante\n");
+		printf("\tsd: seed per la generazione casuale\n");
+		printf("\nOptions:\n");
+		printf("\t-s: modo silenzioso, nessuna stampa, default 0 - false\n");
+		printf("\t-d: stampa a video i risultati, default 0 - false\n");
+		exit(0);
+	}
+
+	//
+	// Legge i valori dei parametri da riga comandi
+	//
+
+	int par = 1;
+	while (par < argc) {
+		if (strcmp(argv[par],"-s") == 0) {
+			input->silent = 1;
+			par++;
+		} else if (strcmp(argv[par],"-d") == 0) {
+			input->display = 1;
+			par++;
+		} else if (strcmp(argv[par],"-seq") == 0) {
+			par++;
+			if (par >= argc) {
+				printf("Missing dataset file name!\n");
+				exit(1);
+			}
+			seqfilename = argv[par];
+			par++;
+		} else if (strcmp(argv[par],"-to") == 0) {
+			par++;
+			if (par >= argc) {
+				printf("Missing to value!\n");
+				exit(1);
+			}
+			input->to = atof(argv[par]);
+			par++;
+		} else if (strcmp(argv[par],"-alpha") == 0) {
+			par++;
+			if (par >= argc) {
+				printf("Missing alpha value!\n");
+				exit(1);
+			}
+			input->alpha = atof(argv[par]);
+			par++;
+		} else if (strcmp(argv[par],"-k") == 0) {
+			par++;
+			if (par >= argc) {
+				printf("Missing k value!\n");
+				exit(1);
+			}
+			input->k = atof(argv[par]);
+			par++;
+		} else if (strcmp(argv[par],"-sd") == 0) {
+			par++;
+			if (par >= argc) {
+				printf("Missing seed value!\n");
+				exit(1);
+			}
+			input->sd = atoi(argv[par]);
+			par++;
+		}else{
+			printf("WARNING: unrecognized parameter '%s'!\n",argv[par]);
+			par++;
+		}
+	}
 }
