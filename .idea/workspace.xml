@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="BackendCodeEditorMiscSettings">
-    <option name="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue" value="false" type="bool" />
-    <option name="/Default/Housekeeping/GlobalSettingsUpgraded/IsUpgraded/@EntryValue" value="true" type="bool" />
     <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
+    <option name="/Default/Housekeeping/GlobalSettingsUpgraded/IsUpgraded/@EntryValue" value="true" type="bool" />
     <option name="/Default/Housekeeping/OptionsDialog/SelectedPageId/@EntryValue" value="CppFormatterOtherPage" type="string" />
+    <option name="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue" value="false" type="bool" />
   </component>
   <component name="CMakePresetLoader">{
   &quot;useNewFormat&quot;: true
@@ -27,7 +27,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="finita ottimizzazione c 32 bit?">
+    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="sistemare il resto degli input, nello specifico la parte di controllo">
       <change beforePath="$PROJECT_DIR$/.idea/editor.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/editor.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trustRank32c.c" beforeDir="false" afterPath="$PROJECT_DIR$/trustRank32c.c" afterDir="false" />
@@ -157,6 +157,12 @@
         <option name="com.jetbrains.cidr.cpp.runfile.CppFileBuildBeforeRunTaskProvider$BasicBuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="trustRank32c.c" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="progettoCurcioMurfuniVoci" TARGET_NAME="trustRank32c.c" CONFIG_NAME="trustRank32c.c">
+      <option name="sourceFile" value="trustRank32c.c" />
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.runfile.CppFileBuildBeforeRunTaskProvider$BasicBuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -180,7 +186,13 @@
       <workItem from="1745407228980" duration="24000" />
       <workItem from="1746430607145" duration="105000" />
       <workItem from="1746804887799" duration="1441000" />
-      <workItem from="1746955898383" duration="3000" />
+      <workItem from="1746955898383" duration="1827000" />
+      <workItem from="1747044401673" duration="1631000" />
+      <workItem from="1747158301110" duration="250000" />
+      <workItem from="1747168424320" duration="1648000" />
+      <workItem from="1747206748452" duration="439000" />
+      <workItem from="1747209565914" duration="4114000" />
+      <workItem from="1747249102010" duration="3655000" />
     </task>
     <task id="LOCAL-00001" summary="creato file 64 e importate funzioni di base">
       <option name="closed" value="true" />
@@ -310,7 +322,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744379023403</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="sistemare il resto degli input, nello specifico la parte di controllo">
+      <option name="closed" value="true" />
+      <created>1746956344491</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1746956344491</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -387,6 +407,7 @@
     <MESSAGE value="fix puntatori nella funzione merge di mergeSort. buh" />
     <MESSAGE value="finito codice in c, restano da fare le implementazioni, vamos" />
     <MESSAGE value="finita ottimizzazione c 32 bit?" />
-    <option name="LAST_COMMIT_MESSAGE" value="finita ottimizzazione c 32 bit?" />
+    <MESSAGE value="sistemare il resto degli input, nello specifico la parte di controllo" />
+    <option name="LAST_COMMIT_MESSAGE" value="sistemare il resto degli input, nello specifico la parte di controllo" />
   </component>
 </project>

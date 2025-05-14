@@ -58,15 +58,14 @@
 
 typedef struct {
 	MATRIX tranMat; // Transition Matrix
-	int numP; // Numero Pagine
-	int lim;
+	int numPages; // Numero Pagine
+	int limitOracle;
 	type alfaB;
-	int mB;
+	int maxBias;
 	type alfaI;
-	VECTOR scoreDistVect;
-	MATRIX tranMatInv;
-	VECTOR s;
-	VECTOR index;
+	VECTOR valoriOracolo;
+	int silent;
+	int display;
 } params;
 
 
@@ -424,7 +423,7 @@ VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numP
 }
 
 
-MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int maxBias, type alfaI, int* valoriOracolo)
+MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int maxBias, type alfaI, VECTOR valoriOracolo)
 {
 	int mI = 100; // numero massimo di iterazioni, deciso empiricamente AC-DC ----> si potrebbe mettere sempre a 1
 	int* indici = alloc_int_matrix(numPages, 1);
@@ -447,41 +446,42 @@ MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int 
 
 int main(int argc, char** argv)
 {
-	//char fname_x[256] --> il filename di x è una lista di char di 256 char
-	char fname_phi[256]; 
-	char fname_psi[256];
-	char* seqfilename = NULL;
+
+	char* fname_graph = NULL;
+	char* fname_oracle = NULL;
+
 	clock_t t;
-	type time;
 	int d;
+	type time;
 
 	//
 	// Imposta i valori di default dei parametri
 	//
 	params* input = malloc(sizeof(params));
 	input->tranMat = NULL;
-	input->numP = 0;
-	input->lim = 0;
+	input->numPages = 0;
+	input->limitOracle = 0;
 	input->alfaB = 0;
-	input->mB = 0;
+	input->maxBias = 0;
 	input->alfaI = 0;
-	input->scoreDistVect = NULL;
-	input->tranMatInv = NULL;
-	input->s = NULL;
-	input->index = NULL;
+	input->valoriOracolo = NULL;
+	input->silent= -1;
+	input->display= -1;
 
 	//
 	// Visualizza la sintassi del passaggio dei parametri da riga comandi
 	//
 
-	if(argc <= 1){
-		printf("%s -seq <SEQ> -to <to> -alpha <alpha> -k <k> -sd <sd> [-s] [-d]\n", argv[0]);
+	if(argc <= 7){
+		printf("%s -tm <TM> -or <OR> -np <NP> -lo <LO> -ab <AB> -mb <MB> -ai <AI> [-s] [-d]\n", argv[0]);
 		printf("\nParameters:\n");
-		printf("\tSEQ: il nome del file ds2 contenente la sequenza amminoacidica\n");
-		printf("\tto: parametro di temperatura\n");
-		printf("\talpha: tasso di raffredamento\n");
-		printf("\tk: costante\n");
-		printf("\tsd: seed per la generazione casuale\n");
+		printf("\tTM: nome del file contenente la transition matrix delle pagine web\n");
+		printf("\tTM: nome del file contenente le risposte dell'oracolo umano\n");
+		printf("\tNP: numero delle pagine web\n");
+		printf("\tLO: limite di iterazioni con l'oracolo\n");
+		printf("\tAB: decay factor bias\n");
+		printf("\tMB: numero massimo di iterazioni con bias\n");
+		printf("\tAI: decay factor\n");
 		printf("\nOptions:\n");
 		printf("\t-s: modo silenzioso, nessuna stampa, default 0 - false\n");
 		printf("\t-d: stampa a video i risultati, default 0 - false\n");
@@ -493,56 +493,204 @@ int main(int argc, char** argv)
 	//
 
 	int par = 1;
-	while (par < argc) {
-		if (strcmp(argv[par],"-s") == 0) {
+	while (par < argc)
+	{
+		if (strcmp(argv[par],"-s") == 0)
+		{
 			input->silent = 1;
 			par++;
-		} else if (strcmp(argv[par],"-d") == 0) {
+		} else if (strcmp(argv[par],"-d") == 0)
+		{
 			input->display = 1;
 			par++;
-		} else if (strcmp(argv[par],"-seq") == 0) {
+		} else if (strcmp(argv[par],"-tm") == 0)
+		{
 			par++;
-			if (par >= argc) {
-				printf("Missing dataset file name!\n");
+			if (par >= argc)
+			{
+				printf("Missing graph file name!\n");
 				exit(1);
 			}
-			seqfilename = argv[par];
+			fname_graph = argv[par];
 			par++;
-		} else if (strcmp(argv[par],"-to") == 0) {
+		} else if (strcmp(argv[par],"-or") == 0)
+		{
 			par++;
-			if (par >= argc) {
-				printf("Missing to value!\n");
+			if (par >= argc)
+			{
+				printf("Missing oracle file name!\n");
 				exit(1);
 			}
-			input->to = atof(argv[par]); //atof --> sto assegnando al parametro to atof dell'oggetto param
+			fname_oracle = argv[par];
 			par++;
-		} else if (strcmp(argv[par],"-alpha") == 0) {
+		} else if (strcmp(argv[par],"-np") == 0)
+		{
 			par++;
-			if (par >= argc) {
-				printf("Missing alpha value!\n");
+			if (par >= argc)
+			{
+				printf("Missing np value!\n");
 				exit(1);
 			}
-			input->alpha = atof(argv[par]);
+			input->numPages = atoi(argv[par]); //atof --> sto assegnando al parametro to atof dell'oggetto param
 			par++;
-		} else if (strcmp(argv[par],"-k") == 0) {
+		} else if (strcmp(argv[par],"-lo") == 0)
+		{
 			par++;
-			if (par >= argc) {
+			if (par >= argc)
+			{
+				printf("Missing lo value!\n");
+				exit(1);
+			}
+			input->limitOracle = atoi(argv[par]);
+			par++;
+		} else if (strcmp(argv[par],"-k") == 0)
+		{
+			par++;
+			if (par >= argc)
+			{
 				printf("Missing k value!\n");
 				exit(1);
 			}
-			input->k = atof(argv[par]);
+			input->alfaB = atof(argv[par]);
 			par++;
-		} else if (strcmp(argv[par],"-sd") == 0) {
+		} else if (strcmp(argv[par],"-sd") == 0)
+		{
 			par++;
-			if (par >= argc) {
+			if (par >= argc)
+			{
 				printf("Missing seed value!\n");
 				exit(1);
 			}
-			input->sd = atoi(argv[par]);
+			input->maxBias = atoi(argv[par]);
 			par++;
-		}else{
+		} else if (strcmp(argv[par],"-sd") == 0)
+		{
+			par++;
+			if (par >= argc)
+			{
+				printf("Missing seed value!\n");
+				exit(1);
+			}
+			input->alfaI = atof(argv[par]);
+			par++;
+		} else if (strcmp(argv[par],"-sd") == 0)
+		{
+			par++;
+			if (par >= argc)
+			{
+				printf("Missing seed value!\n");
+				exit(1);
+			}
+			input->maxBias = atoi(argv[par]);
+			par++;
+		}else
+		{
 			printf("WARNING: unrecognized parameter '%s'!\n",argv[par]);
 			par++;
 		}
 	}
+
+
+	//
+	// Legge i dati e verifica la correttezza dei parametri
+	//
+	if(fname_graph == NULL || strlen(fname_graph) == 0){
+		printf("Missing ds file name!\n");
+		exit(1);
+	}
+
+	input->tranMat = load_seq(fname_graph, &input->numPages, &d);
+
+
+	if(d != 1){
+		printf("Invalid size of sequence file, should be %ix1!\n", input->N);
+		exit(1);
+	}
+
+	if(input->to <= 0){
+		printf("Invalid value of to parameter!\n");
+		exit(1);
+	}
+
+	if(input->k <= 0){
+		printf("Invalid value of k parameter!\n");
+		exit(1);
+	}
+
+	if(input->alpha <= 0){
+		printf("Invalid value of alpha parameter!\n");
+		exit(1);
+	}
+
+	input->phi = alloc_matrix(input->N, 1);
+	input->psi = alloc_matrix(input->N, 1);
+	// Impostazione seed
+	srand(input->sd);
+	// Inizializzazione dei valori
+	gen_rnd_mat(input->phi, input->N);
+	gen_rnd_mat(input->psi, input->N);
+
+	//
+	// Visualizza il valore dei parametri
+	//
+
+	if(!input->silent){
+		printf("Dataset file name: '%s'\n", seqfilename);
+		printf("Sequence lenght: %d\n", input->N);
+	}
+
+	// COMMENTARE QUESTA RIGA!
+	//prova(input);
+	//
+
+	//
+	// Predizione struttura terziaria
+	//
+	t = clock();
+	pst(input);
+	t = clock() - t;
+	time = ((float)t)/CLOCKS_PER_SEC;
+
+	if(!input->silent){
+		printf("PST time = %.3f secs\n", time);
+        printf("Energy = %f\n", input->e);
+    }
+	else{
+		printf("%.3f\n", time);
+        printf("%f\n", input->e);
+        }
+	//
+	// Salva il risultato
+	//
+	sprintf(fname_phi, "out32_%d_%d_phi.ds2", input->N, input->sd);
+	save_out(fname_phi, input->phi, input->N);
+	sprintf(fname_psi, "out32_%d_%d_psi.ds2", input->N, input->sd);
+	save_out(fname_psi, input->psi, input->N);
+	if(input->display){
+		if(input->phi == NULL || input->psi == NULL)
+			printf("out: NULL\n");
+		else{
+			int i,j;
+			printf("energy: %f, phi: [", input->e);
+			for(i=0; i<input->N; i++){
+				printf("%f,", input->phi[i]);
+			}
+			printf("]\n");
+			printf("psi: [");
+			for(i=0; i<input->N; i++){
+				printf("%f,", input->psi[i]);
+			}
+			printf("]\n");
+		}
+	}
+
+	if(!input->silent)
+		printf("\nDone.\n");
+
+	dealloc_matrix(input->phi);
+	dealloc_matrix(input->psi);
+	free(input);
+
+	return 0;
+
 }
