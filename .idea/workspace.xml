@@ -27,8 +27,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="sistemare il resto degli input, nello specifico la parte di controllo">
-      <change beforePath="$PROJECT_DIR$/.idea/editor.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/editor.xml" afterDir="false" />
+    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="ancora devo finire il main, sorry">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trustRank32c.c" beforeDir="false" afterPath="$PROJECT_DIR$/trustRank32c.c" afterDir="false" />
     </list>
@@ -134,9 +133,10 @@
   }
 }</component>
   <component name="RunManager">
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+    <configuration name="trustRank32c.c" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="progettoCurcioMurfuniVoci" TARGET_NAME="trustRank32c.c" CONFIG_NAME="trustRank32c.c">
+      <option name="sourceFile" value="trustRank32c.c" />
       <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="com.jetbrains.cidr.cpp.runfile.CppFileBuildBeforeRunTaskProvider$BasicBuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
     <configuration name="trustRank32c.c" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="progettoCurcioMurfuniVoci" TARGET_NAME="trustRank32c.c" CONFIG_NAME="trustRank32c.c">
@@ -192,7 +192,8 @@
       <workItem from="1747168424320" duration="1648000" />
       <workItem from="1747206748452" duration="439000" />
       <workItem from="1747209565914" duration="4114000" />
-      <workItem from="1747249102010" duration="3655000" />
+      <workItem from="1747249102010" duration="4416000" />
+      <workItem from="1747300605877" duration="1501000" />
     </task>
     <task id="LOCAL-00001" summary="creato file 64 e importate funzioni di base">
       <option name="closed" value="true" />
@@ -330,7 +331,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746956344491</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="ancora devo finire il main, sorry">
+      <option name="closed" value="true" />
+      <created>1747255183979</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1747255183979</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -408,6 +417,7 @@
     <MESSAGE value="finito codice in c, restano da fare le implementazioni, vamos" />
     <MESSAGE value="finita ottimizzazione c 32 bit?" />
     <MESSAGE value="sistemare il resto degli input, nello specifico la parte di controllo" />
-    <option name="LAST_COMMIT_MESSAGE" value="sistemare il resto degli input, nello specifico la parte di controllo" />
+    <MESSAGE value="ancora devo finire il main, sorry" />
+    <option name="LAST_COMMIT_MESSAGE" value="ancora devo finire il main, sorry" />
   </component>
 </project>

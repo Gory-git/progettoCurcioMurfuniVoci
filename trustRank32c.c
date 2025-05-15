@@ -66,6 +66,7 @@ typedef struct {
 	VECTOR valoriOracolo;
 	int silent;
 	int display;
+	MATRIX resultMat;
 } params;
 
 
@@ -443,12 +444,25 @@ MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int 
 	return computeScores(tranMat, alfaB, maxBias, d, numPages);
 }
 
+MATRIX exec(params* input)
+{
+	MATRIX tranMat = input->tranMat;
+	int numPages = input->numPages;
+	int limitOracle = input->limitOracle;
+	type alfaB = input->alfaB;
+	int maxBias = input->maxBias;
+	type alfaI = input->alfaI;
+	VECTOR valoriOracolo = input->valoriOracolo;
+	input->resultMat = (tranMat, numPages, limitOracle, alfaB, maxBias, alfaI, valoriOracolo);
+}
+
 
 int main(int argc, char** argv)
 {
 
 	char* fname_graph = NULL;
 	char* fname_oracle = NULL;
+	char fname_result[256];
 
 	clock_t t;
 	int d;
@@ -467,16 +481,18 @@ int main(int argc, char** argv)
 	input->valoriOracolo = NULL;
 	input->silent= -1;
 	input->display= -1;
+	input->resultMat = NULL;
 
 	//
 	// Visualizza la sintassi del passaggio dei parametri da riga comandi
 	//
 
 	if(argc <= 7){
-		printf("%s -tm <TM> -or <OR> -np <NP> -lo <LO> -ab <AB> -mb <MB> -ai <AI> [-s] [-d]\n", argv[0]);
+		printf("%s -tm <TM> -or <OR> -re <RE> -np <NP> -lo <LO> -ab <AB> -mb <MB> -ai <AI> [-s] [-d]\n", argv[0]);
 		printf("\nParameters:\n");
 		printf("\tTM: nome del file contenente la transition matrix delle pagine web\n");
-		printf("\tTM: nome del file contenente le risposte dell'oracolo umano\n");
+		printf("\tOR: nome del file contenente le risposte dell'oracolo umano\n");
+		printf("\tRE: nome del file in cui verranno salvati i risultati dell'algoritmo\n");
 		printf("\tNP: numero delle pagine web\n");
 		printf("\tLO: limite di iterazioni con l'oracolo\n");
 		printf("\tAB: decay factor bias\n");
@@ -594,49 +610,65 @@ int main(int argc, char** argv)
 	//
 	// Legge i dati e verifica la correttezza dei parametri
 	//
-	if(fname_graph == NULL || strlen(fname_graph) == 0){
-		printf("Missing ds file name!\n");
+	if(fname_graph == NULL || strlen(fname_graph) == 0)
+	{
+		printf("Missing graph file name!\n");
+		exit(1);
+	}
+	if(fname_oracle == NULL || strlen(fname_oracle) == 0)
+	{
+		printf("Missing oracle file name!\n");
 		exit(1);
 	}
 
-	input->tranMat = load_seq(fname_graph, &input->numPages, &d);
+	input->tranMat = load_data(fname_graph, &input->numPages, &d);
 
-
-	if(d != 1){
-		printf("Invalid size of sequence file, should be %ix1!\n", input->N);
+	if(d != input->numPages){
+		printf("Invalid size of sequence file, should be %ix1!\n", input->numPages);
 		exit(1);
 	}
 
-	if(input->to <= 0){
-		printf("Invalid value of to parameter!\n");
+	input->valoriOracolo= load_data(fname_oracle, &input->numPages, &d);
+
+	if(d != 1)
+	{
+		printf("Invalid size of oracle file, should be %ix1!\n", input->numPages);
 		exit(1);
 	}
 
-	if(input->k <= 0){
-		printf("Invalid value of k parameter!\n");
+	if(input->limitOracle <= 0)
+	{
+		printf("Invalid value of lo parameter!\n");
 		exit(1);
 	}
 
-	if(input->alpha <= 0){
-		printf("Invalid value of alpha parameter!\n");
+	if(input->alfaB <= 0)
+	{
+		printf("Invalid value of ab parameter!\n");
 		exit(1);
 	}
 
-	input->phi = alloc_matrix(input->N, 1);
-	input->psi = alloc_matrix(input->N, 1);
-	// Impostazione seed
-	srand(input->sd);
-	// Inizializzazione dei valori
-	gen_rnd_mat(input->phi, input->N);
-	gen_rnd_mat(input->psi, input->N);
+	if(input->maxBias <= 0)
+	{
+		printf("Invalid value of mb parameter!\n");
+		exit(1);
+	}
+
+	if(input->alfaI <= 0)
+	{
+		printf("Invalid value of ai parameter!\n");
+		exit(1);
+	}
 
 	//
 	// Visualizza il valore dei parametri
 	//
 
-	if(!input->silent){
-		printf("Dataset file name: '%s'\n", seqfilename);
-		printf("Sequence lenght: %d\n", input->N);
+	if(!input->silent)
+	{
+		printf("Graph file name: '%s'\n", fname_graph);
+		printf("Oracle file name: '%s'\n", fname_oracle);
+		printf("Number of web pages: %d\n", input->numPages);
 	}
 
 	// COMMENTARE QUESTA RIGA!
@@ -644,41 +676,43 @@ int main(int argc, char** argv)
 	//
 
 	//
-	// Predizione struttura terziaria
+	// Calcolo dei valori di Trust Rank
 	//
 	t = clock();
-	pst(input);
+	exec(input);
 	t = clock() - t;
 	time = ((float)t)/CLOCKS_PER_SEC;
 
-	if(!input->silent){
-		printf("PST time = %.3f secs\n", time);
-        printf("Energy = %f\n", input->e);
+	if(!input->silent)
+	{
+		printf("Execution time = %.3f secs\n", time);
     }
-	else{
+	else
+	{
 		printf("%.3f\n", time);
-        printf("%f\n", input->e);
-        }
+	}
+
 	//
 	// Salva il risultato
 	//
-	sprintf(fname_phi, "out32_%d_%d_phi.ds2", input->N, input->sd);
-	save_out(fname_phi, input->phi, input->N);
-	sprintf(fname_psi, "out32_%d_%d_psi.ds2", input->N, input->sd);
-	save_out(fname_psi, input->psi, input->N);
-	if(input->display){
-		if(input->phi == NULL || input->psi == NULL)
+	sprintf(fname_result, "out32_%d_.ds2", input->numPages);
+	save_out(fname_result, input->resultMat, input->numPages);
+	if(input->display)
+	{
+		if(input->resultMat == NULL)
 			printf("out: NULL\n");
-		else{
+		else
+		{
 			int i,j;
-			printf("energy: %f, phi: [", input->e);
-			for(i=0; i<input->N; i++){
-				printf("%f,", input->phi[i]);
-			}
-			printf("]\n");
-			printf("psi: [");
-			for(i=0; i<input->N; i++){
-				printf("%f,", input->psi[i]);
+			printf("results: [");
+			for(i=0; i<input->numPages; i++)
+			{
+				printf("[");
+				for(j=0; j<input->numPages; j++)
+				{
+					printf("%f,", input->resultMat[i]);
+				}
+				printf("]\n");
 			}
 			printf("]\n");
 		}
@@ -687,8 +721,8 @@ int main(int argc, char** argv)
 	if(!input->silent)
 		printf("\nDone.\n");
 
-	dealloc_matrix(input->phi);
-	dealloc_matrix(input->psi);
+	dealloc_matrix(input->tranMat);
+	dealloc_matrix(input->resultMat);
 	free(input);
 
 	return 0;
