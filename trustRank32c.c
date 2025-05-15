@@ -453,7 +453,7 @@ MATRIX exec(params* input)
 	int maxBias = input->maxBias;
 	type alfaI = input->alfaI;
 	VECTOR valoriOracolo = input->valoriOracolo;
-	input->resultMat = (tranMat, numPages, limitOracle, alfaB, maxBias, alfaI, valoriOracolo);
+	input->resultMat = trustRank(tranMat, numPages, limitOracle, alfaB, maxBias, alfaI, valoriOracolo);
 }
 
 

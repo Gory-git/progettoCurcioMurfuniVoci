@@ -27,7 +27,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="main finito, ho sistemato un paio di cose ma ci sono ovviamente errori" />
+    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="funge" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -191,7 +191,7 @@
       <workItem from="1747206748452" duration="439000" />
       <workItem from="1747209565914" duration="4114000" />
       <workItem from="1747249102010" duration="4416000" />
-      <workItem from="1747300605877" duration="2368000" />
+      <workItem from="1747300605877" duration="2712000" />
     </task>
     <task id="LOCAL-00001" summary="creato file 64 e importate funzioni di base">
       <option name="closed" value="true" />
@@ -345,7 +345,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747302794276</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="funge">
+      <option name="closed" value="true" />
+      <created>1747303331953</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1747303331953</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -425,6 +433,7 @@
     <MESSAGE value="sistemare il resto degli input, nello specifico la parte di controllo" />
     <MESSAGE value="ancora devo finire il main, sorry" />
     <MESSAGE value="main finito, ho sistemato un paio di cose ma ci sono ovviamente errori" />
-    <option name="LAST_COMMIT_MESSAGE" value="main finito, ho sistemato un paio di cose ma ci sono ovviamente errori" />
+    <MESSAGE value="funge" />
+    <option name="LAST_COMMIT_MESSAGE" value="funge" />
   </component>
 </project>
