@@ -462,7 +462,7 @@ int main(int argc, char** argv)
 
 	char* fname_graph = NULL;
 	char* fname_oracle = NULL;
-	char fname_result[256];
+	char* fname_result = NULL;
 
 	clock_t t;
 	int d;
@@ -539,6 +539,16 @@ int main(int argc, char** argv)
 			}
 			fname_oracle = argv[par];
 			par++;
+		} else if (strcmp(argv[par],"-re") == 0)
+		{
+			par++;
+			if (par >= argc)
+			{
+				printf("Missing result file name!\n");
+				exit(1);
+			}
+			fname_result= argv[par];
+			par++;
 		} else if (strcmp(argv[par],"-np") == 0)
 		{
 			par++;
@@ -559,7 +569,7 @@ int main(int argc, char** argv)
 			}
 			input->limitOracle = atoi(argv[par]);
 			par++;
-		} else if (strcmp(argv[par],"-k") == 0)
+		} else if (strcmp(argv[par],"-ab") == 0)
 		{
 			par++;
 			if (par >= argc)
@@ -569,7 +579,7 @@ int main(int argc, char** argv)
 			}
 			input->alfaB = atof(argv[par]);
 			par++;
-		} else if (strcmp(argv[par],"-sd") == 0)
+		} else if (strcmp(argv[par],"-mb") == 0)
 		{
 			par++;
 			if (par >= argc)
@@ -579,7 +589,7 @@ int main(int argc, char** argv)
 			}
 			input->maxBias = atoi(argv[par]);
 			par++;
-		} else if (strcmp(argv[par],"-sd") == 0)
+		} else if (strcmp(argv[par],"-ai") == 0)
 		{
 			par++;
 			if (par >= argc)
@@ -588,16 +598,6 @@ int main(int argc, char** argv)
 				exit(1);
 			}
 			input->alfaI = atof(argv[par]);
-			par++;
-		} else if (strcmp(argv[par],"-sd") == 0)
-		{
-			par++;
-			if (par >= argc)
-			{
-				printf("Missing seed value!\n");
-				exit(1);
-			}
-			input->maxBias = atoi(argv[par]);
 			par++;
 		}else
 		{
@@ -624,7 +624,7 @@ int main(int argc, char** argv)
 	input->tranMat = load_data(fname_graph, &input->numPages, &d);
 
 	if(d != input->numPages){
-		printf("Invalid size of sequence file, should be %ix1!\n", input->numPages);
+		printf("Invalid size of graph file, should be %iX%i!\n", input->numPages, input->numPages);
 		exit(1);
 	}
 

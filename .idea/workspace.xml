@@ -27,7 +27,11 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="funge 2.0" />
+    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="caricati files di input">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trustRank32c.c" beforeDir="false" afterPath="$PROJECT_DIR$/trustRank32c.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trustRank32c.exe" beforeDir="false" afterPath="$PROJECT_DIR$/trustRank32c.exe" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -191,7 +195,7 @@
       <workItem from="1747206748452" duration="439000" />
       <workItem from="1747209565914" duration="4114000" />
       <workItem from="1747249102010" duration="4416000" />
-      <workItem from="1747300605877" duration="3289000" />
+      <workItem from="1747300605877" duration="4548000" />
     </task>
     <task id="LOCAL-00001" summary="creato file 64 e importate funzioni di base">
       <option name="closed" value="true" />
@@ -361,7 +365,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747303459642</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="caricati files di input">
+      <option name="closed" value="true" />
+      <created>1747304064538</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1747304064538</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -443,6 +455,7 @@
     <MESSAGE value="main finito, ho sistemato un paio di cose ma ci sono ovviamente errori" />
     <MESSAGE value="funge" />
     <MESSAGE value="funge 2.0" />
-    <option name="LAST_COMMIT_MESSAGE" value="funge 2.0" />
+    <MESSAGE value="caricati files di input" />
+    <option name="LAST_COMMIT_MESSAGE" value="caricati files di input" />
   </component>
 </project>
