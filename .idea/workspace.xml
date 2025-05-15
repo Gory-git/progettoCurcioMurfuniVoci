@@ -27,10 +27,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="ancora devo finire il main, sorry">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trustRank32c.c" beforeDir="false" afterPath="$PROJECT_DIR$/trustRank32c.c" afterDir="false" />
-    </list>
+    <list default="true" id="31002ec2-6717-4616-a763-bea338b02b81" name="Changes" comment="main finito, ho sistemato un paio di cose ma ci sono ovviamente errori" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -107,31 +104,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.RadMigrateCodeStyle&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.west.config.association.type.startup.service&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.Java&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "C/C++ File.trustRank32c.c.executor": "Run",
+    "RunOnceActivity.RadMigrateCodeStyle": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "RunOnceActivity.west.config.association.type.startup.service": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/grego/OneDrive - Università della Calabria/UNI/A.A. 2024-2025 L.M. ING. INF/Primo Semestre/Architetture e Programmazione dei Sistemi di Elaborazione/progettoCurcioMurfuniVoci",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "preferences.sourceCode.Java",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="trustRank32c.c" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="progettoCurcioMurfuniVoci" TARGET_NAME="trustRank32c.c" CONFIG_NAME="trustRank32c.c">
       <option name="sourceFile" value="trustRank32c.c" />
@@ -193,7 +191,7 @@
       <workItem from="1747206748452" duration="439000" />
       <workItem from="1747209565914" duration="4114000" />
       <workItem from="1747249102010" duration="4416000" />
-      <workItem from="1747300605877" duration="1501000" />
+      <workItem from="1747300605877" duration="2368000" />
     </task>
     <task id="LOCAL-00001" summary="creato file 64 e importate funzioni di base">
       <option name="closed" value="true" />
@@ -339,7 +337,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747255183979</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="main finito, ho sistemato un paio di cose ma ci sono ovviamente errori">
+      <option name="closed" value="true" />
+      <created>1747302794276</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1747302794276</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -418,6 +424,7 @@
     <MESSAGE value="finita ottimizzazione c 32 bit?" />
     <MESSAGE value="sistemare il resto degli input, nello specifico la parte di controllo" />
     <MESSAGE value="ancora devo finire il main, sorry" />
-    <option name="LAST_COMMIT_MESSAGE" value="ancora devo finire il main, sorry" />
+    <MESSAGE value="main finito, ho sistemato un paio di cose ma ci sono ovviamente errori" />
+    <option name="LAST_COMMIT_MESSAGE" value="main finito, ho sistemato un paio di cose ma ci sono ovviamente errori" />
   </component>
 </project>

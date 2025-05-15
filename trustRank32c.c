@@ -318,7 +318,7 @@ void merge(VECTOR arr, int index[], int left, int mid, int right)
 	for (i = 0; i < n1; i++)
 	{
 		leftArr[i] = &arr[left + i];
-		leftIndex[i] = &index[left + i];
+		leftIndex[i] = index[left + i];
 	}
 	for (j = 0; j < n2; j++)
 	{
@@ -435,7 +435,7 @@ MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int 
 	VECTOR d = alloc_vector(numPages);
 	for (int i = 0; i < limitOracle; i++) //Singolo FOR
 	{
-		if (valoriOracolo(sigma[i]) == 1) // Al posto della chiamata a funzione
+		if (valoriOracolo[sigma[i]] == 1) // Al posto della chiamata a funzione
 		{
 			d[sigma[i]] = (type) 1 / (type) numPages; // MEMORIZZO GIà NORMALIZZATO SULLA LUNGHEZZA
 		}
