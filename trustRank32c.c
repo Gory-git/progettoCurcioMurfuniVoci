@@ -57,7 +57,9 @@
 #define random() (((type) rand())/RAND_MAX)
 
 typedef struct {
+	MATRIX graph;
 	MATRIX tranMat; // Transition Matrix
+	MATRIX tranMatInv; // Reverse Transition Matrix
 	int numPages; // Numero Pagine
 	int limitOracle;
 	type alfaB;
@@ -266,7 +268,7 @@ void save_out(char* filename, MATRIX X, int k) {
  * Funzioni ad-hoc
  */
 
-VECTOR selectSeed(MATRIX tranMat, int numPages, type alfaI, int mI, int* indici)
+VECTOR selectSeed(MATRIX tranMatInv, int numPages, type alfaI, int mI, int* indici, VECTOR d)
 {
 	VECTOR s = alloc_vector(numPages);
 	int iterazione = 0;
@@ -282,6 +284,7 @@ VECTOR selectSeed(MATRIX tranMat, int numPages, type alfaI, int mI, int* indici)
 			if (m == 0)
 			{
 				indici[i] = i; // inizializzo il vettore di indici, risparmio un'iterazione in n inizializzandolo qua dentro
+				d[i] = 0;
 			}
 			type riga = 0;
 			for (int j = 0; j < numPages; j++)
@@ -294,7 +297,7 @@ VECTOR selectSeed(MATRIX tranMat, int numPages, type alfaI, int mI, int* indici)
 
 				int x = i * numPages + j;
 
-				riga = riga + alfaI * tranMat[numPages * numPages - x - 1] * s[j];
+				riga = riga + alfaI * tranMatInv[x] * s[j];
 			}
 			s[i] = riga + somma;
 		}
@@ -424,15 +427,23 @@ VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numP
 }
 
 
-MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int maxBias, type alfaI, VECTOR valoriOracolo)
+MATRIX trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracle, type alfaB, int maxBias, type alfaI, VECTOR valoriOracolo)
 {
 	int mI = 100; // numero massimo di iterazioni, deciso empiricamente AC-DC ----> si potrebbe mettere sempre a 1
 	int* indici = alloc_int_matrix(numPages, 1);
-	VECTOR s = selectSeed(tranMat, numPages, alfaI, mI, indici);
-	
-	int* sigma = rank(indici, s, numPages); //rank restituisce una lista ordinata per l'affidabilità delle pagine (CONTIENE INDICI PAG)
-
 	VECTOR d = alloc_vector(numPages);
+	VECTOR s = selectSeed(tranMatInv, numPages, alfaI, mI, indici, d);
+	printf("\nselectsid");
+	int* sigma = rank(indici, s, numPages); //rank restituisce una lista ordinata per l'affidabilità delle pagine (CONTIENE INDICI PAG)
+	printf("\nrank");
+
+	for (int i = 0; i < numPages; i++)
+	{
+		printf("\n%d ", sigma[i]);
+		printf("\n%f", d[i]);
+		printf("\n%d", limitOracle);
+		printf("\n");
+	}
 	for (int i = 0; i < limitOracle; i++) //Singolo FOR
 	{
 		if (valoriOracolo[sigma[i]] == 1) // Al posto della chiamata a funzione
@@ -440,6 +451,7 @@ MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int 
 			d[sigma[i]] = (type) 1 / (type) numPages; // MEMORIZZO GIà NORMALIZZATO SULLA LUNGHEZZA
 		}
 	}
+	printf("\noracolo");
 
 	return computeScores(tranMat, alfaB, maxBias, d, numPages);
 }
@@ -447,13 +459,66 @@ MATRIX trustRank(MATRIX tranMat, int numPages, int limitOracle, type alfaB, int 
 MATRIX exec(params* input)
 {
 	MATRIX tranMat = input->tranMat;
+	MATRIX tranMatInv = input->tranMatInv;
 	int numPages = input->numPages;
 	int limitOracle = input->limitOracle;
 	type alfaB = input->alfaB;
 	int maxBias = input->maxBias;
 	type alfaI = input->alfaI;
 	VECTOR valoriOracolo = input->valoriOracolo;
-	input->resultMat = trustRank(tranMat, numPages, limitOracle, alfaB, maxBias, alfaI, valoriOracolo);
+	input->resultMat = trustRank(tranMat, tranMatInv, numPages, limitOracle, alfaB, maxBias, alfaI, valoriOracolo);
+	printf("\nOKKK");
+}
+
+void loadTranMat(params* input, int archi)
+{
+	MATRIX tranMat = alloc_matrix(input->numPages, input->numPages);
+	MATRIX tranMatInv = alloc_matrix(input->numPages, input->numPages);
+	MATRIX graph = input->graph;
+
+	int* tempIng = alloc_int_matrix(input->numPages, 1);
+	int* tempUsc = alloc_int_matrix(input->numPages, 1);
+	int* tempArco = alloc_int_matrix(input->numPages, input->numPages);
+
+	for (int i = 0; i < input->numPages * 2; i++)
+	{
+		tempIng[i] = 0;
+		tempUsc[i] = 0;
+	}
+	printf("\nInizializzato");
+	for (int i = 0; i < archi * 2; i += 2)
+	{
+		int p = graph[i];
+		int q = graph[i + 1];
+
+		tempUsc[p] = tempUsc[p] + 1;
+		tempIng[q] = tempIng[q] + 1;
+		tempArco[p * input->numPages + q] = 1;
+	}
+	printf("\nContato");
+
+	for (int i = 0; i < input->numPages; i++)
+	{
+		for (int j = 0; j < input->numPages; j++)
+		{
+			if (tempArco[i * input->numPages + j] == 1)
+			{
+				tranMat[i * input->numPages + j] = (type) 1 / (type) tempUsc[j];
+				tranMatInv[i * input->numPages + j] = (type) 1 / (type) tempIng[j];
+			}
+		}
+	}
+	printf("\nSalvato(re)");
+
+
+	input->tranMat = tranMat;
+	input->tranMatInv = tranMatInv;
+
+	printf("\nmmmmm");
+
+	// dealloc_matrix(tempIng);
+	// dealloc_matrix(tempUsc);
+	// dealloc_matrix(tempArco);
 }
 
 
@@ -466,13 +531,18 @@ int main(int argc, char** argv)
 
 	clock_t t;
 	int d;
+	int archi;
+	int righe;
 	type time;
 
 	//
 	// Imposta i valori di default dei parametri
 	//
 	params* input = malloc(sizeof(params));
+	input->graph = NULL;
 	input->tranMat = NULL;
+	input->tranMatInv = NULL;
+	input->resultMat = NULL;
 	input->numPages = 0;
 	input->limitOracle = 0;
 	input->alfaB = 0;
@@ -574,7 +644,7 @@ int main(int argc, char** argv)
 			par++;
 			if (par >= argc)
 			{
-				printf("Missing k value!\n");
+				printf("Missing ab value!\n");
 				exit(1);
 			}
 			input->alfaB = atof(argv[par]);
@@ -621,20 +691,28 @@ int main(int argc, char** argv)
 		exit(1);
 	}
 
-	input->tranMat = load_data(fname_graph, &input->numPages, &d);
+	input->graph = load_data(fname_graph, &archi, &d);
 
-	if(d != input->numPages){
-		printf("Invalid size of graph file, should be %iX%i!\n", input->numPages, input->numPages);
+	if(d != 2){
+		printf("Invalid size of graph file, should be %ix2!\n", input->numPages);
 		exit(1);
 	}
+	printf("\nGrafo");
+	loadTranMat(input, archi);
+	printf("\nPepe");
+	righe = 0;
+	d = 0;
 
-	input->valoriOracolo= load_data(fname_oracle, &input->numPages, &d);
+	input->valoriOracolo= load_data(fname_oracle, &righe, &d);
 
-	if(d != 1)
+	printf("\nOra");
+	if(d != 1 || righe != input->numPages)
 	{
 		printf("Invalid size of oracle file, should be %ix1!\n", input->numPages);
 		exit(1);
 	}
+
+	printf("cle");
 
 	if(input->limitOracle <= 0)
 	{
