@@ -57,7 +57,7 @@
 #define random() (((type) rand())/RAND_MAX)
 
 typedef struct {
-	MATRIX graph;
+	int* graph;
 	MATRIX tranMat; // Transition Matrix
 	MATRIX tranMatInv; // Reverse Transition Matrix
 	int numPages; // Numero Pagine
@@ -139,21 +139,60 @@ void dealloc_vector(void* mat) {
 *****************************************************************************
 * 
 */
+
+int* load_data_int(char* filename, int *n, int *k) {
+	FILE* fp;
+	int rows, cols, status, i;
+	printf("\nopening file");
+	fp = fopen(filename, "rb");
+	printf("\ndone opening file");
+
+	if (fp == NULL){
+		printf("'%s': bad data file name!\n", filename);
+		exit(0);
+	}
+
+	status = fread(&cols, sizeof(int), 1, fp);
+	printf("\nStatus 1 %f", status);
+	status = fread(&rows, sizeof(int), 1, fp);
+	printf("\nStatus 2 %f", status);
+	printf("\n Cols: %d Rows: %d", rows, cols);
+
+	printf("\nallocating");
+	int* data = alloc_int_matrix(rows,cols);
+	printf("\nallocated");
+
+	status = fread(data, sizeof(int), rows*cols, fp);
+	fclose(fp);
+
+	*n = rows;
+	*k = cols;
+
+	return data;
+}
+
 MATRIX load_data(char* filename, int *n, int *k) {
 	FILE* fp;
 	int rows, cols, status, i;
-	
+	printf("\nopening file");
 	fp = fopen(filename, "rb");
-	
+	printf("\ndone opening file");
+
 	if (fp == NULL){
 		printf("'%s': bad data file name!\n", filename);
 		exit(0);
 	}
 	
 	status = fread(&cols, sizeof(int), 1, fp);
+	printf("\nStatus 1 %f", status);
 	status = fread(&rows, sizeof(int), 1, fp);
-	
+	printf("\nStatus 2 %f", status);
+	printf("\n Cols: %d Rows: %d", rows, cols);
+
+	printf("\nallocating");
 	MATRIX data = alloc_matrix(rows,cols);
+	printf("\nallocated");
+
 	status = fread(data, sizeof(type), rows*cols, fp);
 	fclose(fp);
 	
@@ -531,8 +570,8 @@ int main(int argc, char** argv)
 
 	clock_t t;
 	int d;
-	int archi;
 	int righe;
+	int archi;
 	type time;
 
 	//
@@ -691,21 +730,28 @@ int main(int argc, char** argv)
 		exit(1);
 	}
 
-	input->graph = load_data(fname_graph, &archi, &d);
+	input->graph = load_data_int(fname_graph, &archi, &d);
 
 	if(d != 2){
 		printf("Invalid size of graph file, should be %ix2!\n", input->numPages);
 		exit(1);
 	}
+
 	printf("\nGrafo");
+
 	loadTranMat(input, archi);
+	//dealloc_matrix(input->graph);
+
 	printf("\nPepe");
-	righe = 0;
-	d = 0;
+	// printf(fname_oracle);
+
+	righe = input->numPages;
+	d = 1;
 
 	input->valoriOracolo= load_data(fname_oracle, &righe, &d);
 
 	printf("\nOra");
+
 	if(d != 1 || righe != input->numPages)
 	{
 		printf("Invalid size of oracle file, should be %ix1!\n", input->numPages);
@@ -713,12 +759,6 @@ int main(int argc, char** argv)
 	}
 
 	printf("cle");
-
-	if(input->limitOracle <= 0)
-	{
-		printf("Invalid value of lo parameter!\n");
-		exit(1);
-	}
 
 	if(input->alfaB <= 0)
 	{
