@@ -142,7 +142,7 @@ void dealloc_vector(void* mat) {
 
 int* load_data_int(char* filename, int *n, int *k) {
 	FILE* fp;
-	int rows, cols, status, i;
+	int rows, cols, status;
 	printf("\nopening file");
 	fp = fopen(filename, "rb");
 	printf("\ndone opening file");
@@ -153,10 +153,10 @@ int* load_data_int(char* filename, int *n, int *k) {
 	}
 
 	status = fread(&cols, sizeof(int), 1, fp);
-	printf("\nStatus 1 %f", status);
+	printf("\nStatus 1 %d", status);
 	status = fread(&rows, sizeof(int), 1, fp);
-	printf("\nStatus 2 %f", status);
-	printf("\n Cols: %d Rows: %d", rows, cols);
+	printf("\nStatus 2 %d", status);
+	printf("\n Cols: %d Rows: %d", cols, rows);
 
 	printf("\nallocating");
 	int* data = alloc_int_matrix(rows,cols);
@@ -173,7 +173,7 @@ int* load_data_int(char* filename, int *n, int *k) {
 
 MATRIX load_data(char* filename, int *n, int *k) {
 	FILE* fp;
-	int rows, cols, status, i;
+	int rows, cols, status;
 	printf("\nopening file");
 	fp = fopen(filename, "rb");
 	printf("\ndone opening file");
@@ -183,11 +183,11 @@ MATRIX load_data(char* filename, int *n, int *k) {
 		exit(0);
 	}
 	
-	status = fread(&cols, sizeof(int), 1, fp);
-	printf("\nStatus 1 %f", status);
 	status = fread(&rows, sizeof(int), 1, fp);
-	printf("\nStatus 2 %f", status);
-	printf("\n Cols: %d Rows: %d", rows, cols);
+	printf("\nStatus 1 %d", status);
+	status = fread(&cols, sizeof(int), 1, fp);
+	printf("\nStatus 2 %d", status);
+	printf("\n Cols: %d Rows: %d", cols, rows);
 
 	printf("\nallocating");
 	MATRIX data = alloc_matrix(rows,cols);
@@ -221,30 +221,30 @@ MATRIX load_data(char* filename, int *n, int *k) {
 *****************************************************************************
 * 
 */
-char* load_seq(char* filename, int *n, int *k) {
-	FILE* fp;
-	int rows, cols, status, i;
-	
-	fp = fopen(filename, "rb");
-	
-	if (fp == NULL){
-		printf("'%s': bad data file name!\n", filename);
-		exit(0);
-	}
-	
-	status = fread(&cols, sizeof(int), 1, fp);
-	status = fread(&rows, sizeof(int), 1, fp);
-
-	
-	char* data = alloc_char_matrix(rows,cols);
-	status = fread(data, sizeof(char), rows*cols, fp);
-	fclose(fp);
-	
-	*n = rows;
-	*k = cols;
-	
-	return data;
-}
+// char* load_seq(char* filename, int *n, int *k) {
+// 	FILE* fp;
+// 	int rows, cols, status, i;
+//
+// 	fp = fopen(filename, "rb");
+//
+// 	if (fp == NULL){
+// 		printf("'%s': bad data file name!\n", filename);
+// 		exit(0);
+// 	}
+//
+// 	status = fread(&cols, sizeof(int), 1, fp);
+// 	status = fread(&rows, sizeof(int), 1, fp);
+//
+//
+// 	char* data = alloc_char_matrix(rows,cols);
+// 	status = fread(data, sizeof(char), rows*cols, fp);
+// 	fclose(fp);
+//
+// 	*n = rows;
+// 	*k = cols;
+//
+// 	return data;
+// }
 
 /*
 * 	save_data
@@ -292,7 +292,7 @@ void save_data(char* filename, void* X, int n, int k) {
 */
 void save_out(char* filename, MATRIX X, int k) {
 	FILE* fp;
-	int i;
+	//int i;
 	int n = 1;
 	fp = fopen(filename, "wb");
 	if(X != NULL){
@@ -310,7 +310,7 @@ void save_out(char* filename, MATRIX X, int k) {
 VECTOR selectSeed(MATRIX tranMatInv, int numPages, type alfaI, int mI, int* indici, VECTOR d)
 {
 	VECTOR s = alloc_vector(numPages);
-	int iterazione = 0;
+	// int iterazione = 0;
 
 	// s = alfaI * tranMatInv * s + (1 - alfa) * (1/n) * unoN
 	// vettore = scalare * Matrice * vettore + scalare * scalare * vettore
@@ -491,11 +491,16 @@ MATRIX trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracl
 		}
 	}
 	printf("\noracolo");
-
+	for (int i = 0; i < numPages; i++)
+	{
+		printf("\n%d ", sigma[i]);
+		printf("\n%f", d[i]);
+		printf("\n");
+	}
 	return computeScores(tranMat, alfaB, maxBias, d, numPages);
 }
 
-MATRIX exec(params* input)
+void exec(params* input)
 {
 	MATRIX tranMat = input->tranMat;
 	MATRIX tranMatInv = input->tranMatInv;
@@ -513,7 +518,7 @@ void loadTranMat(params* input, int archi)
 {
 	MATRIX tranMat = alloc_matrix(input->numPages, input->numPages);
 	MATRIX tranMatInv = alloc_matrix(input->numPages, input->numPages);
-	MATRIX graph = input->graph;
+	int* graph = input->graph;
 
 	int* tempIng = alloc_int_matrix(input->numPages, 1);
 	int* tempUsc = alloc_int_matrix(input->numPages, 1);
@@ -807,7 +812,7 @@ int main(int argc, char** argv)
     }
 	else
 	{
-		printf("%.3f\n", time);
+		printf("\n%.3f\n", time);
 	}
 
 	//

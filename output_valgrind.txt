@@ -1,0 +1,723 @@
+ktop/progettoCurcioMurfuniVoci$ valgrind -s --leak-check=full --track-origins=yes ./trustRank32c -tm graph_50.ds -or t0_50_32.ds -re results_50_0.7_ds.2 -np 50 -lo 50 -ab 0.85 -mb 50 -ai 0.85 
+==51472== Memcheck, a memory error detector
+==51472== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==51472== Using Valgrind-3.25.0 and LibVEX; rerun with -h for copyright info
+==51472== Command: ./trustRank32c -tm graph_50.ds -or t0_50_32.ds -re results_50_0.7_ds.2 -np 50 -lo 50 -ab 0.85 -mb 50 -ai 0.85
+==51472== 
+
+opening file
+done opening file
+Status 1 1
+Status 2 1
+ Cols: 2 Rows: 355
+allocating
+allocated
+Grafo
+==51472== Invalid write of size 4
+==51472==    at 0x40027D0: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==  Address 0x4a99238 is 0 bytes after a block of size 200 alloc'd
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400149E: alloc_int_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400277C: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+==51472== Invalid write of size 4
+==51472==    at 0x40027EA: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==  Address 0x4a99348 is 0 bytes after a block of size 200 alloc'd
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400149E: alloc_int_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4002793: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+Pagine: 50
+Inizializzato
+==51472== Conditional jump or move depends on uninitialised value(s)
+==51472==    at 0x4002945: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==  Uninitialised value was created by a heap allocation
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400149E: alloc_int_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40027AE: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+Contato
+Salvato(re)
+mmmmm
+Pepe
+opening file
+done opening file
+Status 1 1
+Status 2 1
+ Cols: 1 Rows: 50
+allocating
+allocated
+Oracle
+selectsid
+rank
+0 
+0.000000
+50
+
+1 
+0.000000
+50
+
+2 
+0.000000
+50
+
+3 
+0.000000
+50
+
+4 
+0.000000
+50
+
+5 
+0.000000
+50
+
+6 
+0.000000
+50
+
+7 
+0.000000
+50
+
+8 
+0.000000
+50
+
+9 
+0.000000
+50
+
+10 
+0.000000
+50
+
+11 
+0.000000
+50
+
+12 
+0.000000
+50
+
+13 
+0.000000
+50
+
+14 
+0.000000
+50
+
+15 
+0.000000
+50
+
+16 
+0.000000
+50
+
+17 
+0.000000
+50
+
+18 
+0.000000
+50
+
+19 
+0.000000
+50
+
+20 
+0.000000
+50
+
+21 
+0.000000
+50
+
+22 
+0.000000
+50
+
+23 
+0.000000
+50
+
+24 
+0.000000
+50
+
+25 
+0.000000
+50
+
+26 
+0.000000
+50
+
+27 
+0.000000
+50
+
+28 
+0.000000
+50
+
+29 
+0.000000
+50
+
+30 
+0.000000
+50
+
+31 
+0.000000
+50
+
+32 
+0.000000
+50
+
+33 
+0.000000
+50
+
+34 
+0.000000
+50
+
+35 
+0.000000
+50
+
+36 
+0.000000
+50
+
+37 
+0.000000
+50
+
+38 
+0.000000
+50
+
+39 
+0.000000
+50
+
+40 
+0.000000
+50
+
+41 
+0.000000
+50
+
+42 
+0.000000
+50
+
+43 
+0.000000
+50
+
+44 
+0.000000
+50
+
+45 
+0.000000
+50
+
+46 
+0.000000
+50
+
+47 
+0.000000
+50
+
+48 
+0.000000
+50
+
+49 
+0.000000
+50
+
+oracolo
+0 
+0.000000
+
+1 
+0.000000
+
+2 
+0.000000
+
+3 
+0.000000
+
+4 
+0.020000
+
+5 
+0.000000
+
+6 
+0.000000
+
+7 
+0.020000
+
+8 
+0.000000
+
+9 
+0.000000
+
+10 
+0.000000
+
+11 
+0.000000
+
+12 
+0.000000
+
+13 
+0.000000
+
+14 
+0.000000
+
+15 
+0.000000
+
+16 
+0.020000
+
+17 
+0.000000
+
+18 
+0.000000
+
+19 
+0.000000
+
+20 
+0.000000
+
+21 
+0.000000
+
+22 
+0.000000
+
+23 
+0.000000
+
+24 
+0.000000
+
+25 
+0.000000
+
+26 
+0.000000
+
+27 
+0.000000
+
+28 
+0.000000
+
+29 
+0.000000
+
+30 
+0.000000
+
+31 
+0.000000
+
+32 
+0.000000
+
+33 
+0.000000
+
+34 
+0.020000
+
+35 
+0.000000
+
+36 
+0.000000
+
+37 
+0.000000
+
+38 
+0.000000
+
+39 
+0.000000
+
+40 
+0.020000
+
+41 
+0.000000
+
+42 
+0.000000
+
+43 
+0.000000
+
+44 
+0.000000
+
+45 
+0.000000
+
+46 
+0.000000
+
+47 
+0.000000
+
+48 
+0.000000
+
+49 
+0.000000
+
+OKKK
+0.068
+==51472== Syscall param write(buf) points to uninitialised byte(s)
+==51472==    at 0x4999574: write (write.c:26)
+==51472==    by 0x4910974: _IO_file_write@@GLIBC_2.2.5 (fileops.c:1181)
+==51472==    by 0x490F570: new_do_write (fileops.c:449)
+==51472==    by 0x490F570: _IO_do_write@@GLIBC_2.2.5 (fileops.c:426)
+==51472==    by 0x490EA1F: _IO_file_close_it@@GLIBC_2.2.5 (fileops.c:135)
+==51472==    by 0x49023A0: fclose@@GLIBC_2.2.5 (iofclose.c:53)
+==51472==    by 0x4001A4F: save_out (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40033FA: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==  Address 0x4a9d4b8 is 8 bytes inside a block of size 4,096 alloc'd
+==51472==    at 0x484D80F: malloc (vg_replace_malloc.c:446)
+==51472==    by 0x49021B4: _IO_file_doallocate (filedoalloc.c:101)
+==51472==    by 0x4912523: _IO_doallocbuf (genops.c:347)
+==51472==    by 0x490FF8F: _IO_file_overflow@@GLIBC_2.2.5 (fileops.c:745)
+==51472==    by 0x4910AAE: _IO_new_file_xsputn (fileops.c:1244)
+==51472==    by 0x4910AAE: _IO_file_xsputn@@GLIBC_2.2.5 (fileops.c:1197)
+==51472==    by 0x4903A11: fwrite (iofwrite.c:39)
+==51472==    by 0x4001A0B: save_out (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40033FA: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==  Uninitialised value was created by a heap allocation
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001457: alloc_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400273F: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+==51472== Conditional jump or move depends on uninitialised value(s)
+==51472==    at 0x48DE181: __printf_fp_buffer_1.isra.0 (printf_fp.c:230)
+==51472==    by 0x48E035B: __printf_fp_l_buffer (printf_fp.c:1122)
+==51472==    by 0x48E76C4: __printf_fp_spec (vfprintf-internal.c:266)
+==51472==    by 0x48E76C4: __printf_buffer (vfprintf-internal.c:999)
+==51472==    by 0x48E873A: __vfprintf_internal (vfprintf-internal.c:1544)
+==51472==    by 0x48DD1B2: printf (printf.c:33)
+==51472==    by 0x4003499: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==  Uninitialised value was created by a heap allocation
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001457: alloc_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400273F: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+==51472== Conditional jump or move depends on uninitialised value(s)
+==51472==    at 0x48DE07C: __printf_fp_buffer_1.isra.0 (printf_fp.c:238)
+==51472==    by 0x48E035B: __printf_fp_l_buffer (printf_fp.c:1122)
+==51472==    by 0x48E76C4: __printf_fp_spec (vfprintf-internal.c:266)
+==51472==    by 0x48E76C4: __printf_buffer (vfprintf-internal.c:999)
+==51472==    by 0x48E873A: __vfprintf_internal (vfprintf-internal.c:1544)
+==51472==    by 0x48DD1B2: printf (printf.c:33)
+==51472==    by 0x4003499: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==  Uninitialised value was created by a heap allocation
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001457: alloc_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400273F: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+results: [[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+[-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,-nan,]
+]
+==51472== 
+==51472== HEAP SUMMARY:
+==51472==     in use at exit: 24,040 bytes in 9 blocks
+==51472==   total heap usage: 19 allocs, 10 frees, 49,040 bytes allocated
+==51472== 
+==51472== 200 bytes in 1 blocks are definitely lost in loss record 1 of 9
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400149E: alloc_int_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400277C: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+==51472== 200 bytes in 1 blocks are definitely lost in loss record 2 of 9
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400149E: alloc_int_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4002793: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+==51472== 200 bytes in 1 blocks are definitely lost in loss record 3 of 9
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001457: alloc_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001805: load_data (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031DD: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+==51472== 200 bytes in 1 blocks are definitely lost in loss record 4 of 9
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400149E: alloc_int_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40023BF: trustRank (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40026D9: exec (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4003337: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+==51472== 200 bytes in 1 blocks are definitely lost in loss record 5 of 9
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001477: alloc_vector (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001A93: selectSeed (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40023F2: trustRank (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40026D9: exec (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4003337: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+==51472== 200 bytes in 1 blocks are definitely lost in loss record 6 of 9
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001477: alloc_vector (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400225E: computeScores (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400263C: trustRank (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40026D9: exec (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4003337: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+==51472== 2,840 bytes in 1 blocks are definitely lost in loss record 7 of 9
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400149E: alloc_int_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400164B: load_data_int (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4003146: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+==51472== 10,000 bytes in 1 blocks are definitely lost in loss record 8 of 9
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001457: alloc_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400275A: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+==51472== 10,000 bytes in 1 blocks are definitely lost in loss record 9 of 9
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400149E: alloc_int_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40027AE: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+==51472== LEAK SUMMARY:
+==51472==    definitely lost: 24,040 bytes in 9 blocks
+==51472==    indirectly lost: 0 bytes in 0 blocks
+==51472==      possibly lost: 0 bytes in 0 blocks
+==51472==    still reachable: 0 bytes in 0 blocks
+==51472==         suppressed: 0 bytes in 0 blocks
+==51472== 
+==51472== ERROR SUMMARY: 7166 errors from 15 contexts (suppressed: 0 from 0)
+==51472== 
+==51472== 1 errors in context 1 of 15:
+==51472== Syscall param write(buf) points to uninitialised byte(s)
+==51472==    at 0x4999574: write (write.c:26)
+==51472==    by 0x4910974: _IO_file_write@@GLIBC_2.2.5 (fileops.c:1181)
+==51472==    by 0x490F570: new_do_write (fileops.c:449)
+==51472==    by 0x490F570: _IO_do_write@@GLIBC_2.2.5 (fileops.c:426)
+==51472==    by 0x490EA1F: _IO_file_close_it@@GLIBC_2.2.5 (fileops.c:135)
+==51472==    by 0x49023A0: fclose@@GLIBC_2.2.5 (iofclose.c:53)
+==51472==    by 0x4001A4F: save_out (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40033FA: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==  Address 0x4a9d4b8 is 8 bytes inside a block of size 4,096 alloc'd
+==51472==    at 0x484D80F: malloc (vg_replace_malloc.c:446)
+==51472==    by 0x49021B4: _IO_file_doallocate (filedoalloc.c:101)
+==51472==    by 0x4912523: _IO_doallocbuf (genops.c:347)
+==51472==    by 0x490FF8F: _IO_file_overflow@@GLIBC_2.2.5 (fileops.c:745)
+==51472==    by 0x4910AAE: _IO_new_file_xsputn (fileops.c:1244)
+==51472==    by 0x4910AAE: _IO_file_xsputn@@GLIBC_2.2.5 (fileops.c:1197)
+==51472==    by 0x4903A11: fwrite (iofwrite.c:39)
+==51472==    by 0x4001A0B: save_out (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40033FA: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==  Uninitialised value was created by a heap allocation
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001457: alloc_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400273F: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+==51472== 
+==51472== 18 errors in context 2 of 15:
+==51472== Invalid write of size 4
+==51472==    at 0x40027EA: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==  Address 0x4a99348 is 0 bytes after a block of size 200 alloc'd
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400149E: alloc_int_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4002793: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+==51472== 
+==51472== 18 errors in context 3 of 15:
+==51472== Invalid write of size 4
+==51472==    at 0x40027D0: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==  Address 0x4a99238 is 0 bytes after a block of size 200 alloc'd
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400149E: alloc_int_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400277C: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+==51472== 
+==51472== 2120 errors in context 4 of 15:
+==51472== Conditional jump or move depends on uninitialised value(s)
+==51472==    at 0x4002945: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==  Uninitialised value was created by a heap allocation
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400149E: alloc_int_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40027AE: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+==51472== 
+==51472== 2500 errors in context 5 of 15:
+==51472== Conditional jump or move depends on uninitialised value(s)
+==51472==    at 0x48DE07C: __printf_fp_buffer_1.isra.0 (printf_fp.c:238)
+==51472==    by 0x48E035B: __printf_fp_l_buffer (printf_fp.c:1122)
+==51472==    by 0x48E76C4: __printf_fp_spec (vfprintf-internal.c:266)
+==51472==    by 0x48E76C4: __printf_buffer (vfprintf-internal.c:999)
+==51472==    by 0x48E873A: __vfprintf_internal (vfprintf-internal.c:1544)
+==51472==    by 0x48DD1B2: printf (printf.c:33)
+==51472==    by 0x4003499: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==  Uninitialised value was created by a heap allocation
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001457: alloc_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400273F: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+==51472== 
+==51472== 2500 errors in context 6 of 15:
+==51472== Conditional jump or move depends on uninitialised value(s)
+==51472==    at 0x48DE181: __printf_fp_buffer_1.isra.0 (printf_fp.c:230)
+==51472==    by 0x48E035B: __printf_fp_l_buffer (printf_fp.c:1122)
+==51472==    by 0x48E76C4: __printf_fp_spec (vfprintf-internal.c:266)
+==51472==    by 0x48E76C4: __printf_buffer (vfprintf-internal.c:999)
+==51472==    by 0x48E873A: __vfprintf_internal (vfprintf-internal.c:1544)
+==51472==    by 0x48DD1B2: printf (printf.c:33)
+==51472==    by 0x4003499: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==  Uninitialised value was created by a heap allocation
+==51472==    at 0x4855EAA: posix_memalign (vg_replace_malloc.c:2226)
+==51472==    by 0x40013A9: _mm_malloc (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001411: get_block (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x4001457: alloc_matrix (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x400273F: loadTranMat (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472==    by 0x40031A1: main (in /home/gregorio/Desktop/progettoCurcioMurfuniVoci/trustRank32c)
+==51472== 
+==51472== ERROR SUMMARY: 7166 errors from 15 contexts (suppressed: 0 from 0)
+
