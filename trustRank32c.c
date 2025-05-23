@@ -144,26 +144,19 @@ void dealloc_vector(void* mat) {
 int* load_data_int(char* filename, int *n, int *k) {
 	FILE* fp;
 	int rows, cols, status;
-	printf("\nopening file");
 	fp = fopen(filename, "rb");
-	printf("\ndone opening file");
 
 	if (fp == NULL){
 		printf("'%s': bad data file name!\n", filename);
 		exit(0);
 	}
 
-	status = fread(&cols, sizeof(int), 1, fp);
-	printf("\nStatus 1 %d", status);
-	status = fread(&rows, sizeof(int), 1, fp);
-	printf("\nStatus 2 %d", status);
-	printf("\n Cols: %d Rows: %d", cols, rows);
+	status = (int) fread(&cols, sizeof(int), 1, fp);
+	status = (int) fread(&rows, sizeof(int), 1, fp);
 
-	printf("\nallocating");
 	int* data = alloc_int_matrix(rows,cols);
-	printf("\nallocated");
 
-	status = fread(data, sizeof(int), rows*cols, fp);
+	status = (int) fread(data, sizeof(int), rows*cols, fp);
 	fclose(fp);
 
 	*n = rows;
@@ -175,24 +168,17 @@ int* load_data_int(char* filename, int *n, int *k) {
 MATRIX load_data(char* filename, int *n, int *k) {
 	FILE* fp;
 	int rows, cols, status;
-	printf("\nopening file");
 	fp = fopen(filename, "rb");
-	printf("\ndone opening file");
 
 	if (fp == NULL){
 		printf("'%s': bad data file name!\n", filename);
 		exit(0);
 	}
 	
-	status = fread(&rows, sizeof(int), 1, fp);
-	printf("\nStatus 1 %d", status);
-	status = fread(&cols, sizeof(int), 1, fp);
-	printf("\nStatus 2 %d", status);
-	printf("\n Cols: %d Rows: %d", cols, rows);
+	status = (int) fread(&rows, sizeof(int), 1, fp);
+	status = (int) fread(&cols, sizeof(int), 1, fp);
 
-	printf("\nallocating");
 	MATRIX data = alloc_matrix(rows,cols);
-	printf("\nallocated");
 
 	status = fread(data, sizeof(type), rows*cols, fp);
 	fclose(fp);
@@ -481,17 +467,9 @@ MATRIX trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracl
 	int* indici = alloc_int_matrix(numPages, 1);
 	VECTOR d = alloc_vector(numPages);
 	VECTOR s = selectSeed(tranMatInv, numPages, alfaI, mI, indici, d);
-	printf("\nselectsid");
-	int* sigma = rank(indici, s, numPages); //rank restituisce una lista ordinata per l'affidabilità delle pagine (CONTIENE INDICI PAG)
-	printf("\nrank");
 
-	for (int i = 0; i < numPages; i++)
-	{
-		printf("\n%d ", sigma[i]);
-		printf("\n%f", d[i]);
-		printf("\n%d", limitOracle);
-		printf("\n");
-	}
+	int* sigma = rank(indici, s, numPages); //rank restituisce una lista ordinata per l'affidabilità delle pagine (CONTIENE INDICI PAG)
+
 	for (int i = 0; i < limitOracle; i++) //Singolo FOR
 	{
 		if (valoriOracolo[sigma[i]] == 1) // Al posto della chiamata a funzione
@@ -499,29 +477,13 @@ MATRIX trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracl
 			d[sigma[i]] = (type) 1 / (type) numPages; // MEMORIZZO GIà NORMALIZZATO SULLA LUNGHEZZA
 		}
 	}
-	printf("\noracolo");
-	for (int i = 0; i < numPages; i++)
-	{
-		printf("\n%d ", sigma[i]);
-		printf("\n%f", d[i]);
-		printf("\n");
-	}
+
 	return computeScores(tranMat, alfaB, maxBias, d, numPages);
 }
 
 void exec(params* input)
 {
-	MATRIX tranMat = input->tranMat;
-	MATRIX tranMatInv = input->tranMatInv;
-	int numPages = input->numPages;
-	int limitOracle = input->limitOracle;
-	type alfaB = input->alfaB;
-	int maxBias = input->maxBias;
-	type alfaI = input->alfaI;
-	VECTOR valoriOracolo = input->valoriOracolo;
-	input->results
-	 = trustRank(tranMat, tranMatInv, numPages, limitOracle, alfaB, maxBias, alfaI, valoriOracolo);
-	printf("\nOKKK");
+	input->results= trustRank(input->tranMat, input->tranMatInv, input->numPages, input->limitOracle, input->alfaB, input->maxBias, input->alfaI, input->valoriOracolo);
 }
 
 void loadTranMat(params* input, int archi)
@@ -541,7 +503,6 @@ void loadTranMat(params* input, int archi)
 		tempIng[i] = 0;
 		tempUsc[i] = 0;
 	}
-	printf("\nInizializzato");
 	for (int i = 0; i < archi * 2; i += 2)
 	{
 		int p = graph[i];
@@ -551,7 +512,6 @@ void loadTranMat(params* input, int archi)
 		tempIng[q] = tempIng[q] + 1;
 		tempArco[p * input->numPages + q] = 1;
 	}
-	printf("\nContato");
 
 	for (int i = 0; i < input->numPages; i++)
 	{
@@ -564,13 +524,17 @@ void loadTranMat(params* input, int archi)
 			}
 		}
 	}
-	printf("\nSalvato(re)");
-
+printf("tranMat:\n");
+	for (int i = 0; i < input->numPages; ++i) {
+		printf("\n[");
+		for (int j = 0; j < input->numPages; ++j) {
+			printf(" %f ", tranMat[i * input->numPages + j]);
+		}
+		printf(" ]\n");
+	}
 
 	input->tranMat = tranMat;
 	input->tranMatInv = tranMatInv;
-
-	printf("\nmmmmm");
 
 	dealloc_matrix(tempIng);
 	dealloc_matrix(tempUsc);
@@ -747,12 +711,20 @@ int main(int argc, char** argv)
 	}
 
 	input->graph = load_data_int(fname_graph, &archi, &d);
-	// dealloc_matrix(fname_graph);
+
+	// printf("\n[");
+	// for (int i = 0; i < archi * 2; i += 2)
+	// {
+	// 	printf("\t[%d, %d]\n", input->graph[i], input->graph[i + 1]);
+	//
+	// }
+	// printf("]\n");
 
 	if(d != 2){
-		printf("Invalid size of graph file, should be %ix2!\n", input->numPages);
+		printf("Invalid size of graph file, should be (NumeroArchi)x2!\n");
 		exit(1);
 	}
+
 	loadTranMat(input, archi);
 
 
@@ -762,7 +734,15 @@ int main(int argc, char** argv)
 	input->valoriOracolo= load_data(fname_oracle, &righe, &d);
 	// dealloc_matrix(fname_oracle);
 
-	if(d != 1 || righe != input->numPages)
+	// printf("\n[");
+	// for (int i = 0; i < input->numPages; i++)
+	// {
+	// 	printf(" %f, ", input->valoriOracolo[i]);
+	//
+	// }
+	// printf("]\n");
+
+	if(d != 1)
 	{
 		printf("Invalid size of oracle file, should be %ix1!\n", input->numPages);
 		exit(1);
