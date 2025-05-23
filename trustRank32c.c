@@ -510,7 +510,7 @@ void loadTranMat(params* input, int archi)
 
 		tempUsc[p] = tempUsc[p] + 1;
 		tempIng[q] = tempIng[q] + 1;
-		tempArco[p * input->numPages + q] = 1;
+		tempArco[q * input->numPages + p] = 1;
 	}
 
 	for (int i = 0; i < input->numPages; i++)
@@ -520,7 +520,7 @@ void loadTranMat(params* input, int archi)
 			if (tempArco[i * input->numPages + j] == 1)
 			{
 				tranMat[i * input->numPages + j] = (type) 1 / (type) tempUsc[j];
-				tranMatInv[i * input->numPages + j] = (type) 1 / (type) tempIng[j];
+				tranMatInv[j * input->numPages + i] = (type) 1 / (type) tempIng[j];
 			}
 		}
 	}
