@@ -68,7 +68,8 @@ typedef struct {
 	VECTOR valoriOracolo;
 	int silent;
 	int display;
-	MATRIX resultMat;
+	VECTOR results
+	;
 } params;
 
 
@@ -87,7 +88,7 @@ typedef struct {
 */
 
 void* get_block(int size, int elements) { 
-	return _mm_malloc(elements*size,16); 
+	return _mm_malloc(elements*size,16);
 }
 
 void free_block(void* p) { 
@@ -432,12 +433,20 @@ int* rank(int* index, VECTOR s, int numPages) // è praticamente un sort, ma fun
 	return index;
 }
 
+VECTOR copy_vector(VECTOR src, int size) {
+	VECTOR dest = alloc_vector(size);
+	memcpy(dest, src, sizeof(type) * size);
+	return dest;
+}
+
 
 VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numPages)
 {
-	VECTOR ret = d; // ATTUALMENTE SHALLOW COPY, TODO DEEP COPY
+	VECTOR ret = copy_vector(d, numPages);
 	type unoAlfaB = (type) 1 - alfaB;
 	VECTOR somma = alloc_vector(numPages);
+	memset(somma, 0, numPages * 1 * sizeof(type));
+
 
 	/*
 	 *				 | A B C |	 | 1 |   | X |   | (alfaB*1*A + alfaB*2*B + alfaB*3*C) + X |
@@ -510,7 +519,8 @@ void exec(params* input)
 	int maxBias = input->maxBias;
 	type alfaI = input->alfaI;
 	VECTOR valoriOracolo = input->valoriOracolo;
-	input->resultMat = trustRank(tranMat, tranMatInv, numPages, limitOracle, alfaB, maxBias, alfaI, valoriOracolo);
+	input->results
+	 = trustRank(tranMat, tranMatInv, numPages, limitOracle, alfaB, maxBias, alfaI, valoriOracolo);
 	printf("\nOKKK");
 }
 
@@ -518,13 +528,15 @@ void loadTranMat(params* input, int archi)
 {
 	MATRIX tranMat = alloc_matrix(input->numPages, input->numPages);
 	MATRIX tranMatInv = alloc_matrix(input->numPages, input->numPages);
-	int* graph = input->graph;
 
 	int* tempIng = alloc_int_matrix(input->numPages, 1);
 	int* tempUsc = alloc_int_matrix(input->numPages, 1);
 	int* tempArco = alloc_int_matrix(input->numPages, input->numPages);
 
-	for (int i = 0; i < input->numPages * 2; i++)
+
+	int* graph = input->graph;
+
+	for (int i = 0; i < input->numPages; i++)
 	{
 		tempIng[i] = 0;
 		tempUsc[i] = 0;
@@ -560,9 +572,9 @@ void loadTranMat(params* input, int archi)
 
 	printf("\nmmmmm");
 
-	// dealloc_matrix(tempIng);
-	// dealloc_matrix(tempUsc);
-	// dealloc_matrix(tempArco);
+	dealloc_matrix(tempIng);
+	dealloc_matrix(tempUsc);
+	dealloc_matrix(tempArco);
 }
 
 
@@ -586,7 +598,7 @@ int main(int argc, char** argv)
 	input->graph = NULL;
 	input->tranMat = NULL;
 	input->tranMatInv = NULL;
-	input->resultMat = NULL;
+	input->results = NULL;
 	input->numPages = 0;
 	input->limitOracle = 0;
 	input->alfaB = 0;
@@ -595,7 +607,6 @@ int main(int argc, char** argv)
 	input->valoriOracolo = NULL;
 	input->silent= -1;
 	input->display= -1;
-	input->resultMat = NULL;
 
 	//
 	// Visualizza la sintassi del passaggio dei parametri da riga comandi
@@ -736,34 +747,26 @@ int main(int argc, char** argv)
 	}
 
 	input->graph = load_data_int(fname_graph, &archi, &d);
+	// dealloc_matrix(fname_graph);
 
 	if(d != 2){
 		printf("Invalid size of graph file, should be %ix2!\n", input->numPages);
 		exit(1);
 	}
-
-	printf("\nGrafo");
-
 	loadTranMat(input, archi);
-	//dealloc_matrix(input->graph);
 
-	printf("\nPepe");
-	// printf(fname_oracle);
 
 	righe = input->numPages;
 	d = 1;
 
 	input->valoriOracolo= load_data(fname_oracle, &righe, &d);
-
-	printf("\nOra");
+	// dealloc_matrix(fname_oracle);
 
 	if(d != 1 || righe != input->numPages)
 	{
 		printf("Invalid size of oracle file, should be %ix1!\n", input->numPages);
 		exit(1);
 	}
-
-	printf("cle");
 
 	if(input->alfaB <= 0)
 	{
@@ -819,10 +822,12 @@ int main(int argc, char** argv)
 	// Salva il risultato
 	//
 	sprintf(fname_result, "out32_%d_.ds2", input->numPages);
-	save_out(fname_result, input->resultMat, input->numPages);
+	save_out(fname_result, input->results, input->numPages);
+	//dealloc_matrix(fname_result);
+
 	if(input->display)
 	{
-		if(input->resultMat == NULL)
+		if(input->results == NULL)
 			printf("out: NULL\n");
 		else
 		{
@@ -830,12 +835,7 @@ int main(int argc, char** argv)
 			printf("results: [");
 			for(i=0; i<input->numPages; i++)
 			{
-				printf("[");
-				for(j=0; j<input->numPages; j++)
-				{
-					printf("%f,", input->resultMat[i]);
-				}
-				printf("]\n");
+				printf("%f,", input->results[i]);
 			}
 			printf("]\n");
 		}
@@ -844,8 +844,6 @@ int main(int argc, char** argv)
 	if(!input->silent)
 		printf("\nDone.\n");
 
-	dealloc_matrix(input->tranMat);
-	dealloc_matrix(input->resultMat);
 	free(input);
 
 	return 0;
