@@ -463,10 +463,9 @@ VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numP
 
 MATRIX trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracle, type alfaB, int maxBias, type alfaI, VECTOR valoriOracolo)
 {
-	int mI = 100; // numero massimo di iterazioni, deciso empiricamente AC-DC ----> si potrebbe mettere sempre a 1
 	int* indici = alloc_int_matrix(numPages, 1);
 	VECTOR d = alloc_vector(numPages);
-	VECTOR s = selectSeed(tranMatInv, numPages, alfaI, mI, indici, d);
+	VECTOR s = selectSeed(tranMatInv, numPages, alfaI, maxBias, indici, d);
 
 	int* sigma = rank(indici, s, numPages); //rank restituisce una lista ordinata per l'affidabilità delle pagine (CONTIENE INDICI PAG)
 
@@ -523,14 +522,6 @@ void loadTranMat(params* input, int archi)
 				tranMatInv[j * input->numPages + i] = (type) 1 / (type) tempIng[j];
 			}
 		}
-	}
-printf("tranMat:\n");
-	for (int i = 0; i < input->numPages; ++i) {
-		printf("\n[");
-		for (int j = 0; j < input->numPages; ++j) {
-			printf(" %f ", tranMat[i * input->numPages + j]);
-		}
-		printf(" ]\n");
 	}
 
 	input->tranMat = tranMat;
