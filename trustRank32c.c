@@ -291,7 +291,18 @@ void save_out(char* filename, MATRIX X, int k) {
 }
 
 /*
- * Funzioni ad-hoc
+ * Procedure Assembly
+
+Per generare l' eseguibile:
+*
+* nasm -f elf32 trustRank32.nasm && gcc -m32 -msse -O0 -no-pie sseutils32.o trustRank32.o trustRank32c.c -o trustRank32c -lm && ./trustRank32c $pars
+* pars: -tm graph_50.ds -or t0_50_32.ds -re results_50_0.7_ds.2 -np 50 -lo 50 -ab 0.85 -mb 50 -ai 0.85
+*/
+
+extern VECTOR funzione_unica(MATRIX tranMatInv, int numPages, type decay, int max_outer_iterations, int* indici, VECTOR d, VECTOR ret, VECTOR somma, bool funz1, MATRIX tranMatParam);
+
+/*
+ * Procedure C
  */
 
 VECTOR selectSeed(MATRIX tranMatInv, int numPages, type alfaI, int mI, int* indici, VECTOR d)
@@ -465,7 +476,7 @@ MATRIX trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracl
 {
 	int* indici = alloc_int_matrix(numPages, 1);
 	VECTOR d = alloc_vector(numPages);
-	VECTOR s = selectSeed(tranMatInv, numPages, alfaI, maxBias, indici, d);
+	VECTOR s = funzione_unica(tranMatInv, numPages, alfaI, maxBias, indici, d)//selectSeed(tranMatInv, numPages, alfaI, maxBias, indici, d);
 
 	int* sigma = rank(indici, s, numPages); //rank restituisce una lista ordinata per l'affidabilità delle pagine (CONTIENE INDICI PAG)
 
@@ -477,7 +488,7 @@ MATRIX trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracl
 		}
 	}
 
-	return computeScores(tranMat, alfaB, maxBias, d, numPages);
+	return //computeScores(tranMat, alfaB, maxBias, d, numPages);
 }
 
 void exec(params* input)
