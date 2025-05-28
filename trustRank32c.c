@@ -48,6 +48,7 @@
 #include <time.h>
 #include <libgen.h>
 #include <locale.h>
+#include <stdbool.h>
 #include <xmmintrin.h>
 
 #define	type		float
@@ -314,33 +315,36 @@ VECTOR selectSeed(MATRIX tranMatInv, int numPages, type alfaI, int mI, int* indi
 	// vettore = scalare * Matrice * vettore + scalare * scalare * vettore
 	type somma = (1 - alfaI) / (type) numPages;
 
-	for (int m = 0; m < mI; m++)
-	{
-		for (int i = 0; i < numPages; i++)
-		{
-			if (m == 0)
-			{
-				indici[i] = i; // inizializzo il vettore di indici, risparmio un'iterazione in n inizializzandolo qua dentro
-				d[i] = 0;
-			}
-			type riga = 0;
-			for (int j = 0; j < numPages; j++)
-			{
-				if (m == 0 && i == 0) // Così risparmio un ciclo in n in cui inizializzo tutti gli elementi di s a 1
-				{
-					s[j] = 1;
-				}
 
+	return funzione_unica(tranMatInv, numPages, alfaI, mI, indici, d, s, &somma, true, tranMatInv);
 
-				int x = i * numPages + j;
-
-				riga = riga + alfaI * tranMatInv[x] * s[j];
-			}
-			s[i] = riga + somma;
-		}
-	}
-
-	return s;
+	// for (int m = 0; m < mI; m++)
+	// {
+	// 	for (int i = 0; i < numPages; i++)
+	// 	{
+	// 		if (m == 0)
+	// 		{
+	// 			indici[i] = i; // inizializzo il vettore di indici, risparmio un'iterazione in n inizializzandolo qua dentro
+	// 			d[i] = 0;
+	// 		}
+	// 		type riga = 0;
+	// 		for (int j = 0; j < numPages; j++)
+	// 		{
+	// 			if (m == 0 && i == 0) // Così risparmio un ciclo in n in cui inizializzo tutti gli elementi di s a 1
+	// 			{
+	// 				s[j] = 1;
+	// 			}
+	//
+	//
+	// 			int x = i * numPages + j;
+	//
+	// 			riga = riga + alfaI * tranMatInv[x] * s[j];
+	// 		}
+	// 		s[i] = riga + somma;
+	// 	}
+	// }
+	//
+	// return s;
 }
 
 
@@ -443,32 +447,32 @@ VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numP
 	type unoAlfaB = (type) 1 - alfaB;
 	VECTOR somma = alloc_vector(numPages);
 	memset(somma, 0, numPages * 1 * sizeof(type));
-
+	return funzione_unica(tranMat, numPages, alfaB, maxBias, NULL, d, ret, somma, false, tranMat);
 
 	/*
 	 *				 | A B C |	 | 1 |   | X |   | (alfaB*1*A + alfaB*2*B + alfaB*3*C) + X |
 	 * ret = alfaB * | D E F | * | 2 | + | Y | = | (alfaB*1*D + alfaB*2*E + alfaB*3*F) + Y |
 	 *				 | G H I |	 | 3 |   | Z |   | (alfaB*1*G + alfaB*2*H + alfaB*3*I) + Z |
 	 */
-
-	for (int b = 0; b < maxBias; b++)
-	{
-		// ret = alfaB * tranMat * ret + (1 - alfaB) * d
-		// vettore = scalare * matrice * vettore + scalare * vettore
-
-		for (int i = 0; i < numPages; i++)
-		{
-			somma[i] = unoAlfaB * d[i];
-			type riga = 0;
-			for (int j = 0; j < numPages; j++)
-			{
-				riga = riga + alfaB * ret[j] * tranMat[i * numPages + j];
-			}
-
-			ret[i] = riga + somma[i];
-		}
-	}
-	return ret;
+	//
+	// for (int b = 0; b < maxBias; b++)
+	// {
+	// 	// ret = alfaB * tranMat * ret + (1 - alfaB) * d
+	// 	// vettore = scalare * matrice * vettore + scalare * vettore
+	//
+	// 	for (int i = 0; i < numPages; i++)
+	// 	{
+	// 		somma[i] = unoAlfaB * d[i];
+	// 		type riga = 0;
+	// 		for (int j = 0; j < numPages; j++)
+	// 		{
+	// 			riga = riga + alfaB * ret[j] * tranMat[i * numPages + j];
+	// 		}
+	//
+	// 		ret[i] = riga + somma[i];
+	// 	}
+	// }
+	// return ret;
 }
 
 
@@ -476,7 +480,7 @@ MATRIX trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracl
 {
 	int* indici = alloc_int_matrix(numPages, 1);
 	VECTOR d = alloc_vector(numPages);
-	VECTOR s = funzione_unica(tranMatInv, numPages, alfaI, maxBias, indici, d)//selectSeed(tranMatInv, numPages, alfaI, maxBias, indici, d);
+	VECTOR s = selectSeed(tranMatInv, numPages, alfaI, maxBias, indici, d);
 
 	int* sigma = rank(indici, s, numPages); //rank restituisce una lista ordinata per l'affidabilità delle pagine (CONTIENE INDICI PAG)
 
@@ -488,7 +492,7 @@ MATRIX trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracl
 		}
 	}
 
-	return //computeScores(tranMat, alfaB, maxBias, d, numPages);
+	return computeScores(tranMat, alfaB, maxBias, d, numPages);
 }
 
 void exec(params* input)

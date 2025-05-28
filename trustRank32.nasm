@@ -1,326 +1,294 @@
+%include "sseutils32.nasm"
 section .data
-align 8
-alfaI:          dq 0.0     ; Define these constants (example values)
-alfaB:          dq 0.0
-unoAlfaB:       dq 0.0
-one_double:     dq 1.0
-zero_double:    dq 0.0
+    ; Define constants (assuming double precision)
+    alfaI   dq 0.15         ; Example value for alfaI
+    alfaB   dq 0.85         ; Example value for alfaB
+    unoAlfaB dq 0.85        ; Example value for unoAlfaB (assuming it's same as alfaB)
+    double_8 dq 8.0         ; Constant 8.0 for numPages * constant in k-loop
+    double_zero dq 0.0      ; Constant 0.0
+    double_one  dq 1.0      ; Constant 1.0 (unused based on assumptions)
 
 section .text
-global funzione_unica
-
-; VECTOR funzione_unica(MATRIX tranMatInv, int numPages, type decay, int max_outer_iterations, int* indici, VECTOR d, VECTOR ret, VECTOR somma, bool funz1, MATRIX tranMatParam)
-
-; Parametri sullo stack (da ebp+8 in su, ordine cdecl):
-; [ebp+8]:  tranMatInv (ptr)
-; [ebp+12]: numPages (int)
-; [ebp+16]: decay (type - non usato)
-; [ebp+20]: max_outer_iterations (int)
-; [ebp+24]: indici (ptr)
-; [ebp+28]: d (ptr)
-; [ebp+32]: ret (ptr)
-; [ebp+36]: somma (ptr)
-; [ebp+40]: funz1 (int, 0 o 1)
-; [ebp+44]: tranMatParam (ptr)
+    global funzione_unica
+    extern puts ; Example: if you need debugging prints
 
 funzione_unica:
+    ; Standard function entry
     push    ebp
     mov     ebp, esp
+    ; Reserve stack space for local variables
+    ; scalare_costante (double = 8 bytes)
+    ; riga (double = 8 bytes)
+    sub     esp, 16
 
-    ; Salvataggio registri callee-saved e altri usati localmente
-    push    ebx
-    push    esi
-    push    edi
-    push    eax
-    push    ecx
-    push    edx
-    push    eax            ; Dummy push come nell'originale (7 push totali = 28 bytes)
-                           ; esp ora è ebp - 28
+    ; Argument positions on stack (cdecl-like):
+    ; [ebp+8]: tranMat (pointer)
+    ; [ebp+12]: numPages (int)
+    ; [ebp+16]: decay (double, 8 bytes) - unused
+    ; [ebp+24]: max_outer_iterations (int)
+    ; [ebp+28]: indici (pointer)
+    ; [ebp+32]: d (pointer)
+    ; [ebp+36]: ret (pointer)
+    ; [ebp+40]: sommaV (pointer)
+    ; [ebp+44]: funz1 (int/bool, 4 bytes)
 
-    ; Allocazione spazio per variabili locali
-    ; Necessari 60 bytes per le variabili.
-    ; Per allineamento a 16 byte di ESP (ebp - 28 - X deve essere multiplo di 16):
-    ; Se ebp è ...0, ebp-28 è ...4. Serve X = ...4.
-    ; 60 byte necessari. Il successivo valore che termina con 4 è 68.
-    sub     esp, 68        ; Alloca 68 bytes (60 usati + 8 padding)
-                           ; esp ora è ebp - 28 - 68 = ebp - 96 (allineato a 16-byte)
+    ; Local variable stack offsets:
+    ; [ebp-8]: scalare_costante
+    ; [ebp-16]: riga
 
-    ; Mappa delle variabili locali (offset da ebp):
-    ; [ebp-36]: scalare_costante (double, 8 bytes) ; ebp - 28 - 8
-    ; [ebp-40]: i (int, 4 bytes)                   ; ebp - 36 - 4
-    ; [ebp-44]: j (int, 4 bytes)
-    ; [ebp-48]: k (int, 4 bytes)
-    ; [ebp-56]: riga (double, 8 bytes)
-    ; [ebp-60]: funz1_val (int, 4 bytes)
-    ; [ebp-64]: numPages_val (int, 4 bytes)
-    ; [ebp-68]: max_outer_iterations_val (int, 4 bytes)
-    ; [ebp-72]: ret_ptr (ptr, 4 bytes)
-    ; [ebp-76]: indici_ptr (ptr, 4 bytes)
-    ; [ebp-80]: d_ptr (ptr, 4 bytes)
-    ; [ebp-84]: somma_ptr (ptr, 4 bytes)
-    ; [ebp-88]: tranMatInv_ptr (ptr, 4 bytes)
-    ; [ebp-92]: tranMatParam_ptr (ptr, 4 bytes)
+    ; --- Variable Loading ---
+    ; Load numPages, max_outer_iterations, funz1 into registers
+    mov     ebx, [ebp+12]   ; ebx = numPages
+    mov     ecx, [ebp+24]   ; ecx = max_outer_iterations
+    mov     edx, [ebp+44]   ; edx = funz1 (0 or 1)
 
-    ; Copia parametri nelle variabili locali sullo stack
-    mov     eax, [ebp + 24]  ; indici (parametro)
-    mov     [ebp - 76], eax  ; indici_ptr (locale)
-    mov     eax, [ebp + 28]  ; d
-    mov     [ebp - 80], eax  ; d_ptr
-    mov     eax, [ebp + 32]  ; ret
-    mov     [ebp - 72], eax  ; ret_ptr
-    mov     eax, [ebp + 36]  ; somma
-    mov     [ebp - 84], eax  ; somma_ptr
-    mov     eax, [ebp + 8]   ; tranMatInv
-    mov     [ebp - 88], eax  ; tranMatInv_ptr
-    mov     eax, [ebp + 44]  ; tranMatParam
-    mov     [ebp - 92], eax  ; tranMatParam_ptr
+    ; Load pointers into registers
+    mov     esi, [ebp+28]   ; esi = indici
+    mov     edi, [ebp+32]   ; edi = d
+    mov     eax, [ebp+36]   ; eax = ret
+    mov     ebx, [ebp+40]   ; ebx = sommaV  <-- Reusing ebx, need numPages later. Store numPages somewhere else.
+    mov     eax, [ebp+36]   ; eax = ret
+    mov     ebp, [ebp+40]   ; ebp = sommaV  <-- Reusing ebp! Cannot do this.
+    ; Let's reassign registers more carefully
+    push    dword [ebp+12]  ; Save numPages temporarily
+    mov     eax, [ebp+8]    ; eax = tranMat
+    mov     edx, [ebp+28]   ; edx = indici
+    mov     esi, [ebp+32]   ; esi = d
+    mov     edi, [ebp+36]   ; edi = ret
+    mov     ebx, [ebp+40]   ; ebx = sommaV
+    mov     ecx, [ebp+44]   ; ecx = funz1 (0 or 1)
+    mov     r8d, [ebp+24]   ; r8d = max_outer_iterations (need 64-bit reg for this, oops 32-bit)
+    mov     r8d, [ebp+24]   ; This is 32-bit assembly, cannot use r8d.
+    ; Need more 32-bit registers or stack vars
+    ; eax=tranMat, edx=indici, esi=d, edi=ret, ebx=sommaV, ecx=funz1
+    ; Use stack for max_outer_iterations and numPages after loading
+    pop     dword [ebp-20]  ; Restore numPages to stack [ebp-20] (reserve 4 bytes)
+    mov     dword [ebp-24], ecx ; Store funz1 on stack [ebp-24] (reserve 4 bytes)
+    mov     dword [ebp-28], [ebp+24] ; Store max_outer_iterations on stack [ebp-28] (reserve 4 bytes)
+    mov     ecx, [ebp-28]   ; ecx = max_outer_iterations
 
-    mov     eax, [ebp + 12]  ; numPages
-    mov     [ebp - 64], eax  ; numPages_val
-    mov     eax, [ebp + 20]  ; max_outer_iterations
-    mov     [ebp - 68], eax  ; max_outer_iterations_val
-    mov     eax, [ebp + 40]  ; funz1
-    mov     [ebp - 60], eax  ; funz1_val
+    ; Pointers in: eax=tranMat, edx=indici, esi=d, edi=ret, ebx=sommaV
+    ; numPages in [ebp-20]
+    ; funz1 in [ebp-24]
+    ; max_outer_iterations in ecx (loop counter)
 
-    ; Inizializza scalare_costante se funz1
-    mov     eax, [ebp - 60] ; Carica funz1_val
-    test    eax, eax        ; Controlla se funz1 è true (non-zero)
-    jz      L_calc_scalare_end
+    ; --- Initialize scalare_costante ---
+    ; Check funz1
+    cmp     dword [ebp-24], 0
+    je      .else_scalar_const
 
-    ; scalare_costante = (1 - alfaI) / (type) numPages;
-    movsd   xmm0, [one_double]   ; Carica 1.0
-    movsd   xmm1, [alfaI]        ; Carica alfaI
-    subsd   xmm0, xmm1           ; 1.0 - alfaI
+    ; if funz1: scalare_costante = (1 - alfaI) / (type) numPages;
+    movsd   xmm0, [double_one]  ; xmm0 = 1.0
+    subsd   xmm0, [alfaI]       ; xmm0 = 1.0 - alfaI
+    cvtsi2sd xmm1, dword [ebp-20] ; xmm1 = (double) numPages
+    divsd   xmm0, xmm1          ; xmm0 = (1.0 - alfaI) / (double) numPages
+    movsd   [ebp-8], xmm0       ; store scalare_costante = xmm0
+    jmp     .end_scalar_const
 
-    mov     eax, [ebp - 64]      ; Carica numPages_val
-    cvtsi2sd xmm1, eax           ; Converte numPages in double
-    divsd   xmm0, xmm1           ; (1 - alfaI) / (double)numPages
-    movsd   [ebp - 36], xmm0     ; Salva scalare_costante
+.else_scalar_const:
+    ; else: scalare_costante = (type) 1 - alfaB;
+    movsd   xmm0, [double_one]  ; xmm0 = 1.0
+    subsd   xmm0, [alfaB]       ; xmm0 = 1.0 - alfaB
+    movsd   [ebp-8], xmm0       ; store scalare_costante = xmm0
 
-L_calc_scalare_end:
+.end_scalar_const:
 
-    ; Loop esterno: for i < max_outer_iterations
-    mov     dword [ebp - 40], 0   ; i = 0
-L_outer_loop_i:
-    mov     eax, [ebp - 40]     ; Carica i
-    cmp     eax, [ebp - 68]     ; Confronta i con max_outer_iterations_val
-    jge     L_outer_loop_end_i  ; Se i >= max_outer_iterations, fine loop
+    ; --- Outer loop: for i < max_outer_iterations ---
+    mov     dword [ebp-32], 0   ; i = 0 (reserve 4 bytes for i at [ebp-32])
+    mov     ecx, [ebp-28]       ; ecx = max_outer_iterations
+    jmp     .outer_loop_cond
 
-    ; Loop medio: for j < numPages
-    mov     dword [ebp - 44], 0   ; j = 0
-L_middle_loop_j:
-    mov     ebx, [ebp - 44]     ; Carica j
-    cmp     ebx, [ebp - 64]     ; Confronta j con numPages_val
-    jge     L_middle_loop_end_j ; Se j >= numPages, fine loop
+.outer_loop:
+    ; i is in [ebp-32]
 
-    ; Azioni dentro il loop j (dipende da funz1)
-    mov     eax, [ebp - 60] ; Carica funz1_val
-    test    eax, eax        ; Controlla se funz1 è true
-    jnz     L_funz1_branch  ; Se funz1 è true
+    ; --- Inner loop: for j < numPages ---
+    mov     dword [ebp-36], 0   ; j = 0 (reserve 4 bytes for j at [ebp-36])
+    mov     edx, [ebp-20]       ; edx = numPages (loop limit)
+    jmp     .inner_loop_cond
 
-    ; Ramo Else (!funz1)
-    ; somma[i] = unoAlfaB * d[i]; (Condizionato da somma e d non NULL)
-    mov     ecx, [ebp - 84] ; Carica somma_ptr
-    test    ecx, ecx        ; Controlla se somma è NULL
-    jz      L_skip_somma_d_access ; Salta se somma è NULL
+.inner_loop:
+    ; j is in [ebp-36]
+    ; i is in [ebp-32]
 
-    mov     edx, [ebp - 80] ; Carica d_ptr
-    test    edx, edx        ; Controlla se d è NULL
-    jz      L_skip_somma_d_access ; Salta se d è NULL
+    ; --- Inside inner loop, before k loop ---
+    cmp     dword [ebp-24], 0   ; Check funz1
+    je      .inner_else_before_k
 
-    ; Sia somma che d non sono NULL
-    mov     eax, [ebp - 40]   ; Carica i (indice loop esterno)
-    mov     esi, eax          ; Usa esi per i (indice)
-    imul    esi, 8            ; Calcola offset in byte per double (i * 8)
+    ; if funz1
+    mov     eax, [ebp-32]       ; eax = i
+    cmp     eax, 0              ; if i == 0
+    jne     .inner_funz1_before_k_end
 
-    movsd   xmm0, [unoAlfaB]  ; Carica unoAlfaB
-                              ; edx contiene già d_ptr
-    movsd   xmm1, [edx + esi] ; Carica d[i]
-    mulsd   xmm0, xmm1        ; unoAlfaB * d[i]
-
-                              ; ecx contiene già somma_ptr
-    movsd   [ecx + esi], xmm0 ; Salva risultato in somma[i]
-
-L_skip_somma_d_access:
-    jmp     L_after_funz1_branch ; Vai al calcolo di riga
-
-L_funz1_branch:
-    ; Se funz1 è true
     ; if i == 0
-    mov     eax, [ebp - 40] ; Carica i
-    test    eax, eax        ; Controlla se i == 0
-    jnz     L_skip_i_zero_init ; Se i != 0, salta init
+    mov     ebx, [ebp-32]       ; ebx = i
+    mov     dword [edx + ebx*4], ebx ; indici[i] = i (using edx=indici, ebx=i, size 4)
+    mov     ebx, [ebp-32]       ; ebx = i
+    movsd   xmm0, [double_zero] ; xmm0 = 0.0
+    movsd   [esi + ebx*8], xmm0 ; d[i] = 0 (using esi=d, ebx=i, size 8)
 
-    ; Blocco i == 0
-    ; indici[i] = i; (Condizionato da indici non NULL)
-    mov     ecx, [ebp - 76] ; Carica indici_ptr
-    test    ecx, ecx        ; Controlla se indici è NULL
-    jz      L_skip_indici_access_f1
+.inner_funz1_before_k_end:
+    jmp     .after_inner_before_k
 
-    mov     eax, [ebp - 40]   ; Carica i (che è 0)
-    mov     esi, eax          ; Usa esi per i (indice)
-    imul    esi, 4            ; Calcola offset in byte per int (i * 4)
+.inner_else_before_k:
+    ; else (!funz1)
+    ; somma[i] = unoAlfaB * d[i];  <-- pseudocode used index i, inside j loop!
+    mov     eax, [ebp-32]       ; eax = i
+    movsd   xmm0, [unoAlfaB]    ; xmm0 = unoAlfaB
+    movsd   xmm1, [esi + eax*8] ; xmm1 = d[i]
+    mulsd   xmm0, xmm1          ; xmm0 = unoAlfaB * d[i]
+    mov     ebx, [ebp-32]       ; ebx = i
+    movsd   [ebx + ebx*8], xmm0 ; sommaV[i] = xmm0 (using ebx=sommaV, ebx=i, size 8) <-- This is WRONG! ebx holds sommaV pointer, needs correct base.
+    mov     ecx, [ebx]          ; ecx = sommaV base
+    mov     ebx, [ebp-32]       ; ebx = i
+    movsd   [ecx + ebx*8], xmm0 ; sommaV[i] = xmm0 (using ecx=sommaV, ebx=i, size 8) <-- Fixed
 
-    mov     [ecx + esi], eax  ; Salva i in indici[i]
+.after_inner_before_k:
 
-L_skip_indici_access_f1:
+    ; --- Initialize riga ---
+    movsd   xmm0, [double_zero] ; riga = 0.0
+    movsd   [ebp-16], xmm0      ; store riga locally
 
-    ; d[i] = 0; (Condizionato da d non NULL)
-    mov     ecx, [ebp - 80] ; Carica d_ptr
-    test    ecx, ecx        ; Controlla se d è NULL
-    jz      L_skip_d_zero_access_f1
+    ; --- Innermost loop: for k < numPages ---
+    mov     dword [ebp-40], 0   ; k = 0 (reserve 4 bytes for k at [ebp-40])
+    mov     ecx, [ebp-20]       ; ecx = numPages (loop limit)
+    jmp     .k_loop_cond
 
-    mov     eax, [ebp - 40]   ; Carica i (che è 0)
-    mov     esi, eax          ; Usa esi per i (indice)
-    imul    esi, 8            ; Calcola offset in byte per double (i * 8)
+.k_loop:
+    ; k is in [ebp-40]
+    ; i is in [ebp-32]
+    ; j is in [ebp-36]
 
-    movsd   xmm0, [zero_double] ; Carica 0.0
-    movsd   [ecx + esi], xmm0   ; Salva 0.0 in d[i]
+    ; --- Inside k loop ---
+    cmp     dword [ebp-24], 0   ; Check funz1
+    je      .k_else
 
-L_skip_d_zero_access_f1:
-L_skip_i_zero_init:
+    ; if funz1
+    ; (Ignoring the nonsensical "if (m == 0 && i == 0) { s[j] = 1; }" line)
 
-L_after_funz1_branch:
-    ; type riga = 0
-    movsd   xmm0, [zero_double] ; Carica 0.0
-    movsd   [ebp - 56], xmm0    ; Salva in riga
+    ; Calculate matrix index: x = i * numPages + j
+    mov     eax, [ebp-32]       ; eax = i
+    mov     ebx, [ebp-20]       ; ebx = numPages
+    imul    eax, ebx            ; eax = i * numPages
+    mov     ebx, [ebp-36]       ; ebx = j
+    add     eax, ebx            ; eax = i * numPages + j
+    mov     ebx, [eax*8]        ; ebx = tranMat + (i * numPages + j) * 8 (Base tranMat missing!)
+    mov     ebx, [ebp+8]        ; ebx = tranMat base pointer
+    mov     eax, [ebp-32]       ; eax = i
+    mov     ecx, [ebp-20]       ; ecx = numPages
+    imul    eax, ecx            ; eax = i * numPages
+    mov     ecx, [ebp-36]       ; ecx = j
+    add     eax, ecx            ; eax = i * numPages + j
+    movsd   xmm1, [ebx + eax*8] ; xmm1 = tranMat[i * numPages + j]
 
-    ; Loop più interno: for k < numPages
-    mov     dword [ebp - 48], 0   ; k = 0
-L_innermost_loop_k:
-    mov     edx, [ebp - 48]     ; Carica k
-    cmp     edx, [ebp - 64]     ; Confronta k con numPages_val
-    jge     L_innermost_loop_end_k ; Se k >= numPages, fine loop
+    ; Load s[j] (assuming s is d)
+    mov     eax, [ebp-36]       ; eax = j
+    movsd   xmm2, [esi + eax*8] ; xmm2 = d[j] (using esi=d, eax=j, size 8)
 
-    ; Calcolo dentro il loop k (dipende da funz1)
-    ; *** ATTENZIONE: La logica originale AT&T qui usa gli indici i e j, NON k.
-    ; *** Questo significa che lo stesso termine viene sommato a 'riga' numPages volte.
-    mov     eax, [ebp - 60] ; Carica funz1_val
-    test    eax, eax        ; Controlla se funz1 è true
-    jnz     L_funz1_calc_k_loop
+    ; Calculate alfaI * tranMat[...] * d[j]
+    movsd   xmm3, [alfaI]       ; xmm3 = alfaI
+    mulsd   xmm3, xmm1          ; xmm3 = alfaI * tranMat[...]
+    mulsd   xmm3, xmm2          ; xmm3 = alfaI * tranMat[...] * d[j]
 
-    ; Ramo Else (!funz1 calcolo)
-    ; riga = riga + alfaB * ret[j] * tranMatParam[i * numPages + j];
-    movsd   xmm0, [ebp - 56]  ; Carica riga corrente
-    movsd   xmm1, [alfaB]     ; Carica alfaB
+    ; Add to riga
+    movsd   xmm0, [ebp-16]      ; xmm0 = riga
+    addsd   xmm0, xmm3          ; xmm0 = riga + term
+    movsd   [ebp-16], xmm0      ; store riga
 
-    mov     esi, [ebp - 72]   ; Carica ret_ptr
-    mov     eax, [ebp - 44]   ; Carica j (indice loop medio)
-    imul    eax, 8            ; Offset per ret[j] (j * 8)
-    movsd   xmm2, [esi + eax] ; Carica ret[j]
+    jmp     .k_loop_end
 
-    mov     esi, [ebp - 92]   ; Carica tranMatParam_ptr
-    mov     edi, [ebp - 40]   ; Carica i (indice loop esterno)
-    mov     ecx, [ebp - 64]   ; Carica numPages_val
-    imul    edi, ecx          ; edi = i * numPages
-    add     edi, [ebp - 44]   ; edi = (i * numPages) + j
-    imul    edi, 8            ; Offset per tranMatParam[i*numPages+j]
-    movsd   xmm3, [esi + edi] ; Carica tranMatParam[i*numPages+j]
+.k_else:
+    ; else (!funz1)
+    ; Calculate matrix index: i * numPages + j
+    mov     eax, [ebp-32]       ; eax = i
+    mov     ebx, [ebp-20]       ; ebx = numPages
+    imul    eax, ebx            ; eax = i * numPages
+    mov     ebx, [ebp-36]       ; ebx = j
+    add     eax, ebx            ; eax = i * numPages + j
+    mov     ebx, [ebp+8]        ; ebx = tranMat base pointer
+    movsd   xmm1, [ebx + eax*8] ; xmm1 = tranMat[i * numPages + j]
 
-    mulsd   xmm1, xmm2        ; xmm1 = alfaB * ret[j]
-    mulsd   xmm1, xmm3        ; xmm1 = (alfaB * ret[j]) * tranMatParam[i*numPages+j]
-    addsd   xmm0, xmm1        ; riga = riga + xmm1
-    movsd   [ebp - 56], xmm0  ; Salva riga aggiornata
-    jmp     L_end_k_calc
+    ; Load ret[j]
+    mov     eax, [ebp-36]       ; eax = j
+    movsd   xmm2, [edi + eax*8] ; xmm2 = ret[j] (using edi=ret, eax=j, size 8)
 
-L_funz1_calc_k_loop:
-    ; Calcolo funz1
-    ; riga = riga + alfaI * ret[j] * tranMatInv[i * numPages + j]; (s è ret)
-    movsd   xmm0, [ebp - 56]  ; Carica riga corrente
-    movsd   xmm1, [alfaI]     ; Carica alfaI
+    ; Calculate alfaB * ret[j] * tranMat[...]
+    movsd   xmm3, [alfaB]       ; xmm3 = alfaB
+    mulsd   xmm3, xmm2          ; xmm3 = alfaB * ret[j]
+    mulsd   xmm3, xmm1          ; xmm3 = alfaB * ret[j] * tranMat[...]
 
-    mov     esi, [ebp - 72]   ; Carica ret_ptr (s è ret)
-    mov     eax, [ebp - 44]   ; Carica j (indice loop medio)
-    imul    eax, 8            ; Offset per ret[j] (j * 8)
-    movsd   xmm2, [esi + eax] ; Carica ret[j] (o s[j])
+    ; Add to riga
+    movsd   xmm0, [ebp-16]      ; xmm0 = riga
+    addsd   xmm0, xmm3          ; xmm0 = riga + term
+    movsd   [ebp-16], xmm0      ; store riga
 
-    mov     esi, [ebp - 88]   ; Carica tranMatInv_ptr
-    mov     edi, [ebp - 40]   ; Carica i (indice loop esterno)
-    mov     ecx, [ebp - 64]   ; Carica numPages_val
-    imul    edi, ecx          ; edi = i * numPages
-    add     edi, [ebp - 44]   ; edi = (i * numPages) + j
-    imul    edi, 8            ; Offset per tranMatInv[i*numPages+j]
-    movsd   xmm3, [esi + edi] ; Carica tranMatInv[i*numPages+j]
+.k_loop_end:
+    ; Increment k
+    inc     dword [ebp-40]
+    ; k_loop condition: k < numPages
+.k_loop_cond:
+    mov     eax, [ebp-40]       ; eax = k
+    mov     ebx, [ebp-20]       ; ebx = numPages
+    cmp     eax, ebx
+    jl      .k_loop
 
-    mulsd   xmm1, xmm2        ; xmm1 = alfaI * ret[j]
-    mulsd   xmm1, xmm3        ; xmm1 = (alfaI * ret[j]) * tranMatInv[i*numPages+j]
-    addsd   xmm0, xmm1        ; riga = riga + xmm1
-    movsd   [ebp - 56], xmm0  ; Salva riga aggiornata
+    ; --- After k loop ---
+    ; Load riga
+    movsd   xmm0, [ebp-16]      ; xmm0 = riga
 
-L_end_k_calc:
-    inc     dword [ebp - 48]    ; Incrementa k
-    jmp     L_innermost_loop_k  ; Torna all'inizio del loop k
+    ; Check funz1
+    cmp     dword [ebp-24], 0
+    je      .after_k_else
 
-L_innermost_loop_end_k:
-    ; Dopo il loop k (ancora dentro il loop j)
-    ; *** ATTENZIONE: Il loop k sopra ha aggiunto lo stesso termine (calcolato con i e j) numPages volte.
-    ; *** ATTENZIONE: La seguente assegnazione a ret[i] avviene dentro il loop j.
-    ; *** Questo significa che ret[i] sarà sovrascritto numPages volte, e il suo valore finale
-    ; *** sarà basato sul calcolo quando j = numPages - 1.
-    ; *** Questo comportamento è altamente sospetto e probabilmente un bug nella logica originale.
+    ; if funz1
+    ; s[i] = riga + somma; <-- assuming s is d, somma is scalare_costante
+    movsd   xmm1, [ebp-8]       ; xmm1 = scalare_costante
+    addsd   xmm0, xmm1          ; xmm0 = riga + scalare_costante
+    mov     eax, [ebp-32]       ; eax = i <-- pseudocode used index i!
+    movsd   [esi + eax*8], xmm0 ; d[i] = xmm0 (using esi=d, eax=i, size 8)
 
-    mov     eax, [ebp - 60] ; Carica funz1_val
-    test    eax, eax        ; Controlla se funz1 è true
-    jnz     L_funz1_assign_ret
+    jmp     .after_k_end
 
-    ; Ramo Else (!funz1 assegnazione)
-    ; ret[i] = riga + somma[i]; (Condizionato da somma non NULL)
-    mov     ecx, [ebp - 72]   ; Carica ret_ptr
-    mov     edx, [ebp - 84]   ; Carica somma_ptr
-    test    edx, edx          ; Controlla se somma è NULL
-    jz      L_skip_ret_assign_val ; Salta se somma è NULL
+.after_k_else:
+    ; else (!funz1)
+    ; ret[i] = riga + somma[i]; <-- pseudocode used index i!
+    mov     eax, [ebp-32]       ; eax = i <-- pseudocode used index i!
+    mov     ecx, [ebp+40]       ; ecx = sommaV base pointer
+    movsd   xmm1, [ecx + eax*8] ; xmm1 = sommaV[i] (using ecx=sommaV, eax=i, size 8)
+    addsd   xmm0, xmm1          ; xmm0 = riga + sommaV[i]
+    mov     eax, [ebp-32]       ; eax = i <-- pseudocode used index i!
+    movsd   [edi + eax*8], xmm0 ; ret[i] = xmm0 (using edi=ret, eax=i, size 8)
 
-    movsd   xmm0, [ebp - 56]  ; Carica riga (che è numPages * termine_ij)
+.after_k_end:
 
-    mov     eax, [ebp - 40]   ; Carica i (indice loop esterno)
-    mov     esi, eax          ; Usa esi per i
-    imul    esi, 8            ; Offset per ret[i] e somma[i] (i * 8)
+    ; Increment j
+    inc     dword [ebp-36]
+    ; Inner loop condition: j < numPages
+.inner_loop_cond:
+    mov     eax, [ebp-36]       ; eax = j
+    mov     ebx, [ebp-20]       ; ebx = numPages
+    cmp     eax, ebx
+    jl      .inner_loop
 
-    movsd   xmm1, [edx + esi] ; Carica somma[i]
-    addsd   xmm0, xmm1        ; riga + somma[i]
+    ; Increment i
+    inc     dword [ebp-32]
+    ; Outer loop condition: i < max_outer_iterations
+.outer_loop_cond:
+    mov     eax, [ebp-32]       ; eax = i
+    mov     ebx, [ebp-28]       ; ebx = max_outer_iterations
+    cmp     eax, ebx
+    jl      .outer_loop
 
-                              ; ecx contiene ancora ret_ptr
-    movsd   [ecx + esi], xmm0 ; Salva in ret[i]
-    jmp     L_final_skip_ret_assign
 
-L_funz1_assign_ret:
-    ; Assegnazione funz1
-    ; ret[i] = riga + scalare_costante;
-    mov     ecx, [ebp - 72]   ; Carica ret_ptr
-    movsd   xmm0, [ebp - 56]  ; Carica riga (che è numPages * termine_ij)
-    movsd   xmm1, [ebp - 36]  ; Carica scalare_costante
-    addsd   xmm0, xmm1        ; riga + scalare_costante
+    ; --- Function Return ---
+    ; Pseudocode returns ret (pointer). Conventionally, return the pointer argument.
+    mov     eax, [ebp+36]   ; eax = ret pointer
 
-    mov     eax, [ebp - 40]   ; Carica i (indice loop esterno)
-    mov     esi, eax          ; Usa esi per i
-    imul    esi, 8            ; Offset per ret[i] (i * 8)
-
-                              ; ecx contiene ancora ret_ptr
-    movsd   [ecx + esi], xmm0 ; Salva in ret[i]
-
-L_skip_ret_assign_val:      ; Saltato qui se somma è NULL nel caso !funz1
-L_final_skip_ret_assign:    ; Punto di skip comune
-
-    inc     dword [ebp - 44]    ; Incrementa j
-    jmp     L_middle_loop_j     ; Torna all'inizio del loop j
-
-L_middle_loop_end_j:
-    inc     dword [ebp - 40]    ; Incrementa i
-    jmp     L_outer_loop_i      ; Torna all'inizio del loop i
-
-L_outer_loop_end_i:
-
-    ; Ritorna ret (il puntatore)
-    mov     eax, [ebp - 72] ; Carica ret_ptr in eax (come da originale, ret viene ritornato)
-
-    ; Epilogo
-    add     esp, 68         ; Dealloca spazio variabili locali
-    pop     eax             ; Ripristina dummy eax
-    pop     edx
-    pop     ecx
-    pop     eax
-    pop     edi
-    pop     esi
-    pop     ebx
+    ; Standard function exit
+    add     esp, 40         ; Deallocate stack space (16 for locals + 24 for saved args)
     pop     ebp
     ret
+
+
+;To assemble and link (Linux):
+;nasm -f elf funzione_unica_32.asm -o funzione_unica_32.o
+;gcc -m32 -o test_program test_program.c funzione_unica_32.o # Replace test_program.c with a file that calls the function

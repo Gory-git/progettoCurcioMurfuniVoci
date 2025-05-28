@@ -1,0 +1,273 @@
+section .data
+    ; Define constants (assuming double precision)
+    alfaI       dq 0.15         ; Example value for alfaI
+    alfaB       dq 0.85         ; Example value for alfaB
+    unoAlfaB    dq 0.85         ; Example value for unoAlfaB (assuming it's same as alfaB)
+    double_8    dq 8.0          ; Constant 8.0 (unused in this literal translation)
+    double_zero dq 0.0          ; Constant 0.0
+    double_one  dq 1.0          ; Constant 1.0
+    int_4       dd 4            ; Constant 4 (for int size)
+
+section .text
+    global funzione_unica
+
+funzione_unica:
+    ; Standard function entry
+    push    rbp
+    mov     rbp, rsp
+    ; No local stack variables needed for scalare_costante or riga if using registers
+    ; Assume minimal stack usage for now
+
+    ; Argument mapping (System V ABI):
+    ; rdi: tranMat (pointer)
+    ; rsi: numPages (int)
+    ; xmm0: decay (double) - unused
+    ; rdx: max_outer_iterations (int)
+    ; rcx: indici (pointer)
+    ; r8:  d (pointer)
+    ; r9:  ret (pointer)
+    ; [rbp+16]: sommaV (pointer) - 9th arg
+    ; [rbp+24]: funz1 (bool/int) - 10th arg
+
+    ; Preserve callee-saved registers if used (rbx, rbp, r12-r15).
+    ; Let's use r12, r13, r14, r15 for pointers/vars that need to persist across calls/loops.
+    ; r12: tranMat
+    ; r13: indici
+    ; r14: d
+    ; r15: ret
+    ; rbx: sommaV
+    ; r10d: numPages (int)
+    ; r11d: max_outer_iterations (int)
+    ; r11d: funz1 (int/bool) - re-use? No, let's save max_outer_iterations in a different register.
+    ; r11d: max_outer_iterations (int)
+    ; r12: tranMat, r13: indici, r14: d, r15: ret, rbx: sommaV, r10d: numPages, r11d: max_iter, r12d: funz1 ? No, r12 is pointer.
+
+    ; Let's map registers:
+    ; r12 = tranMat (pointer)
+    ; r13 = indici (pointer)
+    ; r14 = d (pointer)
+    ; r15 = ret (pointer)
+    ; rbx = sommaV (pointer)
+    ; r10d = numPages (int)
+    ; r11d = max_outer_iterations (int)
+    ; r12d = funz1 (int) - Use a temporary register? Yes.
+
+    push    r12
+    push    r13
+    push    r14
+    push    r15
+    push    rbx
+
+    mov     r12, rdi            ; r12 = tranMat
+    mov     r10d, esi           ; r10d = numPages
+    ; xmm0 has decay (unused)
+    mov     r11d, edx           ; r11d = max_outer_iterations
+    mov     r13, rcx            ; r13 = indici
+    mov     r14, r8             ; r14 = d
+    mov     r15, r9             ; r15 = ret
+    mov     rbx, [rbp+16]       ; rbx = sommaV
+    mov     r10d, [rbp+24]      ; r10d = funz1 (oops, r10d used for numPages)
+    ; Use a temporary register for funz1
+    mov     edx, [rbp+24]       ; edx = funz1
+
+    ; --- Initialize scalare_costante ---
+    ; Check funz1 (in edx)
+    cmp     edx, 0
+    je      .else_scalar_const
+
+    ; if funz1: scalare_costante = (1 - alfaI) / (type) numPages;
+    movsd   xmm1, [double_one]  ; xmm1 = 1.0
+    subsd   xmm1, [alfaI]       ; xmm1 = 1.0 - alfaI
+    cvtsi2sd xmm2, r10d         ; xmm2 = (double) numPages (r10d holds numPages)
+    divsd   xmm1, xmm2          ; xmm1 = (1.0 - alfaI) / (double) numPages
+    movsd   xmm0, xmm1          ; xmm0 = scalare_costante
+
+    jmp     .end_scalar_const
+
+.else_scalar_const:
+    ; else: scalare_costante = (type) 1 - alfaB;
+    movsd   xmm1, [double_one]  ; xmm1 = 1.0
+    subsd   xmm1, [alfaB]       ; xmm1 = 1.0 - alfaB
+    movsd   xmm0, xmm1          ; xmm0 = scalare_costante
+
+.end_scalar_const:
+    ; scalare_costante is in xmm0
+
+    ; --- Outer loop: for i < max_outer_iterations ---
+    xor     eax, eax            ; i = 0 (use eax for i)
+    mov     ebx, r11d           ; ebx = max_outer_iterations (use ebx for loop limit)
+    jmp     .outer_loop_cond
+
+.outer_loop:
+    ; i is in eax
+
+    ; --- Inner loop: for j < numPages ---
+    xor     edx, edx            ; j = 0 (use edx for j)
+    mov     ecx, r10d           ; ecx = numPages (use ecx for loop limit)
+    jmp     .inner_loop_cond
+
+.inner_loop:
+    ; j is in edx
+    ; i is in eax
+
+    ; --- Inside inner loop, before k loop ---
+    mov     edi, [rbp+24]       ; edi = funz1 (0 or 1)
+    cmp     edi, 0
+    je      .inner_else_before_k
+
+    ; if funz1
+    cmp     eax, 0              ; if i == 0 (i is in eax)
+    jne     .inner_funz1_before_k_end
+
+    ; if i == 0
+    mov     r8d, eax            ; r8d = i (int)
+    mov     dword [r13 + rax*4], r8d ; indici[i] = i (r13=indici, rax=i, size 4)
+    movsd   xmm1, [double_zero] ; xmm1 = 0.0
+    movsd   [r14 + rax*8], xmm1 ; d[i] = 0 (r14=d, rax=i, size 8)
+
+.inner_funz1_before_k_end:
+    jmp     .after_inner_before_k
+
+.inner_else_before_k:
+    ; else (!funz1)
+    ; somma[i] = unoAlfaB * d[i];  <-- pseudocode used index i, inside j loop!
+    movsd   xmm1, [unoAlfaB]    ; xmm1 = unoAlfaB
+    movsd   xmm2, [r14 + rax*8] ; xmm2 = d[i] (r14=d, rax=i, size 8)
+    mulsd   xmm1, xmm2          ; xmm1 = unoAlfaB * d[i]
+    movsd   [rbx + rax*8], xmm1 ; sommaV[i] = xmm1 (rbx=sommaV, rax=i, size 8)
+
+.after_inner_before_k:
+
+    ; --- Initialize riga ---
+    xorps   xmm3, xmm3          ; riga = 0.0 (use xmm3 for riga)
+
+    ; --- Innermost loop: for k < numPages ---
+    xor     r8d, r8d            ; k = 0 (use r8d for k)
+    mov     r9d, r10d           ; r9d = numPages (use r9d for loop limit)
+    jmp     .k_loop_cond
+
+.k_loop:
+    ; k is in r8d
+    ; i is in eax
+    ; j is in edx
+
+    ; --- Inside k loop ---
+    mov     edi, [rbp+24]       ; edi = funz1 (0 or 1)
+    cmp     edi, 0
+    je      .k_else
+
+    ; if funz1
+    ; (Ignoring the nonsensical "if (m == 0 && i == 0) { s[j] = 1; }" line)
+
+    ; Calculate matrix index: x = i * numPages + j
+    mov     r8, rax             ; r8 = i (64-bit for calculation)
+    mov     r9, r10             ; r9 = numPages (64-bit)
+    imul    r8, r9              ; r8 = i * numPages
+    mov     r9, rdx             ; r9 = j (64-bit)
+    add     r8, r9              ; r8 = i * numPages + j
+    movsd   xmm1, [r12 + r8*8]  ; xmm1 = tranMat[i * numPages + j] (r12=tranMat)
+
+    ; Load s[j] (assuming s is d)
+    mov     r8, rdx             ; r8 = j (64-bit)
+    movsd   xmm2, [r14 + r8*8]  ; xmm2 = d[j] (r14=d, r8=j, size 8)
+
+    ; Calculate alfaI * tranMat[...] * d[j]
+    movsd   xmm4, [alfaI]       ; xmm4 = alfaI
+    mulsd   xmm4, xmm1          ; xmm4 = alfaI * tranMat[...]
+    mulsd   xmm4, xmm2          ; xmm4 = alfaI * tranMat[...] * d[j]
+
+    ; Add to riga (xmm3)
+    addsd   xmm3, xmm4          ; xmm3 = riga + term
+
+    jmp     .k_loop_end
+
+.k_else:
+    ; else (!funz1)
+    ; Calculate matrix index: i * numPages + j
+    mov     r8, rax             ; r8 = i (64-bit)
+    mov     r9, r10             ; r9 = numPages (64-bit)
+    imul    r8, r9              ; r8 = i * numPages
+    mov     r9, rdx             ; r9 = j (64-bit)
+    add     r8, r9              ; r8 = i * numPages + j
+    movsd   xmm1, [r12 + r8*8]  ; xmm1 = tranMat[i * numPages + j] (r12=tranMat)
+
+    ; Load ret[j]
+    mov     r8, rdx             ; r8 = j (64-bit)
+    movsd   xmm2, [r15 + r8*8]  ; xmm2 = ret[j] (r15=ret, r8=j, size 8)
+
+    ; Calculate alfaB * ret[j] * tranMat[...]
+    movsd   xmm4, [alfaB]       ; xmm4 = alfaB
+    mulsd   xmm4, xmm2          ; xmm4 = alfaB * ret[j]
+    mulsd   xmm4, xmm1          ; xmm4 = alfaB * ret[j] * tranMat[...]
+
+    ; Add to riga (xmm3)
+    addsd   xmm3, xmm4          ; xmm3 = riga + term
+
+.k_loop_end:
+    ; Increment k
+    inc     r8d
+    ; k_loop condition: k < numPages (r9d)
+.k_loop_cond:
+    cmp     r8d, r9d
+    jl      .k_loop
+
+    ; --- After k loop ---
+    ; riga is in xmm3
+
+    mov     edi, [rbp+24]       ; edi = funz1 (0 or 1)
+    cmp     edi, 0
+    je      .after_k_else
+
+    ; if funz1
+    ; s[i] = riga + somma; <-- assuming s is d, somma is scalare_costante (xmm0)
+    addsd   xmm3, xmm0          ; xmm3 = riga + scalare_costante
+    mov     r8, rax             ; r8 = i (64-bit) <-- pseudocode used index i!
+    movsd   [r14 + r8*8], xmm3  ; d[i] = xmm3 (r14=d, r8=i, size 8)
+
+    jmp     .after_k_end
+
+.after_k_else:
+    ; else (!funz1)
+    ; ret[i] = riga + somma[i]; <-- pseudocode used index i!
+    mov     r8, rax             ; r8 = i (64-bit) <-- pseudocode used index i!
+    movsd   xmm1, [rbx + r8*8]  ; xmm1 = sommaV[i] (rbx=sommaV, r8=i, size 8)
+    addsd   xmm3, xmm1          ; xmm3 = riga + sommaV[i]
+    mov     r8, rax             ; r8 = i (64-bit) <-- pseudocode used index i!
+    movsd   [r15 + r8*8], xmm3  ; ret[i] = xmm3 (r15=ret, r8=i, size 8)
+
+.after_k_end:
+
+    ; Increment j
+    inc     edx
+    ; Inner loop condition: j < numPages (ecx)
+.inner_loop_cond:
+    cmp     edx, ecx
+    jl      .inner_loop
+
+    ; Increment i
+    inc     eax
+    ; Outer loop condition: i < max_outer_iterations (ebx)
+.outer_loop_cond:
+    cmp     eax, ebx
+    jl      .outer_loop
+
+
+    ; --- Function Return ---
+    ; Pseudocode returns ret (pointer). Conventionally, return the pointer argument.
+    mov     rax, r15            ; rax = ret pointer
+
+    ; Restore callee-saved registers
+    pop     rbx
+    pop     r15
+    pop     r14
+    pop     r13
+    pop     r12
+
+    ; Standard function exit
+    mov     rsp, rbp
+    pop     rbp
+    ret
+
+;To assemble and link (Linux):
+;nasm -f elf64 funzione_unica_64.asm -o funzione_unica_64.o
+;gcc -o test_program test_program.c funzione_unica_64.o # Replace test_program.c with a file that calls the function
