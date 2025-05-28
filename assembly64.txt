@@ -1,0 +1,313 @@
+.section .data
+.align 8
+alfaI:          .double 0.0     # Define these constants (example values)
+alfaB:          .double 0.0
+unoAlfaB:       .double 0.0
+one_double:     .double 1.0
+zero_double:    .double 0.0
+
+.section .text
+.global funzione_unica
+
+# VECTOR funzione_unica(MATRIX tranMatInv, int numPages, type decay, int max_outer_iterations, int* indici, VECTOR d, VECTOR ret, VECTOR somma, bool funz1, MATRIX tranMatParam)
+# Parameters in registers (System V ABI):
+# rdi: tranMatInv (ptr)
+# rsi: numPages (int)
+# rdx: decay (type - ignored)
+# rcx: max_outer_iterations (int)
+# r8:  indici (ptr)
+# r9:  d (ptr)
+# Stack parameters (7th arg onwards):
+# rbp+16: ret (ptr)
+# rbp+24: somma (ptr)
+# rbp+32: funz1 (bool, likely 4/8 bytes on stack)
+# rbp+40: tranMatParam (ptr, assuming 10th arg)
+
+funzione_unica:
+    pushq   %rbp            # Save base pointer
+    movq    %rsp, %rbp      # Set up stack frame
+    pushq   %rbx            # Save callee-saved registers
+    pushq   %r12
+    pushq   %r13
+    pushq   %r14
+    pushq   %r15
+    # Stack is already 16-byte aligned by caller before the call instruction (rsp points to return address)
+    # pushq rbp, rbx..r15 add 6*8 = 48 bytes. rsp is now rsp_at_entry - 48.
+    # Need space for locals. Need to ensure rsp is 16-byte aligned *before* any potential call if this function were to call another function using SSE args on stack.
+    # No calls within this code, so alignment for calls isn't strictly needed.
+    # Allocate space for local variables
+    # Using registers for i, j, k, riga where possible, store pointers and scalare_costante on stack.
+    # [rbp-8]:  scalare_costante (double)
+    # [rbp-16]: funz1_val (int, copy of bool)
+    # [rbp-24]: numPages_val (int, copy)
+    # [rbp-32]: max_outer_iterations_val (int, copy)
+    # [rbp-40]: ret_ptr (ptr, copy)
+    # [rbp-48]: indici_ptr (ptr, copy)
+    # [rbp-56]: d_ptr (ptr, copy)
+    # [rbp-64]: somma_ptr (ptr, copy)
+    # [rbp-72]: tranMatInv_ptr (ptr, copy)
+    # [rbp-80]: tranMatParam_ptr (ptr, copy)
+    # Need 80 bytes. Current rsp = rbp_at_entry - 8 - 48. We need to subtract more.
+    # rsp_at_entry - 56 - 80 = rsp_at_entry - 136.
+    # Let's allocate 80 bytes and ensure alignment manually if needed.
+    subq    $80, %rsp       # Allocate 80 bytes for locals
+
+    # Copy parameters to stack locals and callee-saved registers
+    # indici -> r8 (param), copy to stack
+    movq    %r8, -48(%rbp) # indici_ptr
+    # d -> r9 (param), copy to stack
+    movq    %r9, -56(%rbp) # d_ptr
+    # ret -> rbp+16 (stack param), copy to stack
+    movq    16(%rbp), %rax
+    movq    %rax, -40(%rbp) # ret_ptr
+    # somma -> rbp+24 (stack param), copy to stack
+    movq    24(%rbp), %rax
+    movq    %rax, -64(%rbp) # somma_ptr
+    # tranMatInv -> rdi (param), copy to stack
+    movq    %rdi, -72(%rbp) # tranMatInv_ptr
+    # tranMatParam -> rbp+40 (stack param), copy to stack
+    movq    40(%rbp), %rax
+    movq    %rax, -80(%rbp) # tranMatParam_ptr
+
+    # numPages -> rsi (param), copy to stack
+    movl    %esi, -24(%rbp) # numPages_val (int is 4 bytes, stored in 8 byte slot)
+    # max_outer_iterations -> rcx (param), copy to stack
+    movl    %ecx, -32(%rbp) # max_outer_iterations_val (int)
+    # funz1 -> rbp+32 (stack param), copy to stack
+    movl    32(%rbp), %eax  # funz1 is likely 4 bytes on stack
+    movl    %eax, -16(%rbp) # funz1_val
+
+    # Use r12 for outer loop counter i
+    # Use r13 for middle loop counter j
+    # Use r14 for innermost loop counter k
+    # Use r15 for riga (double, use xmm register and store to r15's stack space)
+    # Use rbx for temporary pointer calculations
+
+    # Initialize scalare_costante if funz1
+    movl    -16(%rbp), %eax # Load funz1_val (int copy of bool)
+    testl   %eax, %eax      # Check if funz1 is true (non-zero)
+    jz      .L_calc_scalare_end_64
+
+    # scalare_costante = (1 - alfaI) / (type) numPages;
+    movsd   one_double(%rip), %xmm0   # Load 1.0 (RIP-relative addressing)
+    movsd   alfaI(%rip), %xmm1      # Load alfaI
+    subsd   %xmm1, %xmm0            # 1.0 - alfaI
+
+    movl    -24(%rbp), %eax         # Load numPages_val (int)
+    cvtsi2sd %eax, %xmm1            # Convert numPages to double
+    divsd   %xmm1, %xmm0            # (1 - alfaI) / (double)numPages
+    movsd   %xmm0, -8(%rbp)         # Store scalare_costante
+
+.L_calc_scalare_end_64:
+
+    # Outer loop: for i < max_outer_iterations
+    movq    $0, %r12        # i = 0
+.L_outer_loop_i_64:
+    movl    -32(%rbp), %eax # Load max_outer_iterations_val (int)
+    cltq                    # Sign-extend into rax (max_outer_iterations as long)
+    cmpq    %rax, %r12      # Compare i with max_outer_iterations_val
+    jge     .L_outer_loop_end_i_64 # If i >= max_outer_iterations, end loop
+
+    # Middle loop: for j < numPages
+    movq    $0, %r13        # j = 0
+.L_middle_loop_j_64:
+    movl    -24(%rbp), %eax # Load numPages_val (int)
+    cltq                    # Sign-extend into rax (numPages as long)
+    cmpq    %rax, %r13      # Compare j with numPages_val
+    jge     .L_middle_loop_end_j_64 # If j >= numPages, end loop
+
+    # Inside j loop actions (depends on funz1)
+    movl    -16(%rbp), %eax # Load funz1_val
+    testl   %eax, %eax      # Check if funz1 is true
+    jnz     .L_funz1_branch_64 # If funz1 is true
+
+    # Else branch (!funz1)
+    # somma[i] = unoAlfaB * d[i]; (Conditional on somma and d being non-NULL)
+    movq    -64(%rbp), %rbx # Load somma_ptr
+    testq   %rbx, %rbx      # Check if somma is NULL
+    jz      .L_skip_somma_d_access_64 # Skip if somma is NULL
+
+    movq    -56(%rbp), %rcx # Load d_ptr
+    testq   %rcx, %rcx      # Check if d is NULL
+    jz      .L_skip_somma_d_access_64 # Skip if d is NULL
+
+    # Both somma and d are non-NULL
+    movq    %r12, %rax      # Load i into rax
+    leaq    (%rcx,%rax,8), %rdx # Calculate address of d[i] (d_ptr + i * 8)
+    movsd   (%rdx), %xmm1   # Load d[i]
+
+    movsd   unoAlfaB(%rip), %xmm0 # Load unoAlfaB
+    mulsd   %xmm1, %xmm0      # unoAlfaB * d[i]
+
+    leaq    (%rbx,%rax,8), %rdx # Calculate address of somma[i] (somma_ptr + i * 8)
+    movsd   %xmm0, (%rdx)     # Store result in somma[i]
+
+.L_skip_somma_d_access_64:
+    jmp     .L_after_funz1_branch_64 # Go to calculation of riga
+
+.L_funz1_branch_64:
+    # If funz1 is true
+    # if i == 0
+    cmpq    $0, %r12        # Compare i with 0
+    jnz     .L_skip_i_zero_init_64 # If i != 0, skip init
+
+    # i == 0 block
+    # indici[i] = i; (Conditional on indici being non-NULL)
+    movq    -48(%rbp), %rbx # Load indici_ptr
+    testq   %rbx, %rbx      # Check if indici is NULL
+    jz      .L_skip_indici_access_64
+
+    movq    %r12, %rax      # Load i (which is 0) into rax
+    leaq    (%rbx,%rax,4), %rcx # Calculate address of indici[i] (indici_ptr + i * 4)
+    movl    %eax, (%rcx)    # Store i (0) in indici[i] (movl since it's int)
+
+.L_skip_indici_access_64:
+
+    # d[i] = 0; (Conditional on d being non-NULL)
+    movq    -56(%rbp), %rbx # Load d_ptr
+    testq   %rbx, %rbx      # Check if d is NULL
+    jz      .L_skip_d_zero_access_64
+
+    movq    %r12, %rax      # Load i (which is 0) into rax
+    leaq    (%rbx,%rax,8), %rcx # Calculate address of d[i] (d_ptr + i * 8)
+    movsd   zero_double(%rip), %xmm0 # Load 0.0
+    movsd   %xmm0, (%rcx)     # Store 0.0 in d[i]
+
+.L_skip_d_zero_access_64:
+.L_skip_i_zero_init_64:
+
+.L_after_funz1_branch_64: # This label is jumped to from both funz1 and !funz1 initial blocks
+
+    # type riga = 0
+    movsd   zero_double(%rip), %xmm0 # Load 0.0 into xmm0 (used for riga)
+
+    # Innermost loop: for k < numPages
+    movq    $0, %r14        # k = 0
+.L_innermost_loop_k_64:
+    movl    -24(%rbp), %eax # Load numPages_val (int)
+    cltq                    # Sign-extend into rax (numPages as long)
+    cmpq    %rax, %r14      # Compare k with numPages_val
+    jge     .L_innermost_loop_end_k_64 # If k >= numPages, end loop
+
+    # Inside k loop calculation (depends on funz1)
+    movl    -16(%rbp), %eax # Load funz1_val
+    testl   %eax, %eax      # Check if funz1 is true
+    jnz     .L_funz1_calc_64
+
+    # Else branch (!funz1 calculation)
+    # riga = riga + alfaB * ret[j] * tranMat[i * numPages + j];
+    # xmm0 holds current riga
+
+    movsd   alfaB(%rip), %xmm1      # Load alfaB
+
+    movq    -40(%rbp), %rbx         # Load ret_ptr
+    movq    %r13, %rax              # Load j
+    leaq    (%rbx,%rax,8), %rdx     # Calculate address of ret[j] (ret_ptr + j * 8)
+    movsd   (%rdx), %xmm2           # Load ret[j]
+
+    movq    -80(%rbp), %rbx         # Load tranMatParam_ptr
+    movl    -24(%rbp), %eax         # Load numPages (int)
+    movq    %r12, %rdx              # Load i (long)
+    imulq   %rax, %rdx              # i * numPages
+    addq    %r13, %rdx              # (i * numPages) + j
+    leaq    (%rbx,%rdx,8), %rcx     # Calculate address of tranMatParam[i*numPages+j]
+    movsd   (%rcx), %xmm3           # Load tranMatParam[i*numPages+j]
+
+    mulsd   %xmm2, %xmm1            # alfaB * ret[j]
+    mulsd   %xmm3, %xmm1            # (alfaB * ret[j]) * tranMatParam[i*numPages+j]
+    addsd   %xmm1, %xmm0            # riga + ... (result in xmm0)
+
+    jmp     .L_end_calc_64
+
+.L_funz1_calc_64:
+    # funz1 calculation
+    # riga = riga + alfaI * tranMatInv[i * numPages + j] * s[j]; (Assuming s is ret)
+    # xmm0 holds current riga
+
+    movsd   alfaI(%rip), %xmm1      # Load alfaI
+
+    movq    -40(%rbp), %rbx         # Load ret_ptr (s)
+    movq    %r13, %rax              # Load j
+    leaq    (%rbx,%rax,8), %rdx     # Calculate address of ret[j] (s[j])
+    movsd   (%rdx), %xmm2           # Load ret[j] (s[j])
+
+    movq    -72(%rbp), %rbx         # Load tranMatInv_ptr
+    movl    -24(%rbp), %eax         # Load numPages (int)
+    movq    %r12, %rdx              # Load i (long)
+    imulq   %rax, %rdx              # i * numPages
+    addq    %r13, %rdx              # (i * numPages) + j
+    leaq    (%rbx,%rdx,8), %rcx     # Calculate address of tranMatInv[i*numPages+j]
+    movsd   (%rcx), %xmm3           # Load tranMatInv[i*numPages+j]
+
+    mulsd   %xmm2, %xmm1            # alfaI * ret[j]
+    mulsd   %xmm3, %xmm1            # (alfaI * ret[j]) * tranMatInv[i*numPages+j]
+    addsd   %xmm1, %xmm0            # riga + ... (result in xmm0)
+
+.L_end_calc_64:
+    # xmm0 now holds the updated 'riga' value
+
+    incq    %r14            # Increment k
+    jmp     .L_innermost_loop_k_64 # Jump back to innermost loop start
+
+.L_innermost_loop_end_k_64:
+
+    # After k loop (still inside j loop)
+    # xmm0 holds the final 'riga' value for this (i,j) combination
+    movl    -16(%rbp), %eax # Load funz1_val
+    testl   %eax, %eax      # Check if funz1 is true
+    jnz     .L_funz1_assign_64
+
+    # Else branch (!funz1 assignment)
+    # ret[i] = riga + somma[i]; (Conditional on somma being non-NULL)
+    movq    -40(%rbp), %rbx   # Load ret_ptr
+    movq    -64(%rbp), %rcx   # Load somma_ptr
+    testq   %rcx, %rcx        # Check if somma is NULL
+    jz      .L_skip_ret_assign_64 # Skip if somma is NULL (cannot get somma[i])
+
+    # xmm0 holds riga
+    movq    %r12, %rax        # Load i
+    leaq    (%rcx,%rax,8), %rdx # Calculate address of somma[i]
+    movsd   (%rdx), %xmm1     # Load somma[i]
+    addsd   %xmm1, %xmm0      # riga + somma[i] (result in xmm0)
+
+    leaq    (%rbx,%rax,8), %rdx # Calculate address of ret[i]
+    movsd   %xmm0, (%rdx)     # Store in ret[i]
+
+    jmp     .L_skip_ret_assign_64 # Skip funz1 assign
+
+.L_funz1_assign_64:
+    # funz1 assignment (Assuming s is ret, somma is scalare_costante)
+    # ret[i] = riga + scalare_costante;
+    movq    -40(%rbp), %rbx   # Load ret_ptr
+    # xmm0 holds riga
+    movsd   -8(%rbp), %xmm1   # Load scalare_costante
+    addsd   %xmm1, %xmm0      # riga + scalare_costante (result in xmm0)
+
+    movq    %r12, %rax        # Load i
+    leaq    (%rbx,%rax,8), %rdx # Calculate address of ret[i]
+    movsd   %xmm0, (%rdx)     # Store in ret[i]
+
+.L_skip_ret_assign_64:
+
+    incq    %r13            # Increment j
+    jmp     .L_middle_loop_j_64 # Jump back to middle loop start
+
+.L_middle_loop_end_j_64:
+
+    incq    %r12            # Increment i
+    jmp     .L_outer_loop_i_64 # Jump back to outer loop start
+
+.L_outer_loop_end_i_64:
+
+    # Return ret (the pointer)
+    movq    -40(%rbp), %rax # Load ret_ptr into rax
+
+    # Epilogue
+    addq    $80, %rsp       # Deallocate local stack space
+    popq    %r15            # Restore saved registers (order matters!)
+    popq    %r14
+    popq    %r13
+    popq    %r12
+    popq    %rbx
+    popq    %rbp
+    ret
