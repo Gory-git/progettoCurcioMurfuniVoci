@@ -1,1 +1,1 @@
-CMakeLists.txt not found in /home/gianny/Scrivania/progettoCurcioMurfuniVoci Select CMakeLists.txt
+CMakeLists.txt not found in /home/gregorio/Desktop/progettoCurcioMurfuniVoci Select CMakeLists.txt

@@ -57,6 +57,10 @@
 
 #define random() (((type) rand())/RAND_MAX)
 
+float alfaI;
+float alfaB;
+float unoAlfaB;
+
 typedef struct {
 	int* graph;
 	MATRIX tranMat; // Transition Matrix
@@ -309,6 +313,12 @@ extern VECTOR funzione_unica(MATRIX tranMatInv, int numPages, type decay, int ma
 VECTOR selectSeed(MATRIX tranMatInv, int numPages, type alfaI, int mI, int* indici, VECTOR d)
 {
 	VECTOR s = alloc_vector(numPages);
+
+	for (int i = 0; i < numPages; i++)
+	{
+		s[i] = 1.0;
+	}
+
 	// int iterazione = 0;
 
 	// s = alfaI * tranMatInv * s + (1 - alfa) * (1/n) * unoN
@@ -492,12 +502,29 @@ MATRIX trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracl
 		}
 	}
 
+	// Nel file trustRank32c.c, dentro la funzione trustRank, dopo il loop dell'oracolo:
+
+	// Aggiungi queste righe per debug (puoi commentarle o rimuoverle dopo aver verificato)
+
+	printf("Vector d after oracle step:\n");
+	for (int i = 0; i < numPages; i++) {
+		printf("%f ", d[i]);
+	}
+	printf("\n");
+
+
+	return computeScores(tranMat, alfaB, maxBias, d, numPages);
+
 	return computeScores(tranMat, alfaB, maxBias, d, numPages);
 }
 
 void exec(params* input)
 {
+	alfaI = input->alfaI;
+	alfaB = input->alfaB;
+	unoAlfaB = (float) 1 - input->alfaB;
 	input->results= trustRank(input->tranMat, input->tranMatInv, input->numPages, input->limitOracle, input->alfaB, input->maxBias, input->alfaI, input->valoriOracolo);
+
 }
 
 void loadTranMat(params* input, int archi)
