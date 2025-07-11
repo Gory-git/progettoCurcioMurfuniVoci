@@ -33,10 +33,7 @@
 * Per generare il file eseguibile:
 * 
 * nasm -f elf32 pst32.nasm && gcc -m32 -msse -O0 -no-pie sseutils32.o pst32.o pst32c.c -o pst32c -lm && ./pst32c $pars
-* 
-* oppure
-* 
-* ./runpst32
+*
 * 
 */
 
