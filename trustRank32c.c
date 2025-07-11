@@ -323,9 +323,9 @@ VECTOR selectSeed(MATRIX tranMatInv, int numPages, type alfaI, int mI, int* indi
 
 				int x = i * numPages + j;
 
-				riga = riga + alfaI * tranMatInv[x] * s[j];
+				riga = riga + tranMatInv[x] * s[j];
 			}
-			s[i] = riga + somma;
+			s[i] = alfaI * riga + somma;
 		}
 	}
 
@@ -454,7 +454,7 @@ VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numP
 				riga = riga + alfaB * ret[j] * tranMat[i * numPages + j];
 			}
 
-			ret[i] = riga + somma[i];
+			ret[i] = d[i] * riga + somma[i];
 		}
 	}
 	return ret;
