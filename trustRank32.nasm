@@ -20,7 +20,7 @@ computeScores:
     ; Standard prologue
     push ebp
     mov ebp, esp
-    sub esp, 40                    ; Space for local variables
+    sub esp, 48                    ; Space for local variables
     push ebx                       ; Save callee-saved registers
     push esi
     push edi
@@ -31,9 +31,12 @@ computeScores:
     ; [ebp-12] = j (innermost loop counter)
     ; [ebp-16] = alfaB (scalar)
     ; [ebp-20] = unoAlfaB (1-alfaB) (scalar)
-    ; [ebp-24] = temporary 
-    ; [ebp-28] = temporary
-    ; [ebp-32] = temporary dot product
+    ; [ebp-24] = aligned_count (for vectorized operations)
+    ; [ebp-28] = base_row_addr (address of current row)
+    ; [ebp-32] = tmp
+    ; [ebp-36] = tmp
+    ; [ebp-40] = tmp
+    ; [ebp-44] = tmp
     
     ; Get parameters
     ; [ebp+8]  = tranMat
@@ -74,6 +77,13 @@ computeScores:
     call memset
     add esp, 12
 
+    ; Calculate aligned count for vectorized operations
+    mov eax, [ebp+24]              ; numPages
+    mov ecx, eax                   ; Copy numPages
+    shr ecx, 2                     ; Divide by 4 (number of complete SSE blocks)
+    shl ecx, 2                     ; Multiply by 4 again (aligned count)
+    mov [ebp-24], ecx              ; Store aligned_count
+
     ; Outer loop - iterate maxBias times
     mov dword [ebp-4], 0           ; b = 0
 outer_loop:
@@ -100,33 +110,63 @@ inner_loop:
     ; Store to somma[i]
     movss [esi + eax*4], xmm0      ; somma[i] = result
 
+    ; Calculate row address for tranMat[i]
+    mov eax, [ebp-8]               ; i
+    mov ebx, [ebp+24]              ; numPages
+    imul eax, ebx                  ; i * numPages
+    shl eax, 2                     ; i * numPages * 4 (sizeof float)
+    add eax, [ebp+8]               ; tranMat + (i * numPages * 4)
+    mov [ebp-28], eax              ; Store base_row_addr
+
     ; Zero accumulator for dot product
     xorps xmm7, xmm7               ; Clear accumulator register
 
-    ; Prepare for innermost loop
+    ; Vectorized loop - process 4 elements at a time
     mov dword [ebp-12], 0          ; j = 0
-innermost_loop:
+vectorized_loop:
+    mov ecx, [ebp-12]              ; Load j
+    cmp ecx, [ebp-24]              ; Compare with aligned_count
+    jge remainder_loop             ; Process remaining elements
+
+    ; Process 4 elements at once using SSE
+    mov eax, [ebp-28]              ; Load row address
+    movups xmm0, [eax + ecx*4]     ; Load 4 elements from tranMat[i,j...j+3]
+    movups xmm1, [edi + ecx*4]     ; Load 4 elements from ret[j...j+3]
+    
+    ; Perform vectorized multiplication
+    mulps xmm0, xmm1               ; tranMat[i,j...j+3] * ret[j...j+3]
+    
+    ; Horizontal add to accumulate
+    ; First, add pairs within xmm0: (a+b, c+d, a+b, c+d)
+    haddps xmm0, xmm0              ; Sum adjacent pairs
+    ; Then, add pairs again: (a+b+c+d, a+b+c+d, a+b+c+d, a+b+c+d)
+    haddps xmm0, xmm0              ; Sum adjacent pairs again
+    
+    ; Add result to accumulator
+    addss xmm7, xmm0               ; Add the sum to the accumulator
+    
+    ; Advance to next 4 elements
+    add dword [ebp-12], 4
+    jmp vectorized_loop
+
+remainder_loop:
+    ; Process remaining elements (not aligned to 4)
     mov ecx, [ebp-12]              ; Load j
     cmp ecx, [ebp+24]              ; Compare with numPages
     jge end_innermost_loop         ; Exit if j >= numPages
 
-    ; Scalar calculation for each element in the row
     ; Calculate tranMat[i,j] * ret[j]
-    mov eax, [ebp-8]               ; i
-    mov ebx, [ebp+24]              ; numPages
-    imul eax, ebx                  ; i * numPages
-    add eax, ecx                   ; i * numPages + j
-    mov ebx, [ebp+8]               ; tranMat
+    mov eax, [ebp-28]              ; Load row address
     
-    ; Perform multiplication and accumulation with SSE
-    movss xmm0, [ebx + eax*4]      ; tranMat[i,j]
+    ; Perform scalar multiplication and accumulation
+    movss xmm0, [eax + ecx*4]      ; tranMat[i,j]
     movss xmm1, [edi + ecx*4]      ; ret[j]
     mulss xmm0, xmm1               ; tranMat[i,j] * ret[j]
-    addss xmm7, xmm0               ; Add to accumulated
+    addss xmm7, xmm0               ; Add to accumulated result
 
     ; Next j
     inc dword [ebp-12]
-    jmp innermost_loop
+    jmp remainder_loop
 
 end_innermost_loop:
     ; Multiply accumulated value by alfaB
