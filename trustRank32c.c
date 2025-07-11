@@ -558,7 +558,7 @@ void loadTranMat(params* input, int archi)
 	{
 		for (int j = 0; j < input->numPages; j++)
 		{
-			if (tempArco[i * input->numPages + j] == 1)
+			if (tempArco[i * input->numPages + j] != 0)
 			{
 				tranMat[i * input->numPages + j] = (type) 1 / (type) tempUsc[j];
 				tranMatInv[j * input->numPages + i] = (type) 1 / (type) tempIng[j];
@@ -844,11 +844,15 @@ int main(int argc, char** argv)
 			printf("out: NULL\n");
 		else
 		{
-			int i,j;
-			printf("results: [");
-			for(i=0; i<input->numPages; i++)
+			righe = input->numPages;
+			d = 1;
+			VECTOR res= load_data("tr_50_10_0.85_32.ds2", &righe, &d);
+			printf("results:\ttrue:\n[");
+			for(int i=0; i<input->numPages; i++)
 			{
-				printf("%f,", input->results[i]);
+				printf("[%f,", input->results[i]);
+				printf("\t%f,", res[i]);
+				printf("]\n");
 			}
 			printf("]\n");
 		}
