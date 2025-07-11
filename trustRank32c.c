@@ -425,14 +425,13 @@ VECTOR copy_vector(VECTOR src, int size) {
 	return dest;
 }
 
-
-VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numPages)
-{
-	VECTOR ret = copy_vector(d, numPages);
-	type unoAlfaB = (type) 1 - alfaB;
-	VECTOR somma = alloc_vector(numPages);
-	memset(somma, 0, numPages * 1 * sizeof(type));
-
+extern VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numPages);
+// VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numPages)
+// {
+	// VECTOR ret = copy_vector(d, numPages);
+	// type unoAlfaB = (type) 1 - alfaB;
+	// VECTOR somma = alloc_vector(numPages);
+	// memset(somma, 0, numPages * 1 * sizeof(type));
 
 	/*
 	 *				 | A B C |	 | 1 |   | X |   | (alfaB*1*A + alfaB*2*B + alfaB*3*C) + X |
@@ -440,25 +439,24 @@ VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numP
 	 *				 | G H I |	 | 3 |   | Z |   | (alfaB*1*G + alfaB*2*H + alfaB*3*I) + Z |
 	 */
 
-	for (int b = 0; b < maxBias; b++)
-	{
-		// ret = alfaB * tranMat * ret + (1 - alfaB) * d
-		// vettore = scalare * matrice * vettore + scalare * vettore
-
-		for (int i = 0; i < numPages; i++)
-		{
-			somma[i] = unoAlfaB * d[i];
-			type riga = 0;
-			for (int j = 0; j < numPages; j++)
-			{
-				riga = riga + alfaB * ret[j] * tranMat[i * numPages + j];
-			}
-
-			ret[i] = riga + somma[i];
-		}
-	}
-	return ret;
-}
+	// ret = alfaB * tranMat * ret + (1 - alfaB) * d
+	// vettore = scalare * matrice * vettore + scalare * vettore
+	// for (int b = 0; b < maxBias; b++)
+	// {
+	// 	for (int i = 0; i < numPages; i++)
+	// 	{
+	// 		somma[i] = unoAlfaB * d[i];
+	// 		type riga = 0;
+	// 		for (int j = 0; j < numPages; j++)
+	// 		{
+	// 			riga = riga + alfaB * ret[j] * tranMat[i * numPages + j];
+	// 		}
+	//
+	// 		ret[i] = riga + somma[i];
+	// 	}
+	// }
+	// return ret;
+// }
 
 
 MATRIX trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracle, type alfaB, int maxBias, type alfaI, VECTOR valoriOracolo)
