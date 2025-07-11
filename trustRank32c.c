@@ -323,9 +323,9 @@ VECTOR selectSeed(MATRIX tranMatInv, int numPages, type alfaI, int mI, int* indi
 
 				int x = i * numPages + j;
 
-				riga = riga + tranMatInv[x] * s[j];
+				riga = riga + alfaI * tranMatInv[x] * s[j];
 			}
-			s[i] = alfaI * riga + somma;
+			s[i] = riga + somma;
 		}
 	}
 
@@ -454,7 +454,7 @@ VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numP
 				riga = riga + alfaB * ret[j] * tranMat[i * numPages + j];
 			}
 
-			ret[i] = d[i] * riga + somma[i];
+			ret[i] = riga + somma[i];
 		}
 	}
 	return ret;
@@ -471,7 +471,7 @@ MATRIX trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracl
 
 	for (int i = 0; i < limitOracle; i++) //Singolo FOR
 	{
-		if (valoriOracolo[sigma[i]] == 1) // Al posto della chiamata a funzione
+		if (valoriOracolo[sigma[i]] != 0) // Al posto della chiamata a funzione
 		{
 			d[sigma[i]] = (type) 1 / (type) numPages; // MEMORIZZO GIà NORMALIZZATO SULLA LUNGHEZZA
 		}
@@ -802,11 +802,15 @@ int main(int argc, char** argv)
 			printf("out: NULL\n");
 		else
 		{
-			int i,j;
-			printf("results: [");
-			for(i=0; i<input->numPages; i++)
+			righe = input->numPages;
+			d = 1;
+			VECTOR res= load_data("tr_50_10_0.85_32.ds2", &righe, &d);
+			printf("results:\ttrue:\n[");
+			for(int i=0; i<input->numPages; i++)
 			{
-				printf("%f,", input->results[i]);
+				printf("[%f,", input->results[i]);
+				printf("\t%f,", res[i]);
+				printf("]\n");
 			}
 			printf("]\n");
 		}
