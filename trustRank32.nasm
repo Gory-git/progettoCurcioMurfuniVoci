@@ -136,13 +136,26 @@ vectorized_loop:
     ; Perform vectorized multiplication
     mulps xmm0, xmm1               ; tranMat[i,j...j+3] * ret[j...j+3]
     
-    ; Horizontal add to accumulate
-    ; First, add pairs within xmm0: (a+b, c+d, a+b, c+d)
-    haddps xmm0, xmm0              ; Sum adjacent pairs
-    ; Then, add pairs again: (a+b+c+d, a+b+c+d, a+b+c+d, a+b+c+d)
-    haddps xmm0, xmm0              ; Sum adjacent pairs again
+    ; Manual horizontal add using SSE/SSE2 instructions
+    ; Copy xmm0 to xmm2
+    movaps xmm2, xmm0              ; xmm2 = [a, b, c, d]
     
-    ; Add result to accumulator
+    ; Shuffle xmm2 to get [b, a, d, c]
+    shufps xmm2, xmm0, 0xB1        ; 0xB1 = 10110001 binary (swap within pairs)
+    
+    ; Add to get [a+b, b+a, c+d, d+c] which is effectively [a+b, a+b, c+d, c+d]
+    addps xmm0, xmm2               ; xmm0 = [a+b, a+b, c+d, c+d]
+    
+    ; Copy xmm0 to xmm2 again
+    movaps xmm2, xmm0              ; xmm2 = [a+b, a+b, c+d, c+d]
+    
+    ; Shuffle to get [c+d, c+d, a+b, a+b]
+    shufps xmm2, xmm0, 0x4E        ; 0x4E = 01001110 binary (swap upper/lower halves)
+    
+    ; Add to get [a+b+c+d, a+b+c+d, c+d+a+b, c+d+a+b]
+    addps xmm0, xmm2               ; xmm0 now has the sum in all elements
+    
+    ; Add lowest element to accumulator
     addss xmm7, xmm0               ; Add the sum to the accumulator
     
     ; Advance to next 4 elements
