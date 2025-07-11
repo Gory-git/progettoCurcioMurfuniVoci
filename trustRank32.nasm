@@ -32,9 +32,9 @@ computeScores:
     ; [ebp-16] = alfaB (scalar)
     ; [ebp-20] = unoAlfaB (1-alfaB) (scalar)
     ; [ebp-24] = aligned_count (for vectorized operations)
-    ; [ebp-28] = base_row_addr (address of current row)
-    ; [ebp-32] = tmp
-    ; [ebp-36] = tmp
+    ; [ebp-28] = row_offset (row offset calculation)
+    ; [ebp-32] = tmp index
+    ; [ebp-36] = tranMat base
     ; [ebp-40] = tmp
     ; [ebp-44] = tmp
     
@@ -54,6 +54,10 @@ computeScores:
     movss xmm1, [ebp-16]           ; Load alfaB
     subss xmm0, xmm1               ; 1.0 - alfaB
     movss [ebp-20], xmm0           ; Store to unoAlfaB local
+    
+    ; Save tranMat base
+    mov eax, [ebp+8]
+    mov [ebp-36], eax
     
     ; Call copy_vector to initialize ret
     push dword [ebp+24]            ; numPages
@@ -77,13 +81,6 @@ computeScores:
     call memset
     add esp, 12
 
-    ; Calculate aligned count for vectorized operations
-    mov eax, [ebp+24]              ; numPages
-    mov ecx, eax                   ; Copy numPages
-    shr ecx, 2                     ; Divide by 4 (number of complete SSE blocks)
-    shl ecx, 2                     ; Multiply by 4 again (aligned count)
-    mov [ebp-24], ecx              ; Store aligned_count
-
     ; Outer loop - iterate maxBias times
     mov dword [ebp-4], 0           ; b = 0
 outer_loop:
@@ -98,7 +95,7 @@ inner_loop:
     cmp eax, [ebp+24]              ; Compare with numPages
     jge end_inner_loop             ; Exit if i >= numPages
 
-    ; Calculate somma[i] = unoAlfaB * d[i] using SSE
+    ; Calculate somma[i] = unoAlfaB * d[i]
     mov eax, [ebp-8]               ; i
     mov ebx, [ebp+20]              ; d
     
@@ -110,89 +107,47 @@ inner_loop:
     ; Store to somma[i]
     movss [esi + eax*4], xmm0      ; somma[i] = result
 
-    ; Calculate row address for tranMat[i]
-    mov eax, [ebp-8]               ; i
-    mov ebx, [ebp+24]              ; numPages
-    imul eax, ebx                  ; i * numPages
-    shl eax, 2                     ; i * numPages * 4 (sizeof float)
-    add eax, [ebp+8]               ; tranMat + (i * numPages * 4)
-    mov [ebp-28], eax              ; Store base_row_addr
-
     ; Zero accumulator for dot product
-    xorps xmm7, xmm7               ; Clear accumulator register
+    xorps xmm7, xmm7               ; Clear accumulator register for row calculation
 
-    ; Vectorized loop - process 4 elements at a time
+    ; Innermost loop - calculate row*vector product
     mov dword [ebp-12], 0          ; j = 0
-vectorized_loop:
-    mov ecx, [ebp-12]              ; Load j
-    cmp ecx, [ebp-24]              ; Compare with aligned_count
-    jge remainder_loop             ; Process remaining elements
-
-    ; Process 4 elements at once using SSE
-    mov eax, [ebp-28]              ; Load row address
-    movups xmm0, [eax + ecx*4]     ; Load 4 elements from tranMat[i,j...j+3]
-    movups xmm1, [edi + ecx*4]     ; Load 4 elements from ret[j...j+3]
-    
-    ; Perform vectorized multiplication
-    mulps xmm0, xmm1               ; tranMat[i,j...j+3] * ret[j...j+3]
-    
-    ; Manual horizontal add using SSE/SSE2 instructions
-    ; Copy xmm0 to xmm2
-    movaps xmm2, xmm0              ; xmm2 = [a, b, c, d]
-    
-    ; Shuffle xmm2 to get [b, a, d, c]
-    shufps xmm2, xmm0, 0xB1        ; 0xB1 = 10110001 binary (swap within pairs)
-    
-    ; Add to get [a+b, b+a, c+d, d+c] which is effectively [a+b, a+b, c+d, c+d]
-    addps xmm0, xmm2               ; xmm0 = [a+b, a+b, c+d, c+d]
-    
-    ; Copy xmm0 to xmm2 again
-    movaps xmm2, xmm0              ; xmm2 = [a+b, a+b, c+d, c+d]
-    
-    ; Shuffle to get [c+d, c+d, a+b, a+b]
-    shufps xmm2, xmm0, 0x4E        ; 0x4E = 01001110 binary (swap upper/lower halves)
-    
-    ; Add to get [a+b+c+d, a+b+c+d, c+d+a+b, c+d+a+b]
-    addps xmm0, xmm2               ; xmm0 now has the sum in all elements
-    
-    ; Add lowest element to accumulator
-    addss xmm7, xmm0               ; Add the sum to the accumulator
-    
-    ; Advance to next 4 elements
-    add dword [ebp-12], 4
-    jmp vectorized_loop
-
-remainder_loop:
-    ; Process remaining elements (not aligned to 4)
+innermost_loop:
     mov ecx, [ebp-12]              ; Load j
     cmp ecx, [ebp+24]              ; Compare with numPages
     jge end_innermost_loop         ; Exit if j >= numPages
 
-    ; Calculate tranMat[i,j] * ret[j]
-    mov eax, [ebp-28]              ; Load row address
-    
-    ; Perform scalar multiplication and accumulation
-    movss xmm0, [eax + ecx*4]      ; tranMat[i,j]
+    ; Calculate the index for tranMat[i,j]
+    mov eax, [ebp-8]               ; i
+    mov ebx, [ebp+24]              ; numPages
+    imul eax, ebx                  ; i * numPages
+    add eax, ecx                   ; i * numPages + j
+    mov [ebp-32], eax              ; Store index
+
+    ; Calculate tranMat[i,j] * ret[j] * alfaB
+    mov edx, [ebp-36]              ; tranMat base
+    mov eax, [ebp-32]              ; Load index
+    movss xmm0, [edx + eax*4]      ; tranMat[i*numPages + j]
     movss xmm1, [edi + ecx*4]      ; ret[j]
     mulss xmm0, xmm1               ; tranMat[i,j] * ret[j]
-    addss xmm7, xmm0               ; Add to accumulated result
+    
+    ; Multiply by alfaB
+    movss xmm1, [ebp-16]           ; alfaB
+    mulss xmm0, xmm1               ; alfaB * tranMat[i,j] * ret[j]
+    
+    ; Add to accumulated result
+    addss xmm7, xmm0               ; accumulate
 
     ; Next j
     inc dword [ebp-12]
-    jmp remainder_loop
+    jmp innermost_loop
 
 end_innermost_loop:
-    ; Multiply accumulated value by alfaB
-    movss xmm0, [ebp-16]           ; alfaB
-    mulss xmm7, xmm0               ; alfaB * accumulated
-    
-    ; Add somma[i]
+    ; Add somma[i] to accumulated value and store to ret[i]
     mov eax, [ebp-8]               ; i
     movss xmm0, [esi + eax*4]      ; somma[i]
-    addss xmm7, xmm0               ; Add to result
-    
-    ; Store to ret[i]
-    movss [edi + eax*4], xmm7      ; ret[i] = result
+    addss xmm0, xmm7               ; somma[i] + row calculation
+    movss [edi + eax*4], xmm0      ; ret[i] = result
 
     ; Next i
     inc dword [ebp-8]
