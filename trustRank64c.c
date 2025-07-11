@@ -31,11 +31,7 @@
 *
 * Per generare il file eseguibile:
 *
-* nasm -f elf64 pst64.nasm && gcc -m64 -msse -O0 -no-pie sseutils64.o pst64.o pst64c.c -o pst64c -lm && ./pst64c $pars
-*
-* oppure
-*
-* ./runpst64
+* nasm -f elf64 trustRank64.nasm && gcc -m64 -msse -O0 -no-pie sseutils64.o trustRank64.o trustRank64c.c -o trustRank64c -lm && ./trustRank32c $pars
 *
 */
 
@@ -806,7 +802,7 @@ int main(int argc, char** argv)
 		{
 			righe = input->numPages;
 			d = 1;
-			VECTOR res= load_data("tr_1024_50_0.7_32.ds2", &righe, &d);
+			VECTOR res= load_data("tr_50_10_0.85_64.ds2", &righe, &d);
 			printf("results:\ttrue:\n[");
 			for(int i=0; i<input->numPages; i++)
 			{
