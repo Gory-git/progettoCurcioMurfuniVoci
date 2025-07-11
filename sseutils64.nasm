@@ -1,6 +1,6 @@
 ; --------------------------------------------------
 ; Macro per il linking di file oggetto
-; NASM a 64-bit con la C standard library e 
+; NASM a 64-bit con la C standard library e
 ; alcune utility per l'uso di SSE e AVX
 ;
 ; Uso:
@@ -53,7 +53,7 @@ br2:	db		')',10,0
 	push	r13
 	push	r14
 	push	r15
-	
+
 	vpush	ymm0
 	vpush	ymm1
 	vpush	ymm2
@@ -89,7 +89,7 @@ br2:	db		')',10,0
 	vpop	ymm2
 	vpop	ymm1
 	vpop	ymm0
-	
+
 	pop	r15
 	pop	r14
 	pop	r13
