@@ -456,7 +456,7 @@ extern VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, i
 // }
 
 
-MATRIX trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracle, type alfaB, int maxBias, type alfaI, VECTOR valoriOracolo)
+VECTOR trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracle, type alfaB, int maxBias, type alfaI, VECTOR valoriOracolo)
 {
 	int* indici = alloc_int_matrix(numPages, 1);
 	VECTOR d = alloc_vector(numPages);
