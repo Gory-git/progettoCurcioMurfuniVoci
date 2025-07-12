@@ -799,7 +799,7 @@ int main(int argc, char** argv)
 		{
 			righe = input->numPages;
 			d = 1;
-			VECTOR res= load_data("tr_1024_50_0.7_32.ds2", &righe, &d);
+			VECTOR res= load_data("tr_50_10_0.85_32.ds2", &righe, &d);
 			printf("results:\ttrue:\n[");
 			for(int i=0; i<input->numPages; i++)
 			{
