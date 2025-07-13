@@ -103,7 +103,7 @@ inner_loop:
     movss xmm0, [ebp-20]           ; unoAlfaB
     movss xmm1, [ebx + eax*4]      ; d[i]
     mulss xmm0, xmm1               ; unoAlfaB * d[i]
-    
+
     ; Store to somma[i]
     movss [esi + eax*4], xmm0      ; somma[i] = result
 
@@ -130,11 +130,11 @@ innermost_loop:
     movss xmm0, [edx + eax*4]      ; tranMat[i*numPages + j]
     movss xmm1, [edi + ecx*4]      ; ret[j]
     mulss xmm0, xmm1               ; tranMat[i,j] * ret[j]
-    
+
     ; Multiply by alfaB
     movss xmm1, [ebp-16]           ; alfaB
     mulss xmm0, xmm1               ; alfaB * tranMat[i,j] * ret[j]
-    
+
     ; Add to accumulated result
     addss xmm7, xmm0               ; accumulate
 
