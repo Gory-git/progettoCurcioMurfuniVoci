@@ -424,10 +424,10 @@ VECTOR copy_vector(VECTOR src, int size) {
 extern VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numPages);
 // VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numPages)
 // {
-	// VECTOR ret = copy_vector(d, numPages);
-	// type unoAlfaB = (type) 1 - alfaB;
-	// VECTOR somma = alloc_vector(numPages);
-	// memset(somma, 0, numPages * 1 * sizeof(type));
+// 	VECTOR ret = copy_vector(d, numPages);
+// 	type unoAlfaB = (type) 1 - alfaB;
+// 	VECTOR somma = alloc_vector(numPages);
+// 	memset(somma, 0, numPages * 1 * sizeof(type));
 
 	/*
 	 *				 | A B C |	 | 1 |   | X |   | (alfaB*1*A + alfaB*2*B + alfaB*3*C) + X |
@@ -437,21 +437,21 @@ extern VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, i
 
 	// ret = alfaB * tranMat * ret + (1 - alfaB) * d
 	// vettore = scalare * matrice * vettore + scalare * vettore
-	// for (int b = 0; b < maxBias; b++)
-	// {
-	// 	for (int i = 0; i < numPages; i++)
-	// 	{
-	// 		somma[i] = unoAlfaB * d[i];
-	// 		type riga = 0;
-	// 		for (int j = 0; j < numPages; j++)
-	// 		{
-	// 			riga = riga + alfaB * ret[j] * tranMat[i * numPages + j];
-	// 		}
-	//
-	// 		ret[i] = riga + somma[i];
-	// 	}
-	// }
-	// return ret;
+// 	for (int b = 0; b < maxBias; b++)
+// 	{
+// 		for (int i = 0; i < numPages; i++)
+// 		{
+// 			somma[i] = unoAlfaB * d[i];
+// 			type riga = 0;
+// 			for (int j = 0; j < numPages; j++)
+// 			{
+// 				riga = riga + alfaB * ret[j] * tranMat[i * numPages + j];
+// 			}
+//
+// 			ret[i] = riga + somma[i];
+// 		}
+// 	}
+// 	return ret;
 // }
 
 
@@ -716,7 +716,7 @@ int main(int argc, char** argv)
 	righe = input->numPages;
 	d = 1;
 
-	input->valoriOracolo= load_data(fname_oracle, &righe, &d);
+	input->valoriOracolo= load_data(fname_oracle, &d, &righe);
 	// dealloc_matrix(fname_oracle);
 
 	// printf("\n[");
