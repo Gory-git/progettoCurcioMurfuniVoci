@@ -33,10 +33,7 @@
 * Per generare il file eseguibile:
 * 
 * nasm -f elf32 pst32.nasm && gcc -m32 -msse -O0 -no-pie sseutils32.o pst32.o pst32c.c -o pst32c -lm && ./pst32c $pars
-* 
-* oppure
-* 
-* ./runpst32
+*
 * 
 */
 
@@ -48,7 +45,6 @@
 #include <time.h>
 #include <libgen.h>
 #include <locale.h>
-#include <stdbool.h>
 #include <xmmintrin.h>
 
 #define	type		float
@@ -56,10 +52,6 @@
 #define	VECTOR		type*
 
 #define random() (((type) rand())/RAND_MAX)
-
-float alfaI;
-float alfaB;
-float unoAlfaB;
 
 typedef struct {
 	int* graph;
@@ -296,65 +288,45 @@ void save_out(char* filename, MATRIX X, int k) {
 }
 
 /*
- * Procedure Assembly
-
-Per generare l' eseguibile:
-*
-* nasm -f elf32 trustRank32.nasm && gcc -m32 -msse -O0 -no-pie sseutils32.o trustRank32.o trustRank32c.c -o trustRank32c -lm && ./trustRank32c $pars
-* pars: -tm graph_50.ds -or t0_50_32.ds -re results_50_0.7_ds.2 -np 50 -lo 50 -ab 0.85 -mb 50 -ai 0.85
-*/
-
-extern VECTOR funzione_unica(MATRIX tranMatInv, int numPages, type decay, int max_outer_iterations, int* indici, VECTOR d, VECTOR ret, VECTOR somma, bool funz1, MATRIX tranMatParam);
-
-/*
- * Procedure C
+ * Funzioni ad-hoc
  */
 
 VECTOR selectSeed(MATRIX tranMatInv, int numPages, type alfaI, int mI, int* indici, VECTOR d)
 {
 	VECTOR s = alloc_vector(numPages);
-
-	for (int i = 0; i < numPages; i++)
-	{
-		s[i] = 1.0;
-	}
-
 	// int iterazione = 0;
 
 	// s = alfaI * tranMatInv * s + (1 - alfa) * (1/n) * unoN
 	// vettore = scalare * Matrice * vettore + scalare * scalare * vettore
 	type somma = (1 - alfaI) / (type) numPages;
 
+	for (int m = 0; m < mI; m++)
+	{
+		for (int i = 0; i < numPages; i++)
+		{
+			if (m == 0)
+			{
+				indici[i] = i; // inizializzo il vettore di indici, risparmio un'iterazione in n inizializzandolo qua dentro
+				d[i] = 0;
+			}
+			type riga = 0;
+			for (int j = 0; j < numPages; j++)
+			{
+				if (m == 0 && i == 0) // Così risparmio un ciclo in n in cui inizializzo tutti gli elementi di s a 1
+				{
+					s[j] = 1;
+				}
 
-	return funzione_unica(tranMatInv, numPages, alfaI, mI, indici, d, s, &somma, true, tranMatInv);
 
-	// for (int m = 0; m < mI; m++)
-	// {
-	// 	for (int i = 0; i < numPages; i++)
-	// 	{
-	// 		if (m == 0)
-	// 		{
-	// 			indici[i] = i; // inizializzo il vettore di indici, risparmio un'iterazione in n inizializzandolo qua dentro
-	// 			d[i] = 0;
-	// 		}
-	// 		type riga = 0;
-	// 		for (int j = 0; j < numPages; j++)
-	// 		{
-	// 			if (m == 0 && i == 0) // Così risparmio un ciclo in n in cui inizializzo tutti gli elementi di s a 1
-	// 			{
-	// 				s[j] = 1;
-	// 			}
-	//
-	//
-	// 			int x = i * numPages + j;
-	//
-	// 			riga = riga + alfaI * tranMatInv[x] * s[j];
-	// 		}
-	// 		s[i] = riga + somma;
-	// 	}
-	// }
-	//
-	// return s;
+				int x = i * numPages + j;
+
+				riga = riga + alfaI * tranMatInv[x] * s[j];
+			}
+			s[i] = riga + somma;
+		}
+	}
+
+	return s;
 }
 
 
@@ -450,26 +422,24 @@ VECTOR copy_vector(VECTOR src, int size) {
 	return dest;
 }
 
-
-VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numPages)
-{
-	VECTOR ret = copy_vector(d, numPages);
-	type unoAlfaB = (type) 1 - alfaB;
-	VECTOR somma = alloc_vector(numPages);
-	memset(somma, 0, numPages * 1 * sizeof(type));
-	return funzione_unica(tranMat, numPages, alfaB, maxBias, NULL, d, ret, somma, false, tranMat);
+extern VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numPages);
+// VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numPages)
+// {
+	// VECTOR ret = copy_vector(d, numPages);
+	// type unoAlfaB = (type) 1 - alfaB;
+	// VECTOR somma = alloc_vector(numPages);
+	// memset(somma, 0, numPages * 1 * sizeof(type));
 
 	/*
 	 *				 | A B C |	 | 1 |   | X |   | (alfaB*1*A + alfaB*2*B + alfaB*3*C) + X |
 	 * ret = alfaB * | D E F | * | 2 | + | Y | = | (alfaB*1*D + alfaB*2*E + alfaB*3*F) + Y |
 	 *				 | G H I |	 | 3 |   | Z |   | (alfaB*1*G + alfaB*2*H + alfaB*3*I) + Z |
 	 */
-	//
+
+	// ret = alfaB * tranMat * ret + (1 - alfaB) * d
+	// vettore = scalare * matrice * vettore + scalare * vettore
 	// for (int b = 0; b < maxBias; b++)
 	// {
-	// 	// ret = alfaB * tranMat * ret + (1 - alfaB) * d
-	// 	// vettore = scalare * matrice * vettore + scalare * vettore
-	//
 	// 	for (int i = 0; i < numPages; i++)
 	// 	{
 	// 		somma[i] = unoAlfaB * d[i];
@@ -483,10 +453,10 @@ VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, int numP
 	// 	}
 	// }
 	// return ret;
-}
+// }
 
 
-MATRIX trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracle, type alfaB, int maxBias, type alfaI, VECTOR valoriOracolo)
+VECTOR trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracle, type alfaB, int maxBias, type alfaI, VECTOR valoriOracolo)
 {
 	int* indici = alloc_int_matrix(numPages, 1);
 	VECTOR d = alloc_vector(numPages);
@@ -496,35 +466,18 @@ MATRIX trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracl
 
 	for (int i = 0; i < limitOracle; i++) //Singolo FOR
 	{
-		if (valoriOracolo[sigma[i]] == 1) // Al posto della chiamata a funzione
+		if (valoriOracolo[sigma[i]] != 0) // Al posto della chiamata a funzione
 		{
 			d[sigma[i]] = (type) 1 / (type) numPages; // MEMORIZZO GIà NORMALIZZATO SULLA LUNGHEZZA
 		}
 	}
-
-	// Nel file trustRank32c.c, dentro la funzione trustRank, dopo il loop dell'oracolo:
-
-	// Aggiungi queste righe per debug (puoi commentarle o rimuoverle dopo aver verificato)
-
-	printf("Vector d after oracle step:\n");
-	for (int i = 0; i < numPages; i++) {
-		printf("%f ", d[i]);
-	}
-	printf("\n");
-
-
-	return computeScores(tranMat, alfaB, maxBias, d, numPages);
 
 	return computeScores(tranMat, alfaB, maxBias, d, numPages);
 }
 
 void exec(params* input)
 {
-	alfaI = input->alfaI;
-	alfaB = input->alfaB;
-	unoAlfaB = (float) 1 - input->alfaB;
 	input->results= trustRank(input->tranMat, input->tranMatInv, input->numPages, input->limitOracle, input->alfaB, input->maxBias, input->alfaI, input->valoriOracolo);
-
 }
 
 void loadTranMat(params* input, int archi)
@@ -558,7 +511,7 @@ void loadTranMat(params* input, int archi)
 	{
 		for (int j = 0; j < input->numPages; j++)
 		{
-			if (tempArco[i * input->numPages + j] != 0)
+			if (tempArco[i * input->numPages + j] == 1)
 			{
 				tranMat[i * input->numPages + j] = (type) 1 / (type) tempUsc[j];
 				tranMatInv[j * input->numPages + i] = (type) 1 / (type) tempIng[j];
