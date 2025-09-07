@@ -1,4 +1,4 @@
 /home/samba/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_CXX_COMPILER=/usr/bin/g++ -G "Unix Makefiles" -S /home/samba/Progetti/progettoCurcioMurfuniVoci -B /home/samba/Progetti/progettoCurcioMurfuniVoci/cmake-build-debug
 -- Configuring done (0.1s)
--- Generating done (0.3s)
+-- Generating done (0.1s)
 -- Build files have been written to: /home/samba/Progetti/progettoCurcioMurfuniVoci/cmake-build-debug

@@ -446,36 +446,19 @@ extern VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, i
 // }
 
 
-VECTOR trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages,
-				 int limitOracle, type alfaB, int maxBias,
-				 type alfaI, VECTOR valoriOracolo)
+VECTOR trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracle, type alfaB, int maxBias, type alfaI, VECTOR valoriOracolo)
 {
 	int* indici = alloc_int_matrix(numPages, 1);
 	VECTOR d = alloc_vector(numPages);
 	VECTOR s = selectSeed(tranMatInv, numPages, alfaI, maxBias, indici, d);
 
-	int* sigma = rank(indici, s, numPages); // lista ordinata per affidabilità delle pagine
+	int* sigma = rank(indici, s, numPages); //rank restituisce una lista ordinata per l'affidabilità delle pagine (CONTIENE INDICI PAG)
 
-	//Inizializza d a 0
-	for (int i = 0; i < numPages; i++) {
-		d[i] = 0.0f;
-	}
-
-	//Assegna i pesi alle pagine seed (quelle scelte dall'oracolo)
-	for (int i = 0; i < limitOracle; i++) {
-		if (valoriOracolo[sigma[i]] != 0) {
-			d[sigma[i]] = 1.0f;
-		}
-	}
-
-	//Normalizzazione di d (in modo che sommi a 1)
-	type somma_d = 0.0f;
-	for (int i = 0; i < numPages; i++) {
-		somma_d += d[i];
-	}
-	if (somma_d > 0.0f) {
-		for (int i = 0; i < numPages; i++) {
-			d[i] /= somma_d;
+	for (int i = 0; i < limitOracle; i++) //Singolo FOR
+	{
+		if (valoriOracolo[sigma[i]] != 0) // Al posto della chiamata a funzione
+		{
+			d[sigma[i]] = (type) 1 / (type) numPages; // MEMORIZZO GIà NORMALIZZATO SULLA LUNGHEZZA
 		}
 	}
 
