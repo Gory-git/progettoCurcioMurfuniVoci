@@ -1,40 +1,40 @@
 
 /**************************************************************************************
-* 
+*
 * CdL Magistrale in Ingegneria Informatica
 * Corso di Architetture e Programmazione dei Sistemi di Elaborazione - a.a. 2024/25
-* 
+*
 * Progetto dell'algoritmo TrustRank per il calcolo della fiducia delle pagine web
 * in linguaggio assembly x86-32 + SSE
-* 
+*
 * F. Angiulli F. Fassetti S. Nisticò, marzo 2025
-* 
+*
 **************************************************************************************/
 
 /*
-* 
+*
 * Software necessario per l'esecuzione:
-* 
+*
 *    NASM (www.nasm.us)
 *    GCC (gcc.gnu.org)
-* 
-* entrambi sono disponibili come pacchetti software 
-* installabili mediante il packaging tool del sistema 
+*
+* entrambi sono disponibili come pacchetti software
+* installabili mediante il packaging tool del sistema
 * operativo; per esempio, su Ubuntu, mediante i comandi:
-* 
+*
 *    sudo apt-get install nasm
 *    sudo apt-get install gcc
-* 
+*
 * potrebbe essere necessario installare le seguenti librerie:
-* 
+*
 *    sudo apt-get install lib32gcc-4.8-dev (o altra versione)
 *    sudo apt-get install libc6-dev-i386
-* 
+*
 * Per generare il file eseguibile:
-* 
+*
 * nasm -f elf32 pst32.nasm && gcc -m32 -msse -O0 -no-pie sseutils32.o pst32.o pst32c.c -o pst32c -lm && ./pst32c $pars
 *
-* 
+*
 */
 
 #include <stdlib.h>
@@ -71,24 +71,24 @@ typedef struct {
 
 
 /*
-* 
-*	Le funzioni sono state scritte assumento che le matrici siano memorizzate 
+*
+*	Le funzioni sono state scritte assumento che le matrici siano memorizzate
 * 	mediante un array (type*), in modo da occupare un unico blocco
-* 	di memoria, ma a scelta del candidato possono essere 
+* 	di memoria, ma a scelta del candidato possono essere
 * 	memorizzate mediante array di array (type**).
-* 
+*
 * 	In entrambi i casi il candidato dovrà inoltre scegliere se memorizzare le
 * 	matrici per righe (row-major order) o per colonne (column major-order).
 *
 * 	L'assunzione corrente è che le matrici siano in row-major order.
-* 
+*
 */
 
-void* get_block(int size, int elements) { 
+void* get_block(int size, int elements) {
 	return _mm_malloc(elements*size,16);
 }
 
-void free_block(void* p) { 
+void free_block(void* p) {
 	_mm_free(p);
 }
 
@@ -119,23 +119,23 @@ void dealloc_vector(void* mat) {
 
 
 /*
-* 
+*
 * 	load_data
 * 	=========
-* 
+*
 *	Legge da file una matrice di N righe
 * 	e M colonne e la memorizza in un array lineare in row-major order
-* 
+*
 * 	Codifica del file:
 * 	primi 4 byte: numero di righe (N) --> numero intero
 * 	successivi 4 byte: numero di colonne (M) --> numero intero
 * 	successivi N*M*4 byte: matrix data in row-major order --> numeri typeing-point a precisione singola
-* 
+*
 *****************************************************************************
 *	Se lo si ritiene opportuno, � possibile cambiare la codifica in memoria
-* 	della matrice. 
+* 	della matrice.
 *****************************************************************************
-* 
+*
 */
 
 int* load_data_int(char* filename, int *n, int *k) {
@@ -171,7 +171,7 @@ MATRIX load_data(char* filename, int *n, int *k) {
 		printf("'%s': bad data file name!\n", filename);
 		exit(0);
 	}
-	
+
 	status = (int) fread(&rows, sizeof(int), 1, fp);
 	status = (int) fread(&cols, sizeof(int), 1, fp);
 
@@ -179,31 +179,31 @@ MATRIX load_data(char* filename, int *n, int *k) {
 
 	status = fread(data, sizeof(type), rows*cols, fp);
 	fclose(fp);
-	
+
 	*n = rows;
 	*k = cols;
-	
+
 	return data;
 }
 
 /*
-* 
+*
 * 	load_seq
 * 	=========
-* 
+*
 *	Legge da file una matrice di N righe
 * 	e M colonne e la memorizza in un array lineare in row-major order
-* 
+*
 * 	Codifica del file:
 * 	primi 4 byte: numero di righe (N) --> numero intero
 * 	successivi 4 byte: numero di colonne (M) --> numero intero
 * 	successivi N*M*1 byte: matrix data in row-major order --> charatteri che compongono la stringa
-* 
+*
 *****************************************************************************
 *	Se lo si ritiene opportuno, � possibile cambiare la codifica in memoria
-* 	della matrice. 
+* 	della matrice.
 *****************************************************************************
-* 
+*
 */
 // char* load_seq(char* filename, int *n, int *k) {
 // 	FILE* fp;
@@ -233,10 +233,10 @@ MATRIX load_data(char* filename, int *n, int *k) {
 /*
 * 	save_data
 * 	=========
-* 
+*
 *	Salva su file un array lineare in row-major order
 *	come matrice di N righe e M colonne
-* 
+*
 * 	Codifica del file:
 * 	primi 4 byte: numero di righe (N) --> numero intero a 32 bit
 * 	successivi 4 byte: numero di colonne (M) --> numero intero a 32 bit
@@ -266,9 +266,9 @@ void save_data(char* filename, void* X, int n, int k) {
 /*
 * 	save_out
 * 	=========
-* 
+*
 *	Salva su file un array lineare composto da k elementi.
-* 
+*
 * 	Codifica del file:
 * 	primi 4 byte: contenenti l'intero 1 		--> numero intero a 32 bit
 * 	successivi 4 byte: numero di elementi k     --> numero intero a 32 bit
@@ -329,18 +329,15 @@ VECTOR selectSeed(MATRIX tranMatInv, int numPages, type alfaI, int mI, int* indi
 	return s;
 }
 
-
 void merge(VECTOR arr, int index[], int left, int mid, int right)
 {
 	int i, j, k;
 	int n1 = mid - left + 1;
 	int n2 = right - mid;
 
-	// Create temporary arrays
 	VECTOR leftArr[n1], rightArr[n2];
 	int leftIndex[n1], rightIndex[n2];
 
-	// Copy data to temporary arrays
 	for (i = 0; i < n1; i++)
 	{
 		leftArr[i] = &arr[left + i];
@@ -351,7 +348,7 @@ void merge(VECTOR arr, int index[], int left, int mid, int right)
 		rightArr[j] = arr[mid + 1 + j];
 		rightIndex[j] = index[mid + 1 + j];
 	}
-	// Merge the temporary arrays back into arr[left..right]
+
 	i = 0;
 	j = 0;
 	k = left;
@@ -371,7 +368,6 @@ void merge(VECTOR arr, int index[], int left, int mid, int right)
 		k++;
 	}
 
-	// Copy the remaining elements of leftArr[], if any
 	while (i < n1)
 	{
 		arr[k] = *leftArr[i];
@@ -380,7 +376,6 @@ void merge(VECTOR arr, int index[], int left, int mid, int right)
 		k++;
 	}
 
-	// Copy the remaining elements of rightArr[], if any
 	while (j < n2)
 	{
 		arr[k] = rightArr[j];
@@ -390,21 +385,16 @@ void merge(VECTOR arr, int index[], int left, int mid, int right)
 	}
 }
 
-
-// The subarray to be sorted is in the index range [left-right]
 void mergeSort(VECTOR arr, int index[], int left, int right)
 {
 	if (left < right)
 	{
 
-		// Calculate the midpoint
 		int mid = left + (right - left) / 2;
 
-		// Sort first and second halves
 		mergeSort(arr, index, left, mid);
 		mergeSort(arr, index, mid + 1, right);
 
-		// Merge the sorted halves
 		merge(arr, index, left, mid, right);
 	}
 }
@@ -466,19 +456,19 @@ VECTOR trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages,
 
 	int* sigma = rank(indici, s, numPages); // lista ordinata per affidabilità delle pagine
 
-	// Inizializza d a 0
+	//Inizializza d a 0
 	for (int i = 0; i < numPages; i++) {
 		d[i] = 0.0f;
 	}
 
-	// Assegna i pesi alle pagine seed (quelle scelte dall'oracolo)
+	//Assegna i pesi alle pagine seed (quelle scelte dall'oracolo)
 	for (int i = 0; i < limitOracle; i++) {
 		if (valoriOracolo[sigma[i]] != 0) {
 			d[sigma[i]] = 1.0f;
 		}
 	}
 
-	// 🔑 Normalizzazione di d (in modo che sommi a 1)
+	//Normalizzazione di d (in modo che sommi a 1)
 	type somma_d = 0.0f;
 	for (int i = 0; i < numPages; i++) {
 		somma_d += d[i];
@@ -507,7 +497,7 @@ void loadTranMat(params* input, int archi)
     int* tempUsc  = alloc_int_matrix(input->numPages, 1);
     int* tempArco = alloc_int_matrix(input->numPages, input->numPages);
 
-    // 🔧 Azzeramento iniziale
+    //Azzeramento iniziale
     memset(tranMat,    0, sizeof(type) * input->numPages * input->numPages);
     memset(tranMatInv, 0, sizeof(type) * input->numPages * input->numPages);
     memset(tempArco,   0, sizeof(int)  * input->numPages * input->numPages);
@@ -533,7 +523,7 @@ void loadTranMat(params* input, int archi)
     for (int i = 0; i < input->numPages; i++) {
         for (int j = 0; j < input->numPages; j++) {
             if (tempArco[i * input->numPages + j] == 1) {
-                // 🔧 Normalizzazione per riga (uscite di i)
+                //Normalizzazione per riga (uscite di i)
                 if (tempUsc[i] > 0) {
                     tranMat[i * input->numPages + j] = (type)1.0 / (type)tempUsc[i];
                 } else {
