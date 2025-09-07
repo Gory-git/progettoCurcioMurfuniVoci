@@ -456,24 +456,42 @@ extern VECTOR computeScores(MATRIX tranMat, type alfaB, int maxBias, VECTOR d, i
 // }
 
 
-VECTOR trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages, int limitOracle, type alfaB, int maxBias, type alfaI, VECTOR valoriOracolo)
+VECTOR trustRank(MATRIX tranMat, MATRIX tranMatInv, int numPages,
+				 int limitOracle, type alfaB, int maxBias,
+				 type alfaI, VECTOR valoriOracolo)
 {
 	int* indici = alloc_int_matrix(numPages, 1);
 	VECTOR d = alloc_vector(numPages);
 	VECTOR s = selectSeed(tranMatInv, numPages, alfaI, maxBias, indici, d);
 
-	int* sigma = rank(indici, s, numPages); //rank restituisce una lista ordinata per l'affidabilità delle pagine (CONTIENE INDICI PAG)
+	int* sigma = rank(indici, s, numPages); // lista ordinata per affidabilità delle pagine
 
-	for (int i = 0; i < limitOracle; i++) //Singolo FOR
-	{
-		if (valoriOracolo[sigma[i]] != 0) // Al posto della chiamata a funzione
-		{
-			d[sigma[i]] = (type) 1 / (type) numPages; // MEMORIZZO GIà NORMALIZZATO SULLA LUNGHEZZA
+	// Inizializza d a 0
+	for (int i = 0; i < numPages; i++) {
+		d[i] = 0.0f;
+	}
+
+	// Assegna i pesi alle pagine seed (quelle scelte dall'oracolo)
+	for (int i = 0; i < limitOracle; i++) {
+		if (valoriOracolo[sigma[i]] != 0) {
+			d[sigma[i]] = 1.0f;
+		}
+	}
+
+	// 🔑 Normalizzazione di d (in modo che sommi a 1)
+	type somma_d = 0.0f;
+	for (int i = 0; i < numPages; i++) {
+		somma_d += d[i];
+	}
+	if (somma_d > 0.0f) {
+		for (int i = 0; i < numPages; i++) {
+			d[i] /= somma_d;
 		}
 	}
 
 	return computeScores(tranMat, alfaB, maxBias, d, numPages);
 }
+
 
 void exec(params* input)
 {
@@ -482,51 +500,64 @@ void exec(params* input)
 
 void loadTranMat(params* input, int archi)
 {
-	MATRIX tranMat = alloc_matrix(input->numPages, input->numPages);
-	MATRIX tranMatInv = alloc_matrix(input->numPages, input->numPages);
+    MATRIX tranMat    = alloc_matrix(input->numPages, input->numPages);
+    MATRIX tranMatInv = alloc_matrix(input->numPages, input->numPages);
 
-	int* tempIng = alloc_int_matrix(input->numPages, 1);
-	int* tempUsc = alloc_int_matrix(input->numPages, 1);
-	int* tempArco = alloc_int_matrix(input->numPages, input->numPages);
+    int* tempIng  = alloc_int_matrix(input->numPages, 1);
+    int* tempUsc  = alloc_int_matrix(input->numPages, 1);
+    int* tempArco = alloc_int_matrix(input->numPages, input->numPages);
 
+    // 🔧 Azzeramento iniziale
+    memset(tranMat,    0, sizeof(type) * input->numPages * input->numPages);
+    memset(tranMatInv, 0, sizeof(type) * input->numPages * input->numPages);
+    memset(tempArco,   0, sizeof(int)  * input->numPages * input->numPages);
 
-	int* graph = input->graph;
+    int* graph = input->graph;
 
-	for (int i = 0; i < input->numPages; i++)
-	{
-		tempIng[i] = 0;
-		tempUsc[i] = 0;
-	}
-	for (int i = 0; i < archi * 2; i += 2)
-	{
-		int p = graph[i];
-		int q = graph[i + 1];
+    // conta gradi entranti e uscenti
+    for (int i = 0; i < input->numPages; i++) {
+        tempIng[i] = 0;
+        tempUsc[i] = 0;
+    }
 
-		tempUsc[p] = tempUsc[p] + 1;
-		tempIng[q] = tempIng[q] + 1;
-		tempArco[q * input->numPages + p] = 1;
-	}
+    for (int i = 0; i < archi * 2; i += 2) {
+        int p = graph[i];     // sorgente
+        int q = graph[i + 1]; // destinazione
 
-	for (int i = 0; i < input->numPages; i++)
-	{
-		for (int j = 0; j < input->numPages; j++)
-		{
-			if (tempArco[i * input->numPages + j] == 1)
-			{
-				tranMat[i * input->numPages + j] = (type) 1 / (type) tempUsc[j];
-				tranMatInv[j * input->numPages + i] = (type) 1 / (type) tempIng[j];
-			}
-		}
-	}
+        tempUsc[p] += 1;
+        tempIng[q] += 1;
+        tempArco[p * input->numPages + q] = 1; // arco p→q
+    }
 
-	input->tranMat = tranMat;
-	input->tranMatInv = tranMatInv;
+    // costruzione matrici
+    for (int i = 0; i < input->numPages; i++) {
+        for (int j = 0; j < input->numPages; j++) {
+            if (tempArco[i * input->numPages + j] == 1) {
+                // 🔧 Normalizzazione per riga (uscite di i)
+                if (tempUsc[i] > 0) {
+                    tranMat[i * input->numPages + j] = (type)1.0 / (type)tempUsc[i];
+                } else {
+                    tranMat[i * input->numPages + j] = 0.0;
+                }
 
-	dealloc_matrix(tempIng);
-	dealloc_matrix(tempUsc);
-	dealloc_matrix(tempArco);
+                // matrice inversa (normalizzata per ingressi di j)
+                if (tempIng[j] > 0) {
+                    tranMatInv[j * input->numPages + i] = (type)1.0 / (type)tempIng[j];
+                } else {
+                    tranMatInv[j * input->numPages + i] = 0.0;
+                }
+            }
+        }
+    }
+
+    input->tranMat    = tranMat;
+    input->tranMatInv = tranMatInv;
+
+    dealloc_matrix(tempIng);
+    dealloc_matrix(tempUsc);
+    dealloc_matrix(tempArco);
+
 }
-
 
 int main(int argc, char** argv)
 {
@@ -791,17 +822,25 @@ int main(int argc, char** argv)
 	save_out(fname_result, input->results, input->numPages);
 	//dealloc_matrix(fname_result);
 
-	if(input->display)
+	if (input->display)
 	{
-		if(input->results == NULL)
+		if (input->results == NULL)
 			printf("out: NULL\n");
 		else
 		{
 			righe = input->numPages;
 			d = 1;
-			VECTOR res= load_data("tr_50_10_0.85_32.ds2", &righe, &d);
+
+			char truefile[256];
+
+			// Usa SEMPRE maxBias nel nome del file "true"
+			sprintf(truefile, "tr_%d_%d_%g_32.ds2",
+					input->numPages, input->maxBias, input->alfaB);
+
+			VECTOR res = load_data(truefile, &righe, &d);
+
 			printf("results:\ttrue:\n[");
-			for(int i=0; i<input->numPages; i++)
+			for (int i = 0; i < input->numPages; i++)
 			{
 				printf("[%f,", input->results[i]);
 				printf("\t%f,", res[i]);

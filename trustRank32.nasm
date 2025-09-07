@@ -1,171 +1,248 @@
+; ====================================================================
+; VECTOR computeScores(MATRIX tranMat, float alfaB, int maxBias, VECTOR d, int numPages)
+; Versione x86-32 con SSE:
+; - SIMD completa (mulps/addps)
+; - Unrolling ×2 su blocchi da 8
+; - Riduzione orizzontale
+; - Variabili stabili in .bss (no offset numerici)
+; ====================================================================
+
 section .note.GNU-stack noalloc noexec nowrite progbits
 
 section .data
 align 16
-one_float:    dd 1.0, 1.0, 1.0, 1.0    ; Vector of four 1.0 values for SSE
-zero_float:   dd 0.0, 0.0, 0.0, 0.0    ; Vector of four 0.0 values for SSE
+one_float:      dd 1.0, 1.0, 1.0, 1.0
+zero_float:     dd 0.0, 0.0, 0.0, 0.0
+
+section .bss
+align 16
+alpha:          resd 1
+oneMinusAlpha:  resd 1
+tranBase:       resd 1
+dPtr:           resd 1
+retPtr:         resd 1
+sommaPtr:       resd 1
+numPagesVar:    resd 1
+maxBiasVar:     resd 1
+biasLoopVar:    resd 1
+pageLoopVar:    resd 1
+innerLoopVar:   resd 1
+vecBound4:      resd 1
+vecBound8:      resd 1
 
 section .text
 [BITS 32]
 global computeScores
 extern copy_vector
 extern alloc_vector
-extern memset
-
-; SSE-optimized implementation of computeScores function
-; VECTOR computeScores(MATRIX tranMat, float alfaB, int maxBias, VECTOR d, int numPages)
-%define TYPE_SIZE 4
+extern dealloc_vector
 
 computeScores:
-    ; Standard prologue
-    push ebp
-    mov ebp, esp
-    sub esp, 48                    ; Space for local variables
-    push ebx                       ; Save callee-saved registers
-    push esi
-    push edi
+    push    ebp
+    mov     ebp, esp
+    push    ebx
+    push    esi
+    push    edi
 
-    ; Setup local variables
-    ; [ebp-4]  = b (loop counter)
-    ; [ebp-8]  = i (inner loop counter)
-    ; [ebp-12] = j (innermost loop counter)
-    ; [ebp-16] = alfaB (scalar)
-    ; [ebp-20] = unoAlfaB (1-alfaB) (scalar)
-    ; [ebp-24] = aligned_count (for vectorized operations)
-    ; [ebp-28] = row_offset (row offset calculation)
-    ; [ebp-32] = tmp index
-    ; [ebp-36] = tranMat base
-    ; [ebp-40] = tmp
-    ; [ebp-44] = tmp
-    
-    ; Get parameters
-    ; [ebp+8]  = tranMat
-    ; [ebp+12] = alfaB (float)
-    ; [ebp+16] = maxBias
-    ; [ebp+20] = d
-    ; [ebp+24] = numPages
+    ; --- Validazione parametri ---
+    mov     eax, [ebp+8]      ; tranMat
+    test    eax, eax
+    jz      .error_exit
+    mov     eax, [ebp+20]     ; d
+    test    eax, eax
+    jz      .error_exit
+    mov     eax, [ebp+24]     ; numPages
+    test    eax, eax
+    jle     .error_exit
 
-    ; Create a scalar copy of alfaB for safer access
-    movss xmm0, [ebp+12]
-    movss [ebp-16], xmm0
+    ; --- Salvataggio parametri in BSS ---
+    mov     eax, [ebp+12]     ; alfaB
+    mov     [alpha], eax
+    movss   xmm0, [one_float]
+    subss   xmm0, [alpha]
+    movss   [oneMinusAlpha], xmm0
 
-    ; Calculate unoAlfaB = 1.0 - alfaB 
-    movss xmm0, [one_float]        ; Load 1.0
-    movss xmm1, [ebp-16]           ; Load alfaB
-    subss xmm0, xmm1               ; 1.0 - alfaB
-    movss [ebp-20], xmm0           ; Store to unoAlfaB local
-    
-    ; Save tranMat base
-    mov eax, [ebp+8]
-    mov [ebp-36], eax
-    
-    ; Call copy_vector to initialize ret
-    push dword [ebp+24]            ; numPages
-    push dword [ebp+20]            ; d
-    call copy_vector
-    add esp, 8
-    mov edi, eax                   ; EDI = ret
+    mov     eax, [ebp+8]
+    mov     [tranBase], eax
+    mov     eax, [ebp+20]
+    mov     [dPtr], eax
+    mov     eax, [ebp+24]
+    mov     [numPagesVar], eax
+    mov     eax, [ebp+16]
+    mov     [maxBiasVar], eax
 
-    ; Allocate somma
-    push dword [ebp+24]            ; numPages
-    call alloc_vector
-    add esp, 4
-    mov esi, eax                   ; ESI = somma
+    ; --- Pre-calcolo bound ---
+    mov     eax, [numPagesVar]
+    mov     ebx, eax
+    and     ebx, 0FFFFFFFCh
+    mov     [vecBound4], ebx
+    and     eax, 0FFFFFFF8h
+    mov     [vecBound8], eax
 
-    ; Clear somma with memset
-    mov ecx, [ebp+24]              ; numPages
-    imul ecx, TYPE_SIZE            ; numPages * TYPE_SIZE
-    push ecx                       ; size
-    push dword 0                   ; value
-    push esi                       ; somma
-    call memset
-    add esp, 12
+    ; --- ret = copy_vector(d, numPages) ---
+    push    dword [numPagesVar]
+    push    dword [dPtr]
+    call    copy_vector
+    add     esp, 8
+    test    eax, eax
+    jz      .error_exit
+    mov     [retPtr], eax
 
-    ; Outer loop - iterate maxBias times
-    mov dword [ebp-4], 0           ; b = 0
-outer_loop:
-    mov eax, [ebp-4]               ; Load b
-    cmp eax, [ebp+16]              ; Compare with maxBias
-    jge end_outer_loop             ; Exit if b >= maxBias
+    ; --- somma = alloc_vector(numPages) ---
+    push    dword [numPagesVar]
+    call    alloc_vector
+    add     esp, 4
+    test    eax, eax
+    jz      .error_cleanup_ret
+    mov     [sommaPtr], eax
 
-    ; Inner loop - for each page
-    mov dword [ebp-8], 0           ; i = 0
-inner_loop:
-    mov eax, [ebp-8]               ; Load i
-    cmp eax, [ebp+24]              ; Compare with numPages
-    jge end_inner_loop             ; Exit if i >= numPages
+    ; --- Bias loop ---
+    mov     dword [biasLoopVar], 0
 
-    ; Calculate somma[i] = unoAlfaB * d[i]
-    mov eax, [ebp-8]               ; i
-    mov ebx, [ebp+20]              ; d
-    
-    ; Load values and multiply
-    movss xmm0, [ebp-20]           ; unoAlfaB
-    movss xmm1, [ebx + eax*4]      ; d[i]
-    mulss xmm0, xmm1               ; unoAlfaB * d[i]
+.bias_loop:
+    mov     eax, [biasLoopVar]
+    cmp     eax, [maxBiasVar]
+    jge     .done
 
-    ; Store to somma[i]
-    movss [esi + eax*4], xmm0      ; somma[i] = result
+    ; --- Page loop ---
+    mov     dword [pageLoopVar], 0
 
-    ; Zero accumulator for dot product
-    xorps xmm7, xmm7               ; Clear accumulator register for row calculation
+.page_loop:
+    mov     eax, [pageLoopVar]
+    cmp     eax, [numPagesVar]
+    jge     .end_page_loop
 
-    ; Innermost loop - calculate row*vector product
-    mov dword [ebp-12], 0          ; j = 0
-innermost_loop:
-    mov ecx, [ebp-12]              ; Load j
-    cmp ecx, [ebp+24]              ; Compare with numPages
-    jge end_innermost_loop         ; Exit if j >= numPages
+    ; somma[i] = (1-alfa) * d[i]
+    mov     esi, [sommaPtr]
+    mov     edi, [dPtr]
+    mov     ecx, [pageLoopVar]
+    movss   xmm0, [oneMinusAlpha]
+    movss   xmm1, [edi + ecx*4]
+    mulss   xmm0, xmm1
+    movss   [esi + ecx*4], xmm0
 
-    ; Calculate the index for tranMat[i,j]
-    mov eax, [ebp-8]               ; i
-    mov ebx, [ebp+24]              ; numPages
-    imul eax, ebx                  ; i * numPages
-    add eax, ecx                   ; i * numPages + j
-    mov [ebp-32], eax              ; Store index
+    ; --- Dot product riga·ret ---
+    xorps   xmm7, xmm7
+    xorps   xmm6, xmm6
+    mov     edi, [retPtr]
+    mov     dword [innerLoopVar], 0
 
-    ; Calculate tranMat[i,j] * ret[j] * alfaB
-    mov edx, [ebp-36]              ; tranMat base
-    mov eax, [ebp-32]              ; Load index
-    movss xmm0, [edx + eax*4]      ; tranMat[i*numPages + j]
-    movss xmm1, [edi + ecx*4]      ; ret[j]
-    mulss xmm0, xmm1               ; tranMat[i,j] * ret[j]
+.dot_vec8:
+    mov     ecx, [innerLoopVar]
+    cmp     ecx, [vecBound8]
+    jge     .dot_vec4
 
-    ; Multiply by alfaB
-    movss xmm1, [ebp-16]           ; alfaB
-    mulss xmm0, xmm1               ; alfaB * tranMat[i,j] * ret[j]
+    ; base = tranMat + (i*numPages + j)
+    mov     eax, [pageLoopVar]
+    mov     ebx, [numPagesVar]
+    imul    eax, ebx
+    add     eax, ecx
+    mov     edx, [tranBase]
+    lea     edx, [edx + eax*4]
 
-    ; Add to accumulated result
-    addss xmm7, xmm0               ; accumulate
+    movups  xmm0, [edx]
+    movups  xmm1, [edi + ecx*4]
+    mulps   xmm0, xmm1
+    addps   xmm7, xmm0
 
-    ; Next j
-    inc dword [ebp-12]
-    jmp innermost_loop
+    movups  xmm2, [edx+16]
+    movups  xmm3, [edi + ecx*4 + 16]
+    mulps   xmm2, xmm3
+    addps   xmm6, xmm2
 
-end_innermost_loop:
-    ; Add somma[i] to accumulated value and store to ret[i]
-    mov eax, [ebp-8]               ; i
-    movss xmm0, [esi + eax*4]      ; somma[i]
-    addss xmm0, xmm7               ; somma[i] + row calculation
-    movss [edi + eax*4], xmm0      ; ret[i] = result
+    add     ecx, 8
+    mov     [innerLoopVar], ecx
+    jmp     .dot_vec8
 
-    ; Next i
-    inc dword [ebp-8]
-    jmp inner_loop
+.dot_vec4:
+    mov     ecx, [innerLoopVar]
+    cmp     ecx, [vecBound4]
+    jge     .dot_reduce
 
-end_inner_loop:
-    ; Next b
-    inc dword [ebp-4]
-    jmp outer_loop
+    mov     eax, [pageLoopVar]
+    mov     ebx, [numPagesVar]
+    imul    eax, ebx
+    add     eax, ecx
+    mov     edx, [tranBase]
+    lea     edx, [edx + eax*4]
 
-end_outer_loop:
-    ; Return ret
-    mov eax, edi
+    movups  xmm0, [edx]
+    movups  xmm1, [edi + ecx*4]
+    mulps   xmm0, xmm1
+    addps   xmm7, xmm0
 
-    ; Epilogue
-    pop edi
-    pop esi
-    pop ebx
-    mov esp, ebp
-    pop ebp
+    add     ecx, 4
+    mov     [innerLoopVar], ecx
+
+.dot_reduce:
+    addps   xmm7, xmm6
+    movaps  xmm0, xmm7
+    shufps  xmm1, xmm7, 0b11101110
+    addps   xmm0, xmm1
+    movhlps xmm1, xmm0
+    addss   xmm0, xmm1
+
+; --- Tail scalare ---
+.dot_tail:
+    mov     ecx, [innerLoopVar]
+    cmp     ecx, [numPagesVar]
+    jge     .dot_done
+
+    mov     eax, [pageLoopVar]
+    mov     ebx, [numPagesVar]
+    imul    eax, ebx
+    add     eax, ecx
+    mov     edx, [tranBase]
+
+    movss   xmm4, [edx + eax*4]
+    movss   xmm5, [edi + ecx*4]
+    movaps  xmm6, xmm4
+    mulss   xmm6, xmm5
+    addss   xmm0, xmm6
+
+    inc     ecx
+    mov     [innerLoopVar], ecx
+    jmp     .dot_tail
+
+.dot_done:
+    ; alfa * dot + somma[i]
+    movss   xmm1, [alpha]
+    mulss   xmm0, xmm1
+    mov     esi, [sommaPtr]
+    mov     edi, [retPtr]
+    mov     eax, [pageLoopVar]
+    movss   xmm6, [esi + eax*4]
+    addss   xmm0, xmm6
+    movss   [edi + eax*4], xmm0
+
+    inc     dword [pageLoopVar]
+    jmp     .page_loop
+
+.end_page_loop:
+    inc     dword [biasLoopVar]
+    jmp     .bias_loop
+
+.done:
+    ; free somma
+    push    dword [sommaPtr]
+    call    dealloc_vector
+    add     esp, 4
+
+    mov     eax, [retPtr]
+    jmp     .exit
+
+.error_cleanup_ret:
+    push    dword [retPtr]
+    call    dealloc_vector
+    add     esp, 4
+
+.error_exit:
+    xor     eax, eax
+
+.exit:
+    pop     edi
+    pop     esi
+    pop     ebx
+    mov     esp, ebp
+    pop     ebp
     ret

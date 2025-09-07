@@ -554,8 +554,8 @@ int main(int argc, char** argv)
 	input->maxBias = 0;
 	input->alfaI = 0;
 	input->valoriOracolo = NULL;
-	input->silent= -1;
-	input->display= -1;
+	input->silent= 0;
+	input->display= 0;
 
 	//
 	// Visualizza la sintassi del passaggio dei parametri da riga comandi
@@ -785,9 +785,10 @@ int main(int argc, char** argv)
 
 	//
 	// Salva il risultato
-	//
-	sprintf(fname_result, "out32_%d_.ds2", input->numPages);
-	save_out(fname_result, input->results, input->numPages);
+	char out_name[256];
+	snprintf(out_name, sizeof out_name, "out64_%d_.ds2", input->numPages);
+	save_out(out_name, input->results, input->numPages);
+
 	//dealloc_matrix(fname_result);
 
 	if(input->display)
